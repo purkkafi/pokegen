@@ -10,7 +10,7 @@ A little program that generates Pokémon procedurally and inserts them into Pok�
 
 * Run `pokegen.py` with the path to the `pokefirered` folder. Example:
 
-    ./pokegen.py ../pokefirered/
+`./pokegen.py ../pokefirered/`
 
 This generates two files: `dex.json`, used in the next step, and `dex.txt`, a human-readable description of the generated Pokémon.
 
@@ -18,7 +18,7 @@ The script will print out a table called `fully evolved non-legendary pokemon by
 
 * Run `replace_files.py` with the path to the `pokefirered` folder. Example:
 
-    ./replace_files.py ../pokefirered/
+`./replace_files.py ../pokefirered/`
 
 This will edit the files in `pokefirered`. The script will print two lists: `unavailable families now`, which lists Pokémon families that can't be found in the wild, and `final unavailable families`, which lists Pokémon that can't be obtained at all after gifts and trades have been set. If the latter is not empty, rerandomize by running `replace_files.py` again.
 
@@ -30,7 +30,7 @@ This will edit the files in `pokefirered`. The script will print two lists: `una
 
 **What is missing?**
 
-As you can see from the picture, there are no sprites (though the question mark icons give some kind of suggestion about the colors the Pokémon might be). Dex entries arent' also in. The script of the game isn't edited, so everybody talks about weird, nonexistent Pokémon like Bulbasaur. Apart from that, all important gameplay stuff is there: 151 random Pokémon exist with customized stats, moves, evolution data, etc. and trainers have teams that make sense.
+As you can see from the picture, there are no sprites (though the question mark icons give some kind of suggestion about the colors the Pokémon might be). Dex entries are also not in. The script of the game isn't edited, so everybody talks about weird, nonexistent Pokémon like Bulbasaur. Apart from that, all important gameplay stuff is there: 151 random Pokémon exist with customized stats, moves, evolution data, etc. and trainers have teams that make sense.
 
 **How many Pokémon are obtainable?**
 
