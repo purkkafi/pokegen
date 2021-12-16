@@ -1,0 +1,434 @@
+{
+  "MAP_SEVEN_ISLAND_TANOBY_RUINS_MONEAN_CHAMBER": {
+    "types": [ "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_SEVEN_ISLAND_TANOBY_RUINS_LIPTOO_CHAMBER": {
+    "types": [ "STEEL" ],
+    "egg_groups": []
+  },
+  "MAP_SEVEN_ISLAND_TANOBY_RUINS_WEEPTH_CHAMBER": {
+    "types": [ "ROCK" ],
+    "egg_groups": []
+  },
+  "MAP_SEVEN_ISLAND_TANOBY_RUINS_DILFORD_CHAMBER": {
+    "types": [ "ICE" ],
+    "egg_groups": []
+  },
+  "MAP_SEVEN_ISLAND_TANOBY_RUINS_SCUFIB_CHAMBER": {
+    "types": [ "ELECTRIC" ],
+    "egg_groups": []
+  },
+  "MAP_SEVEN_ISLAND_TANOBY_RUINS_RIXY_CHAMBER": {
+    "types": [ "GRASS" ],
+    "egg_groups": []
+  },
+  "MAP_SEVEN_ISLAND_TANOBY_RUINS_VIAPOIS_CHAMBER": {
+    "types": [ "PSYCHIC" ],
+    "egg_groups": []
+  },
+  "MAP_VIRIDIAN_FOREST": {
+    "types": [ "BUG" ],
+    "egg_groups": [ "BUG", "FAIRY" ]
+  },
+  "MAP_MT_MOON_1F": {
+    "types": [ "ROCK", "GROUND", "POISON" ],
+    "egg_groups": [ "MINERAL", "FAIRY", "BUG", "GRASS" ]
+  },
+  "MAP_MT_MOON_B1F": {
+    "types": [ "BUG", "GRASS" ],
+    "egg_groups": [ "BUG", "GRASS" ]
+  },
+  "MAP_MT_MOON_B2F": {
+    "types": [ "ROCK", "GROUND", "POISON" ],
+    "egg_groups": [ "MINERAL", "FAIRY", "BUG", "GRASS" ]
+  },
+  "MAP_DIGLETTS_CAVE_B1F": {
+    "types": [ "GROUND" ],
+    "egg_groups": []
+  },
+  "MAP_VICTORY_ROAD_1F": {
+    "types": [ "POISON", "FIGHTING", "ROCK", "GROUND" ],
+    "egg_groups": [ "MINERAL", "HUMAN_LIKE" ]
+  },
+  "MAP_VICTORY_ROAD_2F": {
+    "types": [ "POISON", "FIGHTING", "ROCK", "GROUND" ],
+    "egg_groups": [ "MINERAL", "HUMAN_LIKE" ]
+  },
+  "MAP_VICTORY_ROAD_3F": {
+    "types": [ "POISON", "FIGHTING", "ROCK", "GROUND" ],
+    "egg_groups": [ "MINERAL", "HUMAN_LIKE" ]
+  },
+  "MAP_POKEMON_MANSION_1F": {
+    "types": [ "POISON", "FIRE", "NORMAL" ],
+    "egg_groups": [ "FIELD", "AMORPHOUS" ]
+  },
+  "MAP_POKEMON_MANSION_2F": {
+    "types": [ "POISON", "FIRE", "NORMAL" ],
+    "egg_groups": [ "FIELD", "AMORPHOUS" ]
+  },
+  "MAP_POKEMON_MANSION_3F": {
+    "types": [ "POISON", "FIRE", "NORMAL" ],
+    "egg_groups": [ "FIELD", "AMORPHOUS" ]
+  },
+  "MAP_POKEMON_MANSION_B1F": {
+    "types": [ "POISON", "FIRE", "NORMAL" ],
+    "egg_groups": [ "FIELD", "AMORPHOUS" ]
+  },
+  "MAP_SAFARI_ZONE_CENTER": {
+    "types": [ "POISON", "GRASS", "BUG", "NORMAL", "ROCK", "GROUND", "DRAGON" ],
+    "egg_groups": [ "FIELD", "BUG", "FAIRY", "GRASS", "DRAGON" ]
+  },
+  "MAP_SAFARI_ZONE_EAST": {
+    "types": [ "POISON", "GRASS", "BUG", "NORMAL", "FLYING", "DRAGON" ],
+    "egg_groups": [ "FIELD", "BUG", "FLYING", "GRASS", "DRAGON" ]
+  },
+  "MAP_SAFARI_ZONE_NORTH": {
+    "types": [ "POISON", "GRASS", "BUG", "NORMAL", "ROCK", "GROUND", "DRAGON" ],
+    "egg_groups": [ "FIELD", "BUG", "FAIRY", "GRASS", "DRAGON" ]
+  },
+  "MAP_SAFARI_ZONE_WEST": {
+    "types": [ "POISON", "GRASS", "BUG", "NORMAL", "ROCK", "GROUND", "DRAGON" ],
+    "egg_groups": [ "FIELD", "BUG", "FAIRY", "GRASS", "DRAGON", "MONSTER" ]
+  },
+  "MAP_CERULEAN_CAVE_1F": {
+    "types": [ "GRASS", "BUG", "ELECTRIC", "STEEL", "POISON", "FIGHTING", "NORMAL", "PSYCHIC" ],
+    "egg_groups": [ "AMORPHOUS", "HUMAN_LIKE", "BUG" ]
+  },
+  "MAP_CERULEAN_CAVE_2F": {
+    "types": [ "GRASS", "BUG", "ELECTRIC", "STEEL", "POISON", "FIGHTING", "NORMAL", "PSYCHIC" ],
+    "egg_groups": [ "AMORPHOUS", "HUMAN_LIKE", "BUG" ]
+  },
+  "MAP_CERULEAN_CAVE_B1F": {
+    "types": [ "GRASS", "BUG", "ELECTRIC", "STEEL", "POISON", "FIGHTING", "NORMAL", "PSYCHIC" ],
+    "egg_groups": [ "AMORPHOUS", "HUMAN_LIKE", "BUG" ]
+  },
+  "MAP_ROCK_TUNNEL_1F": {
+    "types": [ "ROCK", "GROUND", "FIGHTING" ],
+    "egg_groups": [ "MINERAL", "HUMAN_LIKE" ]
+  },
+  "MAP_ROCK_TUNNEL_B1F": {
+    "types": [ "ROCK", "GROUND", "FIGHTING" ],
+    "egg_groups": [ "MINERAL", "HUMAN_LIKE" ]
+  },
+  "MAP_SEAFOAM_ISLANDS_1F": {
+    "types": [ "ICE" ],
+    "egg_groups": [ "MONSTER", "WATER_1" ]
+  },
+  "MAP_SEAFOAM_ISLANDS_B1F": {
+    "types": [ "ICE" ],
+    "egg_groups": [ "MONSTER", "WATER_1" ]
+  },
+  "MAP_SEAFOAM_ISLANDS_B2F": {
+    "types": [ "ICE" ],
+    "egg_groups": [ "MONSTER", "WATER_1" ]
+  },
+  "MAP_SEAFOAM_ISLANDS_B3F": {
+    "types": [ "ICE" ],
+    "egg_groups": [ "MONSTER", "WATER_1" ]
+  },
+  "MAP_SEAFOAM_ISLANDS_B4F": {
+    "types": [ "ICE" ],
+    "egg_groups": [ "MONSTER", "WATER_1" ]
+  },
+  "MAP_POKEMON_TOWER_3F": {
+    "types": [ "GHOST" ],
+    "egg_groups": [ "AMORPHOUS", "MONSTER" ]
+  },
+  "MAP_POKEMON_TOWER_4F": {
+    "types": [ "GHOST" ],
+    "egg_groups": [ "AMORPHOUS", "MONSTER" ]
+  },
+  "MAP_POKEMON_TOWER_5F": {
+    "types": [ "GHOST" ],
+    "egg_groups": [ "AMORPHOUS", "MONSTER" ]
+  },
+  "MAP_POKEMON_TOWER_6F": {
+    "types": [ "GHOST" ],
+    "egg_groups": [ "AMORPHOUS", "MONSTER" ]
+  },
+  "MAP_POKEMON_TOWER_7F": {
+    "types": [ "GHOST" ],
+    "egg_groups": [ "AMORPHOUS", "MONSTER" ]
+  },
+  "MAP_POWER_PLANT": {
+    "types": [ "ELECTRIC" ],
+    "egg_groups": []
+  },
+  "MAP_MT_EMBER_EXTERIOR": {
+    "types": [ "FLYING", "FIGHTING", "FIRE", "ROCK", "GROUND" ],
+    "egg_groups": [ "FIELD", "FLYING", "MINERAL", "MONSTER" ]
+  },
+  "MAP_MT_EMBER_SUMMIT_PATH_1F": {
+    "types": [ "FIGHTING", "ROCK" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_SUMMIT_PATH_2F": {
+    "types": [ "FIGHTING", "ROCK" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_SUMMIT_PATH_3F": {
+    "types": [ "FIGHTING", "ROCK", "FIRE" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_RUBY_PATH_1F": {
+    "types": [ "FIGHTING", "ROCK", "FIRE" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_RUBY_PATH_B1F": {
+    "types": [ "FIGHTING", "ROCK", "FIRE" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_RUBY_PATH_B2F": {
+    "types": [ "FIGHTING", "ROCK", "FIRE" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_RUBY_PATH_B3F": {
+    "types": [ "FIGHTING", "ROCK", "FIRE" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_RUBY_PATH_B1F_STAIRS": {
+    "types": [ "FIGHTING", "ROCK", "FIRE" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_MT_EMBER_RUBY_PATH_B2F_STAIRS": {
+    "types": [ "FIGHTING", "ROCK", "FIRE" ],
+    "egg_groups": [ "MINERAL" ]
+  },
+  "MAP_THREE_ISLAND_BERRY_FOREST": {
+    "types": [ "GRASS", "BUG", "FLYING", "PSYCHIC" ],
+    "egg_groups": [ "GRASS", "BUG", "WATER_1", "FAIRY" ]
+  },
+  "MAP_FOUR_ISLAND_ICEFALL_CAVE_ENTRANCE": {
+    "types": [ "ICE", "DARK" ],
+    "egg_groups": [ "WATER_1" ]
+  },
+  "MAP_FOUR_ISLAND_ICEFALL_CAVE_1F": {
+    "types": [ "ICE", "DARK" ],
+    "egg_groups": [ "WATER_1" ]
+  },
+  "MAP_FOUR_ISLAND_ICEFALL_CAVE_B1F": {
+    "types": [ "ICE", "DARK" ],
+    "egg_groups": [ "WATER_1" ]
+  },
+  "MAP_FOUR_ISLAND_ICEFALL_CAVE_BACK": {
+    "types": [ "ICE", "DARK" ],
+    "egg_groups": [ "WATER_1" ]
+  },
+  "MAP_SIX_ISLAND_PATTERN_BUSH": {
+    "types": [ "BUG" ],
+    "egg_groups": [ "BUG" ]
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM1": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM2": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM3": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM4": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM5": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM6": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM7": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM8": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM9": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM10": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM11": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM12": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM13": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_LOST_CAVE_ROOM14": {
+    "types": [ "GHOST", "POISON", "DARK" ],
+    "egg_groups": []
+  },
+  "MAP_ONE_ISLAND_KINDLE_ROAD": {
+    "types": [ "FIRE", "NORMAL" ],
+    "egg_groups": [ "MINERAL", "WATER_1", "FIELD", "FLYING" ]
+  },
+  "MAP_ONE_ISLAND_TREASURE_BEACH": {
+    "types": [ "GRASS", "NORMAL" ],
+    "egg_groups": [ "FIELD", "FLYING", "WATER_1", "FAIRY" ]
+  },
+  "MAP_TWO_ISLAND_CAPE_BRINK": {
+    "types": [ "GRASS", "FLYING", "NORMAL" ],
+    "egg_groups": [ "WATER_1", "FAIRY" ]
+  },
+  "MAP_THREE_ISLAND_BOND_BRIDGE": {
+    "types": [ "GRASS", "BUG", "NORMAL", "FLYING" ],
+    "egg_groups": [ "WATER_1" ]
+  },
+  "MAP_THREE_ISLAND_PORT": {
+    "types": [ "NORMAL" ],
+    "egg_groups": []
+  },
+  "MAP_FIVE_ISLAND_MEADOW": {
+    "types": [ "NORMAL", "GRASS", "FLYING" ],
+    "egg_groups": [ "WATER_1" ]
+  },
+  "MAP_FIVE_ISLAND_MEMORIAL_PILLAR": {
+    "types": [ "GRASS" ],
+    "egg_groups": []
+  },
+  "MAP_SIX_ISLAND_WATER_PATH": {
+    "types": [ "GRASS", "NORMAL", "FLYING" ],
+    "egg_groups": [ "WATER_1" ]
+  },
+  "MAP_SIX_ISLAND_RUIN_VALLEY": {
+    "types": [ "NORMAL", "FLYING", "PSYCHIC", "BUG" ],
+    "egg_groups": [ "FIELD", "WATER_1" ]
+  },
+  "MAP_SEVEN_ISLAND_SEVAULT_CANYON_ENTRANCE": {
+    "types": [ "GROUND", "NORMAL", "FLYING" ],
+    "egg_groups": [ "FIELD", "WATER_1" ]
+  },
+  "MAP_SEVEN_ISLAND_SEVAULT_CANYON": {
+    "types": [ "NORMAL", "FLYING", "ROCK", "GROUND", "STEEL" ],
+    "egg_groups": [ "MINERAL", "DRAGON" ]
+  },
+  "MAP_ROUTE1": {
+    "types": [ ],
+    "egg_groups": [ "FIELD", "FLYING" ]
+  },
+  "MAP_ROUTE2": {
+    "types": [ ],
+    "egg_groups": [ "FIELD", "FLYING", "BUG" ]
+  },
+  "MAP_ROUTE3": {
+    "types": [ "FIGHTING" ],
+    "egg_groups": [ "FAIRY", "FIELD" ]
+  },
+  "MAP_ROUTE4": {
+    "types": [ "GROUND", "FIGHTING", "POISON" ],
+    "egg_groups": [ "FIELD", "FLYING" ]
+  },
+  "MAP_ROUTE5": {
+    "types": [],
+    "egg_groups": [ "GRASS", "FIELD", "FLYING" ]
+  },
+  "MAP_ROUTE6": {
+    "types": [ ],
+    "egg_groups": [ "FIELD", "FLYING", "GRASS" ]
+  },
+  "MAP_ROUTE7": {
+    "types": [ "FIRE" ],
+    "egg_groups": [ "FIELD", "FLYING", "GRASS" ]
+  },
+  "MAP_ROUTE8": {
+    "types": [ "GROUND", "POISON", "FIRE" ],
+    "egg_groups": [ "FIELD", "FLYING" ]
+  },
+  "MAP_ROUTE9": {
+    "types": [ "NORMAL", "FLYING", "POISON", "GROUND" ],
+    "egg_groups": []
+  },
+  "MAP_ROUTE10": {
+    "types": [ "ELECTRIC", "FLYING", "POISON", "GROUND" ],
+    "egg_groups": []
+  },
+  "MAP_ROUTE11": {
+    "types": [ "PSYCHIC", "GROUND", "POISON" ],
+    "egg_groups": [ "HUMAN_LIKE", "FLYING" ]
+  },
+  "MAP_ROUTE12": {
+    "types": [ "GRASS", "BUG", "FLYING" ],
+    "egg_groups": [ "GRASS", "BUG", "FLYING" ]
+  },
+  "MAP_ROUTE13": {
+    "types": [ "GRASS", "BUG", "FLYING" ],
+    "egg_groups": [ "GRASS", "BUG", "FLYING", "AMORPHOUS" ]
+  },
+  "MAP_ROUTE14": {
+    "types": [ "GRASS", "BUG", "FLYING" ],
+    "egg_groups": [ "GRASS", "BUG", "FLYING", "AMORPHOUS" ]
+  },
+  "MAP_ROUTE15": {
+    "types": [ "GRASS", "BUG", "FLYING" ],
+    "egg_groups": [ "GRASS", "BUG", "FLYING", "AMORPHOUS" ]
+  },
+  "MAP_ROUTE16": {
+    "types": [ "NORMAL", "FLYING" ],
+    "egg_groups": [ "FIELD", "FLYING" ]
+  },
+  "MAP_ROUTE17": {
+    "types": [ "NORMAL", "FLYING" ],
+    "egg_groups": [ "FIELD", "FLYING" ]
+  },
+  "MAP_ROUTE18": {
+    "types": [ "NORMAL", "FLYING" ],
+    "egg_groups": [ "FIELD", "FLYING" ]
+  },
+  "MAP_ROUTE21_NORTH": {
+    "types": [ "GRASS" ],
+    "egg_groups": [ "GRASS" ]
+  },
+  "MAP_ROUTE21_SOUTH": {
+    "types": [ "GRASS" ],
+    "egg_groups": [ "GRASS" ]
+  },
+  "MAP_ROUTE22": {
+    "types": [ "NORMAL", "FLYING", "FIGHTING" ],
+    "egg_groups": []
+  },
+  "MAP_ROUTE23": {
+    "types": [ "POISON", "GROUND", "FIGHTING", "FLYING" ],
+    "egg_groups": [ "FIELD", "FLYING", "HUMAN_LIKE" ]
+  },
+  "MAP_ROUTE24": {
+    "types": [ "BUG", "PSYCHIC", "GRASS" ],
+    "egg_groups": [ "GRASS", "BUG", "FLYING" ]
+  },
+  "MAP_ROUTE25": {
+    "types": [ "BUG", "PSYCHIC", "GRASS" ],
+    "egg_groups": [ "GRASS", "BUG", "FLYING" ]
+  },
+  "MAP_SIX_ISLAND_ALTERING_CAVE": {
+    "types": [ "POISON" ],
+    "egg_groups": []
+  },
+  "SPECIAL_ROCK_SMASH": {
+    "types" : [],
+    "egg_groups" : [ "MINERAL" ]
+  },
+  "SPECIAL_FISHING": {
+    "types" : [],
+    "egg_groups" : [ "WATER_2", "WATER_3" ]
+  },
+  "SPECIAL_SURFING": {
+    "types" : [],
+    "egg_groups" : [ "WATER_1", "WATER_3" ]
+  }
+}

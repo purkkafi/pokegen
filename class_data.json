@@ -1,0 +1,253 @@
+{
+    "unused_classes" : [
+        "CLASS_ELITE_FOUR",
+        "CLASS_LEADER",
+        "CLASS_AQUA_ADMIN",
+        "CLASS_MAGMA_ADMIN",
+        "CLASS_PKMN_PROF",
+        "CLASS_PLAYER"
+    ],
+    "special_classes" : {
+        "CLASS_RIVAL" : {},
+        "CLASS_BOSS" : {},
+        "CLASS_LEADER_2" : {},
+        "CLASS_ELITE_FOUR_2" : {},
+        "CLASS_RIVAL_2" : {},
+        "CLASS_CHAMPION_2" : {}
+    },
+    "special_type_preference" : {
+        "BROCK" : "ROCK",
+        "MISTY" : "WATER",
+        "LT. SURGE" : "ELECTRIC",
+        "ERIKA" : "GRASS",
+        "KOGA" : "POISON",
+        "SABRINA" : "PSYCHIC",
+        "BLAINE" : "FIRE",
+        "GIOVANNI" : "GROUND",
+        "LORELEI" : "ICE",
+        "BRUNO" : "FIGHTING",
+        "AGATHA" : "GHOST",
+        "LANCE" : "DRAGON"
+    },
+    "gym_trainers" : {
+        "LIAM" : "ROCK",
+        
+        "LUIS" : "WATER",
+        "DIANA" : "WATER",
+        
+        "DWAYNE" : "ELECTRIC",
+        "BAILY" : "ELECTRIC",
+        "TUCKER" : "ELECTRIC",
+        
+        "KAY" : "GRASS",
+        "BRIDGET" : "GRASS",
+        "MARY" : "GRASS",
+        "LISA" : "GRASS",
+        "TINA" : "GRASS",
+        "LORI" : "GRASS",
+        "TAMIA" : "GRASS",
+        
+        "CAMERON" : "PSYCHIC",
+        "TYRON" : "PSYCHIC",
+        "STACY" : "PSYCHIC",
+        "PRESTON" : "PSYCHIC",
+        "AMANDA" : "PSYCHIC",
+        "TASHA" : "PSYCHIC",
+        "JOHAN" : "PSYCHIC",
+        
+        "QUINN" : "FIRE",
+        "ERIK" : "FIRE",
+        "AVERY" : "FIRE",
+        "RAMON" : "FIRE",
+        "DEREK" : "FIRE",
+        "DUSTY" : "FIRE",
+        "ZAC" : "FIRE",
+        
+        "SAMUEL" : "GROUND",
+        "YUJI" : "GROUND",
+        "WARREN" : "GROUND"
+    },
+    "signature_tm" : {
+        "BROCK" : "ROCK_TOMB",
+        "MISTY" : "WATER_PULSE",
+        "LT. SURGE" : "SHOCK_WAVE",
+        "ERIKA" : "GIGA_DRAIN",
+        "KOGA" : "SLUDGE_BOMB",
+        "SABRINA" : "PSYCHIC",
+        "BLAINE" : "FIRE_BLAST",
+        "GIOVANNI" : "EARTHQUAKE",
+        "LORELEI" : "ICE_BEAM",
+        "AGATHA" : "SHADOW_BALL",
+        "LANCE" : "DRAGON_CLAW"
+    },
+    "classes" : {
+        "CLASS_YOUNGSTER_2" : {
+            "types" : [ "NORMAL", "FLYING", "POISON", "GROUND" ],
+            "egg_groups" : [ "FIELD", "FLYING", "MONSTER", "WATER_1" ]
+        },
+        "CLASS_BUG_CATCHER_2" : {
+            "types" : [ "BUG" ],
+            "egg_groups" : [ "BUG" ]
+        },
+        "CLASS_LASS_2" : {
+            "types" : [ "FLYING", "NORMAL", "GRASS" ],
+            "egg_groups" : [ "FLYING", "GRASS", "FIELD", "FAIRY" ]
+        },
+        "CLASS_SAILOR_2" : {
+            "types" : [ "FIGHTING", "WATER" ],
+            "egg_groups" : []
+        },
+        "CLASS_CAMPER_2" : {
+            "types" : [ "NORMAL", "GROUND", "FIGHTING", "FLYING", "BUG" ],
+            "egg_groups" : [ "FIELD", "FLYING", "WATER_1", "BUG" ]
+        },
+        "CLASS_PICNICKER_2" : {
+            "types" : [ "GRASS", "NORMAL", "WATER", "FLYING" ],
+            "egg_groups" : [ "GRASS", "FIELD", "FAIRY", "FLYING" ]
+        },
+        "CLASS_POKEMANIAC_2" : {
+            "types" : [],
+            "egg_groups" : [ "MONSTER" ]
+        },
+        "CLASS_SUPER_NERD" : {
+            "types" : [ "ELECTRIC", "POISON" ],
+            "egg_groups" : []
+        },
+        "CLASS_HIKER_2" : {
+            "types" : [ "ROCK", "FIGHTING" ],
+            "egg_groups" : [ "MINERAL" ]
+        },
+        "CLASS_BIKER" : {
+            "types" : [ "POISON" ],
+            "egg_groups" : []
+        },
+        "CLASS_BURGLAR" : {
+            "types" : [ "FIRE" ],
+            "egg_groups" : []
+        },
+        "CLASS_ENGINEER" : {
+            "types" : [ "ELECTRIC", "STEEL" ],
+            "egg_groups" : []
+        },
+        "CLASS_FISHERMAN_2" : {
+            "types" : [],
+            "egg_groups" : [ "WATER_2", "WATER_3" ]
+        },
+        "CLASS_SWIMMER_MALE_2" : {
+            "types" : [ "WATER" ],
+            "egg_groups" : []
+        },
+        "CLASS_CUE_BALL" : {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "CLASS_GAMER" : {
+            "types" : [ "WATER", "FIRE", "GRASS", "ELECTRIC" ],
+            "egg_groups" : []
+        },
+        "CLASS_BEAUTY_2" : {
+            "types" : [ "NORMAL", "GRASS", "FLYING" ],
+            "egg_groups" : [ "FIELD", "FAIRY" ]
+        },
+        "CLASS_SWIMMER_FEMALE_2" : {
+            "types" : [ "WATER" ],
+            "egg_groups" : []
+        },
+        "CLASS_PSYCHIC_2" : {
+            "types" : [ "PSYCHIC" ],
+            "egg_groups" : []
+        },
+        "CLASS_ROCKER" : {
+            "types" : [ "ELECTRIC" ],
+            "egg_groups" : []
+        },
+        "CLASS_JUGGLER" : {
+            "types" : [ "PSYCHIC" ],
+            "egg_groups" : [ "AMORPHOUS" ]
+        },
+        "CLASS_TAMER" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "MONSTER" ]
+        },
+        "CLASS_BIRD_KEEPER_2" : {
+            "types" : [],
+            "egg_groups" : [ "FLYING" ]
+        },
+        "CLASS_BLACK_BELT_2": {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "CLASS_SCIENTIST" : {
+            "types" : [ "POISON", "ELECTRIC", "STEEL" ],
+            "egg_groups" : []
+        },
+        "CLASS_TEAM_ROCKET" : {
+            "types" : [ "NORMAL", "GROUND", "POISON", "FIGHTING", "PSYCHIC", "DARK" ],
+            "egg_groups" : []
+        },
+        "CLASS_COOLTRAINER_2" : {
+            "types" : null,
+            "egg_groups" : null
+        },
+        "CLASS_GENTLEMAN_2" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD" ]
+        },
+        "CLASS_CHANNELER" : {
+            "types" : [ "GHOST" ],
+            "egg_groups" : []
+        },
+        "CLASS_TWINS_2": {
+            "types" : [],
+            "egg_groups" : [ "FAIRY" ]
+        },
+        "CLASS_COOL_COUPLE" : {
+            "types" : null,
+            "egg_groups" : null
+        },
+        "CLASS_YOUNG_COUPLE_2" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "WATER_1" ]
+        },
+        "CLASS_CRUSH_KIN" : {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "CLASS_SIS_AND_BRO_2" : {
+            "types" : [ "WATER" ],
+            "egg_groups" : []
+        },
+        "CLASS_CRUSH_GIRL" : {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "CLASS_TUBER_3" : {
+            "types" : [ "WATER" ],
+            "egg_groups" : []
+        },
+        "CLASS_PKMN_BREEDER_2" : {
+            "types" : [],
+            "egg_groups" : [ "FAIRY" ]
+        },
+        "CLASS_PKMN_RANGER_2" : {
+            "types" : [ "GRASS" ],
+            "egg_groups" : [ "FAIRY" ]
+        },
+        "CLASS_AROMA_LADY_2" : {
+            "types" : [ "GRASS" ],
+            "egg_groups" : []
+        },
+        "CLASS_RUIN_MANIAC_2" : {
+            "types" : [ "ROCK", "FIGHTING", "GROUND" ],
+            "egg_groups" : []
+        },
+        "CLASS_LADY_2" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "FAIRY", "GRASS" ]
+        },
+        "CLASS_PAINTER" : {
+            "types" : [ "NORMAL" ],
+            "egg_groups" : []
+        }
+    }
+}
