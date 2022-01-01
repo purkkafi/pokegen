@@ -77,6 +77,7 @@ class Flags(Enum):
     MYTHICAL = auto()
     LEGENDARY_TRIO = auto()
     FOSSIL = auto()
+    DITTO = auto()
     
     def __repr__(self):
         return self.name
@@ -555,6 +556,9 @@ class Pokemon:
         
         if Flags.LEGENDARY in self.flags or Flags.LEGENDARY_TRIO in self.flags or Flags.MYTHICAL in self.flags:
             self.egg_groups = ['UNDISCOVERED', 'UNDISCOVERED']
+        
+        if Flags.DITTO in self.flags:
+            self.egg_groups = ['DITTO', 'DITTO']
     
     def calc_max_non_stab_perc(self, type_string):
         val = 0.8
@@ -682,6 +686,10 @@ class Pokemon:
         learnset = set()
         target_len = random.randint(8, 12)
         movelist = list(self.moves)
+        
+        if Flags.DITTO in self.flags:
+            self.learnset = [(1, move_data['TRANSFORM'])]
+            return
         
         # give starters good starting move
         if Flags.GRASS_STARTER in self.flags or Flags.FIRE_STARTER in self.flags or Flags.WATER_STARTER in self.flags:
@@ -895,6 +903,9 @@ class Pokemon:
         if Flags.FIRE_STARTER in self.flags or Flags.WATER_STARTER in self.flags or Flags.GRASS_STARTER in self.flags or Flags.FOSSIL in self.flags:
             self.gender_ratio = 'PERCENT_FEMALE(12.5)'
         
+        if Flags.DITTO in self.flags:
+            self.gender_ratio = 'MON_GENDERLESS'
+        
         if 'UNDISCOVERED' in self.egg_groups:
             self.gender_ratio = 'MON_GENDERLESS'
     
@@ -983,6 +994,10 @@ class Pokemon:
     
     def generate_tms(self):
         self.tms = set()
+        self.tutor_moves = set()
+        
+        if Flags.DITTO in self.flags:
+            return
         
         for tm in tm_list:
             if tm in universal_tms:
@@ -998,8 +1013,6 @@ class Pokemon:
                     if tm in themedata[theme]['tms']:
                         self.tms.add(tm)
         
-        self.tutor_moves = set()
-        
         for move in tutor_move_list:
             if move in universal_tms:
                 self.tutor_moves.add(move)
@@ -1013,11 +1026,13 @@ class Pokemon:
                         self.tutor_moves.add(move)   
     
     def generate_egg_moves(self):
-        if 'UNDISCOVERED' in self.egg_groups:
+        self.egg_moves = set()
+        
+        if 'UNDISCOVERED' in self.egg_groups or Flags.DITTO in self.flags:
             return
+        
         target_amount = random.randint(3,8)
         tries = 0
-        self.egg_moves = set()
         choices = list(self.moves)
         
         not_good = set()
@@ -1231,6 +1246,9 @@ def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
     if Flags.FOSSIL in flags:
         subarchetype = 'rocky'
     
+    if Flags.DITTO in flags:
+        archetype = 'blob'
+    
     if Flags.LEGENDARY_TRIO in flags or Flags.MYTHICAL in flags or Flags.LEGENDARY in flags:
         if len(special_dex_slots[slot]) == 3:
             archetype = special_dex_slots[slot][2]
@@ -1296,7 +1314,9 @@ def generate_family(slot, evo_cat, special=None):
             bst_range = (580, 580)
         
         pkmn = make_pkmn(slot, flags, bst_range=bst_range)
-        pkmn.tms.add('HYPER_BEAM')
+        
+        if not special == Flags.DITTO:
+            pkmn.tms.add('HYPER_BEAM')
         return [ pkmn ]
         
     elif evo_cat == Flags.TWO_STAGES:
@@ -1348,6 +1368,8 @@ special_dex_slots = [None] * 152
 special_dex_slots[1] = (Flags.THREE_STAGES, Flags.GRASS_STARTER)
 special_dex_slots[4] = (Flags.THREE_STAGES, Flags.FIRE_STARTER)
 special_dex_slots[7] = (Flags.THREE_STAGES, Flags.WATER_STARTER)
+
+special_dex_slots[132] = (Flags.SINGLE, Flags.DITTO) # ditto
 
 special_dex_slots[138] = (Flags.TWO_STAGES, Flags.FOSSIL) # fossil line 1
 special_dex_slots[140] = (Flags.TWO_STAGES, Flags.FOSSIL) # fossil line 2
