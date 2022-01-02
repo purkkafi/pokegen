@@ -176,8 +176,9 @@ def generate_egg_moves_h():
     output.append(tmpl_start)
     
     for poke in data.keys():
-        movelist = ', '.join([ '\n              MOVE_'+mv for mv in data[poke] ])
-        output.append(f'    egg_moves({poke}, {movelist}),\n')
+        if len(data[poke]) != 0:
+            movelist = ', '.join([ '\n              MOVE_'+mv for mv in data[poke] ])
+            output.append(f'    egg_moves({poke}, {movelist}),\n')
     
     output.append(tmpl_end)
     
@@ -213,8 +214,9 @@ def generate_tmhm_learnsets_h():
     output.append(tmpl_start)
     
     for poke in data.keys():
-        learnset = "\n                                        | ".join([ "TMHM(" + tms[tm] + ")" for tm in data[poke] ])
-        output.append(f'    [SPECIES_{poke}] = TMHM_LEARNSET({learnset}),\n')
+        if len(data[poke]) != 0:
+            learnset = "\n                                        | ".join([ "TMHM(" + tms[tm] + ")" for tm in data[poke] ])
+            output.append(f'    [SPECIES_{poke}] = TMHM_LEARNSET({learnset}),\n')
     
     output.append(tmpl_end)
     
@@ -233,8 +235,9 @@ def generate_tutor_learnsets_h():
     output.append(tmpl_start)
     
     for poke in data.keys():
-        learnset = '\n                        | '.join([ f'TUTOR(MOVE_{mv})' for mv in data[poke] ])
-        output.append(f'    [SPECIES_{poke}] = {learnset},\n')
+        if len(data[poke]) != 0:
+            learnset = '\n                        | '.join([ f'TUTOR(MOVE_{mv})' for mv in data[poke] ])
+            output.append(f'    [SPECIES_{poke}] = {learnset},\n')
     
     output.append(tmpl_end)
     

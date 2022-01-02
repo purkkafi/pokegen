@@ -785,8 +785,29 @@ class Pokemon:
                 if self.learnset[i][0] > self.previous_stage.evo_type.level:
                     self.learnset[i] = (self.learnset[i][0]+acc, self.learnset[i][1])
                     acc = acc + 2
-        else:
-            pass
+        
+        # for some fully-evolved pokemon, add extra moves at level 1
+        if Flags.LAST_EVOLVABLE_STAGE in self.previous_stage.flags and random.random() > 0.5:
+            possible_moves = set()
+            
+            for mv in self.moves:
+                if move_data[mv].value >= 120:
+                    possible_moves.add(move_data[mv])
+            
+            for (lvl, mv) in self.learnset:
+                if mv in possible_moves:
+                    possible_moves.remove(mv)
+            
+            for tm in tm_list:
+                if move_data[tm] in possible_moves:
+                    possible_moves.remove(move_data[tm])
+            
+            if len(possible_moves) != 0:
+                extra_move = random.choice(list(possible_moves))
+                new_ls = [(1, extra_move)]
+                new_ls.extend(self.learnset)
+                self.learnset = new_ls
+                print(self.name, 'gets extra move', extra_move)
     
     def assign_base_stats(self):
         if self.stat_spread_weights == None:
