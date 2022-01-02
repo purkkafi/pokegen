@@ -184,6 +184,9 @@ class Pokemon:
         self.weight = None
         self.height = None
     
+    def __repr__(self):
+        return f'[{self.name}]'
+    
     # Recursively adds themes from initially defined ones
     def populate_themes(self):
         self.initial_themes = list(self.themes)
@@ -807,7 +810,6 @@ class Pokemon:
                 new_ls = [(1, extra_move)]
                 new_ls.extend(self.learnset)
                 self.learnset = new_ls
-                print(self.name, 'gets extra move', extra_move)
     
     def assign_base_stats(self):
         if self.stat_spread_weights == None:
@@ -1246,7 +1248,8 @@ def weighted_pick_theme(possibilities, normalize_untyped_ratio=False):
         
         return random.choices(typed_themes, weights)[0]
 
-types_so_far = defaultdict(lambda: 0)
+used_combos = defaultdict(lambda: 0)
+total_combos = defaultdict(lambda: 0)
 
 def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
     pkmn = Pokemon(bst_range=bst_range, flags=flags)
@@ -1279,24 +1282,43 @@ def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
     
     pkmn.generate()
     
-    if len(types_so_far.keys()) == len(type_weights.keys()) and all([ amount >= 4 for amount in types_so_far.values() ]):
-        # no need to try to balance amounts
-        return pkmn
+    type_combo = tuple(sorted(pkmn.types))
     
     if reroll:
-        reroll_tries = 0
-        while reroll_tries < 10:
-            if (types_so_far[pkmn.types[0]] >= 7 and types_so_far[pkmn.types[1]] >= 7) or (types_so_far[pkmn.types[0]] >= 11 or types_so_far[pkmn.types[1]] >= 11):
-                pkmn = make_pkmn(slot, flags, bst_range, reroll=False)
-                reroll_tries = reroll_tries + 1
-            else:
-                break
+        if (type_combo[0] != type_combo[1]) and used_combos[type_combo] > 2:
+            # print('rerolling (used combo)', type_combo)
+            for i in range(0,20):
+                pkmn = make_pkmn(slot, flags, bst_range=bst_range, reroll=False)
+                type_combo = tuple(sorted(pkmn.types))
+                if not (type_combo[0] != type_combo[1]) and used_combos[type_combo] > 2:
+                    break
+            # print('got', type_combo)  
         
-        if not (Flags.MYTHICAL in pkmn.flags or Flags.LEGENDARY in pkmn.flags or Flags.LEGENDARY_TRIO in pkmn.flags):
-            types_so_far[pkmn.types[0]] = types_so_far[pkmn.types[0]] + 1
-            if pkmn.types[0] != pkmn.types[1]:
-                types_so_far[pkmn.types[1]] = types_so_far[pkmn.types[1]] + 1
-    
+        if total_combos[type_combo[0]] >= 6 and total_combos[type_combo[1]] >= 6:
+            # print('rerolling (common types)', type_combo)
+            for i in range(0,20):
+                pkmn = make_pkmn(slot, flags, bst_range=bst_range, reroll=False)
+                type_combo = tuple(sorted(pkmn.types))
+                if not (total_combos[type_combo[0]] >= 6 and total_combos[type_combo[1]] >= 6):
+                    break
+            # print('got', type_combo)  
+        
+        if total_combos[type_combo[0]] >= 10 or total_combos[type_combo[1]] >= 10:
+            # print('rerolling (common type)', type_combo[0])
+            for i in range(0,20):
+                pkmn = make_pkmn(slot, flags, bst_range=bst_range, reroll=False)
+                type_combo = tuple(sorted(pkmn.types))
+                if not (total_combos[type_combo[0]] >= 10 or total_combos[type_combo[1]] >= 10):
+                    break
+            # print('got', type_combo)
+        
+    if reroll:
+        used_combos[type_combo] = used_combos[type_combo] + 1
+        
+        total_combos[type_combo[0]] = total_combos[type_combo[0]] + 1
+        if type_combo[0] != type_combo[1]:
+            total_combos[type_combo[1]] = total_combos[type_combo[1]] + 1
+        
     return pkmn
 
 def debug_type_distribution():
@@ -1498,9 +1520,48 @@ def debug_gen_dex():
     with open('dex.txt', 'w') as f:
         f.write('\n'.join(string))
     
-    print('stats:\n\tfully evolved non-legendary pokemon by type:')
-    for k in types_so_far.keys():
-        print(f'\t\t{k}: {types_so_far[k]}')
+    # debug print for type spread
+    families = set()
+    for poke in dex[1:]:
+        final = poke
+        while final.evo_target != None:
+            final = final.evo_target
+        
+        if Flags.LEGENDARY in final.flags:
+            pass
+        elif Flags.LEGENDARY_TRIO in final.flags:
+            pass
+        elif Flags.MYTHICAL in final.flags:
+            pass
+        else:
+            families.add(final)
+    
+    combo_spread = defaultdict(lambda: 0)
+    type_spread = defaultdict(lambda: 0)
+    
+    for fam in families:
+        tp = tuple(sorted(fam.types))
+        combo_spread[tp] = combo_spread[tp]+1
+        
+        type_spread[tp[0]] = type_spread[tp[0]]+1
+        
+        if(tp[0] != tp[1]):
+            type_spread[tp[1]] = type_spread[tp[1]]+1
+    
+    for tp in type_weights.keys():
+        print(f'{tp}: {type_spread[tp]}')
+        
+        for combo in combo_spread.keys():
+            if combo[0] != tp and combo[1] != tp:
+                continue
+            print(f'\t{combo_spread[combo]} {"*" if combo[0] == tp else combo[0]}/{"*" if combo[1] == tp else combo[1]}')
+    
+    print()
+    rare_types = []
+    for tp in type_weights.keys():
+        if type_spread[tp] < 5:
+            rare_types.append(f'{tp} ({type_spread[tp]})')
+    print('rare types:', ', '.join(rare_types))
     
     return dex
 

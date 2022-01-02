@@ -485,7 +485,7 @@
         "blob" : {
             "possible_subthemes" : [ "poisonous", "ghost", "metallic", "rocky", "electric", "fire_elemental", "ice_elemental" ],
             "optional_subthemes" : [ "clawed", "handed", "fast_body", "hard_body", "shelled", "loud", "electric_tms" ],
-            "moves" : [ "RECOVER", "SUBSTITUTE", "HARDEN", "BARRAGE", "POUND" ],
+            "moves" : [ "RECOVER", "SUBSTITUTE", "HARDEN", "BARRAGE", "POUND", "EXPLOSION", "SELF_DESTRUCT" ],
             "abilities" : [ "SOUNDPROOF", "INSOMNIA", "LEVITATE" ],
             "egg_groups" : [ "AMORPHOUS" ],
             "namestrings" : [ "orb", "blob", "ball" ],

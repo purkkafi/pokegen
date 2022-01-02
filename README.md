@@ -14,7 +14,7 @@ A little program that generates Pokémon procedurally and inserts them into Pok�
 
 This generates two files: `dex.json`, used in the next step, and `dex.txt`, a human-readable description of the generated Pokémon.
 
-The script will print out a table called `fully evolved non-legendary pokemon by type` that lists how many families of every type there are. If the distribution is bad, you can rerun the program a few times until you get a better one.
+The script will print out the amount of fully evolved Pokémon by type. If the distribution of types is bad, you can rerun the program a few times until you get a better one.
 
 * Run `replace_files.py` with the path to the `pokefirered` folder. Example:
 
