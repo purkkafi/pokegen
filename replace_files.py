@@ -4,6 +4,7 @@ import re
 import json
 import sys
 import random
+from enum import Enum, auto
 
 if(len(sys.argv) != 2):
     print('usage: replace_files.py [path to pokefirered folder]')
@@ -434,16 +435,27 @@ for evolver in dex['evolution.h'].keys():
         buffer = evos_from[evolver]['at'] + 15
     
     if evo[0] == 'EVO_LEVEL':
-        evos_into[evolver] = { 'at' : evo[1], 'to' : evo[2] }
+        evos_into[evolver] = { 'at' : evo[1], 'to' : evo[2], 'wild' : True }
         evos_from[evo[2]] = { 'at' : evo[1], 'from' : evolver }
     elif evo[0] == 'EVO_ITEM':
-        evos_into[evolver] = { 'at' : buffer, 'to' : evo[2] }
+        evos_into[evolver] = { 'at' : buffer, 'to' : evo[2], 'wild' : False }
         evos_from[evo[2]] = { 'at' : buffer, 'from' : evolver }
     elif evo[0] == 'EVO_FRIENDSHIP':   
-        evos_into[evolver] = { 'at' : buffer, 'to' : evo[2] }
+        evos_into[evolver] = { 'at' : buffer, 'to' : evo[2], 'wild' : False }
         evos_from[evo[2]] = { 'at' : buffer, 'from' : evolver }
+    
+    # prevent stage 3 in wild
+    if evolver in evos_into and evolver in evos_from:
+        evos_into[evolver]['wild'] = False
+        
 
-def adjust_evo(mon, min_lvl, max_lvl=None):
+class EvoContext(Enum):
+    UNKNOWN = auto()
+    WILD = auto()
+    TRAINER = auto()
+    BOSS = auto()
+
+def adjust_evo(mon, min_lvl, max_lvl=None, ctxt=None):
     if max_lvl == None:
         max_lvl = min_lvl
     
@@ -453,6 +465,12 @@ def adjust_evo(mon, min_lvl, max_lvl=None):
             mon = evos_into[mon]['to']
     while mon in evos_from and min_lvl < evos_from[mon]['at']:
             mon = evos_from[mon]['from']
+    
+    # prevent illegal wild evolutions
+    if ctxt == EvoContext.WILD and mon in evos_from:
+        prev_stage = evos_from[mon]['from']
+        if not evos_into[prev_stage]['wild']:
+            mon = prev_stage
     
     if mon != mon_start:
         #print(f'lvl {min_lvl}–{max_lvl}: {mon_start} -> {mon}')
@@ -472,7 +490,7 @@ def assign_wild_mons(types, egg_groups, wild_mons):
     mons = filter_mons(types, egg_groups, max_lvl)
 
     for mon in wild_mons['mons']:
-        mon['species'] = 'SPECIES_' + adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'])
+        mon['species'] = 'SPECIES_' + adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'], ctxt=EvoContext.WILD)
 
 def try_generate_wild_encounters():
     with open('templates/wild_encounters.json_template') as f:

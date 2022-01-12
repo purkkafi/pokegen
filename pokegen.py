@@ -87,7 +87,7 @@ FriendshipEvo = namedtuple('FriendshipEvo', [])
 StoneEvo = namedtuple('StoneEvo', ['stone'])
 
 FRIENDSHIP_EVO_CHANCE = 0.1
-STONE_EVO_CHANCE = 0.125
+STONE_EVO_CHANCE = 0.2
 
 def take_random(ls):
     elem = random.choice(ls)
