@@ -12,6 +12,12 @@ if(len(sys.argv) != 2):
 
 pokered_folder = sys.argv[1]
 
+class MonContext(Enum):
+    UNKNOWN = auto()
+    WILD = auto()
+    TRAINER = auto()
+    BOSS = auto()
+
 with open('dex.json') as f:
     dex = json.load(f)
 
@@ -390,7 +396,7 @@ def generate_sprite_position_files():
             f.write(t.read())
     print('wrote src/data/pokemon_graphics/front_pic_coordinates.h')
 
-def filter_mons(of_types, of_egg_groups, max_lvl):
+def filter_mons(of_types, of_egg_groups, max_lvl, ctxt=MonContext.UNKNOWN):
     choices = []
     
     if of_types == None and of_egg_groups == None:
@@ -414,11 +420,18 @@ def filter_mons(of_types, of_egg_groups, max_lvl):
     
     random.shuffle(choices)
     
-    target_len = random.randint(3, 5)
-    if target_len > len(choices):
-        target_len = len(choices)
-    
-    choices = choices[0:target_len]
+    if ctxt == MonContext.BOSS:
+        target_len = 6
+        if(len(choices) > 6):
+            choices.sort(key=lambda pk: dex['encounter_data'][pk]['bst'])
+            choices = choices[len(choices)-6:]
+    else:
+        target_len = random.randint(3, 5)
+        
+        if target_len > len(choices):
+            target_len = len(choices)
+        
+        choices = choices[0:target_len]
     
     if len(choices) == 0:
         raise BaseException(f'no mons for {of_types}, {of_egg_groups}')
@@ -447,13 +460,6 @@ for evolver in dex['evolution.h'].keys():
     # prevent stage 3 in wild
     if evolver in evos_into and evolver in evos_from:
         evos_into[evolver]['wild'] = False
-        
-
-class EvoContext(Enum):
-    UNKNOWN = auto()
-    WILD = auto()
-    TRAINER = auto()
-    BOSS = auto()
 
 def adjust_evo(mon, min_lvl, max_lvl=None, ctxt=None):
     if max_lvl == None:
@@ -467,10 +473,21 @@ def adjust_evo(mon, min_lvl, max_lvl=None, ctxt=None):
             mon = evos_from[mon]['from']
     
     # prevent illegal wild evolutions
-    if ctxt == EvoContext.WILD and mon in evos_from:
+    if ctxt == MonContext.WILD and mon in evos_from:
         prev_stage = evos_from[mon]['from']
         if not evos_into[prev_stage]['wild']:
             mon = prev_stage
+    
+    # randomly devolve trainer pokemon close to evolution level
+    if ctxt == MonContext.TRAINER and mon in evos_from:
+        if max_lvl - 5 < evos_from[mon]['at']:
+            if random.random() > 0.5:
+                mon = evos_from[mon]['from']
+    
+    # bosses can cheat a bit and evolve pokemon earlier, as a treat
+    if ctxt == MonContext.BOSS and mon in evos_into:
+        if max_lvl + 4 >= evos_into[mon]['at']:
+            mon = evos_into[mon]['to']
     
     if mon != mon_start:
         #print(f'lvl {min_lvl}–{max_lvl}: {mon_start} -> {mon}')
@@ -490,7 +507,7 @@ def assign_wild_mons(types, egg_groups, wild_mons):
     mons = filter_mons(types, egg_groups, max_lvl)
 
     for mon in wild_mons['mons']:
-        mon['species'] = 'SPECIES_' + adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'], ctxt=EvoContext.WILD)
+        mon['species'] = 'SPECIES_' + adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'], ctxt=MonContext.WILD)
 
 def try_generate_wild_encounters():
     with open('templates/wild_encounters.json_template') as f:
@@ -875,14 +892,14 @@ def generate_trainers():
         if m_sp != None and current_trainer != None:
             if current_trainer['class'] in class_data['special_classes']:
                 if current_trainer['name'] in class_data['special_type_preference']:
-                    mons = filter_mons(class_data['special_type_preference'][current_trainer['name']], [], current_level+15)
+                    mons = filter_mons(class_data['special_type_preference'][current_trainer['name']], [], current_level+15, ctxt=MonContext.BOSS)
                     #print('for', current_trainer['name'], mons, 'dupes:', dupes)
                     for mon in list(mons):
                         if base_form(mon) in dupes:
                             mons.remove(mon)
                             #print("won't dupe", mon)
                     if len(mons) == 0:
-                        mons = filter_mons(class_data['special_type_preference'][current_trainer['name']], [], current_level+15)
+                        mons = filter_mons(class_data['special_type_preference'][current_trainer['name']], [], current_level+15, ctxt=MonContext.BOSS)
                 elif current_trainer['name'] == 'TERRY':
                     if current_trainer['id'].startswith('sTrainerMons_RivalOaksLab'):
                         offset = 5
@@ -913,8 +930,10 @@ def generate_trainers():
             else:
                 tr_class = class_data['classes'][current_trainer['class']]
                 mons = filter_mons(tr_class['types'], tr_class['egg_groups'], current_level)
-                
-            mon = adjust_evo(random.choice(mons), current_level)
+            
+            is_boss = current_trainer['class'] in class_data['special_classes']    
+            mon = adjust_evo(random.choice(mons), current_level, ctxt=(MonContext.BOSS if is_boss else MonContext.TRAINER))
+            
             current_species = mon
             dupes.add(base_form(mon))
             parties_h_out.append(f'        .species = SPECIES_{mon},')
