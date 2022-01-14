@@ -406,11 +406,12 @@
         "DARK": 10.5625
     },
     
+    "generic_baby_namestrings" : [ "baby", "child", "little", "small", "petite", "mini", "wee", "puny", "babe", "kid", "toddler", "young", "youngster", "tot", "tiny", "tyke", "teen", "kiddie" ],
+    
     "archetypes" : {
     
         "small_animal" : {
-            "necessary_subthemes" : [ "animal_noises", "general_animal" ],
-            "possible_subthemes" : [  "feline", "canine", "bovine", "simian", "equine", "ursine", "leporine", "ovine", "murine", "generic_animal" ],
+            "necessary_subthemes" : [ "animal" ],
             "optional_subthemes" : [ "muddy", "ice_tms", "electric_tms", "fire_tms" ],
             "possible_types" : [ "NORMAL" ],
             "held_items" : [ "ORAN_BERRY", "LEPPA_BERRY", "NUGGET", "LUM_BERRY", "SITRUS_BERRY", "CHESTO_BERRY", "PERSIM_BERRY" ],
@@ -418,12 +419,19 @@
         },
         
         "ground_animal" : {
-            "necessary_subthemes" : [ "muddy", "ground_elemental", "basic_body", "general_animal", "animal_noises" ],
-            "possible_subthemes" : [  "feline", "canine", "bovine", "simian", "equine", "ursine", "leporine", "ovine", "murine", "generic_animal" ],
+            "necessary_subthemes" : [ "muddy", "ground_elemental", "basic_body", "animal" ],
             "optional_subthemes" : [ "strong_body", "hard_body", "fire_tms" ],
             "necessary_types" : [ "GROUND" ],
             "tms" : [ "SANDSTORM", "ROCK_TOMB", "SUNNY_DAY" ]
-        }, 
+        },
+        
+        "dark_animal" : {
+            "necessary_subthemes" : [ "animal", "dark_elemental" ],
+            "possible_subthemes" : [ "muddy", "strong_body", "hard_body", "fast_body", "evil", "cute" ],
+            "necessary_types" : [ "DARK" ],
+            "moves" : [ "BITE", "CRUNCH", "FAINT_ATTACK" ],
+            "tms" : [ "ROAR", "TAUNT", "TORMENT" ]
+        },
         
         "monster" : {
             "necessary_subthemes" : [ "strong_body" ],
@@ -431,6 +439,7 @@
             "moves" : [ "LEER", "SCREECH", "ENDURE", "DEFENSE_CURL", "DISABLE", "AMNESIA", "GROWL" ],
             "egg_groups" : [ "MONSTER" ],
             "namestrings" : [ "monster", "ogre", "troll", "fiend", "barbarian", "brute", "savage" ],
+            "namestrings_baby" : [ "imp", "kobold", "midget", "dwarf" ],
             "held_items" : [ "KINGS_ROCK" ],
             "tms" : [ "BULK_UP", "ROCK_TOMB", "BRICK_BREAK", "DIG", "EARTHQUAKE", "TAUNT", "STRENGTH", "ROCK_SMASH", "SLUDGE_BOMB", "SURF", "ROCK_SLIDE" ]
         },
@@ -443,14 +452,14 @@
             "moves" : [ "BULK_UP", "FOCUS_ENERGY", "LEER", "FORESIGHT", "SWAGGER", "ENDURE", "BELLY_DRUM", "MEDITATE", "DETECT", "MIND_READER" ],
             "abilities" : [ "INNER_FOCUS", "LIMBER", "VITAL_SPIRIT", "KEEN_EYE", "HUSTLE" ],
             "egg_groups" : [ "HUMAN_LIKE" ],
-            "namestrings" : [ "man", "fight", "battle", "melee", "match", "duel", "combat", "brawl", "action", "rumble", "strife", "war", "chop", "karate", "fist", "grip", "smash", "pummel", "wallop" ],
+            "namestrings" : [ "man", "fight", "battle", "melee", "match", "duel", "combat", "brawl", "action", "rumble", "strife", "war", "chop", "karate", "fist", "grip", "smash", "pummel", "wallop", "hit", "rogue" ],
             "held_items" : [ "FOCUS_BAND", "MACHO_BRACE", "CHOICE_BAND", "BLACK_BELT" ],
             "tms" : [ "BULK_UP", "ROCK_TOMB", "BRICK_BREAK", "DIG", "EARTHQUAKE", "TAUNT", "STRENGTH", "ROCK_SMASH", "ROCK_SLIDE" ]
         },
         
         "humanoid_psychic" : {
-            "necessary_subthemes" : [ "tricky" ],
-            "possible_subthemes" : [ "psychic_abilities", "dark_elemental" ],
+            "necessary_subthemes" : [ "tricky", "psychic_abilities" ],
+            "necessary_types" : [ "PSYCHIC" ],
             "optional_subthemes" : [ "small_body", "basic_body", "fanged", "tailed", "handed" ],
             "primary" : true,
             "abilities" : [ "INNER_FOCUS", "INSOMNIA", "OWN_TEMPO", "PURE_POWER", "SYNCHRONIZE", "TRACE", "SOUNDPROOF" ],
@@ -467,7 +476,8 @@
             "moves" : [ "MIRROR_MOVE" ],
             "abilities" : [ "EARLY_BIRD", "KEEN_EYE", "RUN_AWAY", "AIR_LOCK" ],
             "egg_groups" : [ "FLYING" ],
-            "namestrings" : [ "bird", "fowl", "parrot", "pigeon", "crow", "owl", "vulture", "swallow", "shrike", "pecker", "heron", "toucan", "cuckoo", "dove", "crake", "robin", "sparrow", "eagle", "hawk", "cock", "chick", "air", "breeze", "wind", "ozone", "sky", "zephyr", "feather", "storm", "talon", "corvid", "tornado" ],
+            "namestrings" : [ "bird", "fowl", "parrot", "pigeon", "crow", "owl", "vulture", "swallow", "shrike", "pecker", "heron", "toucan", "cuckoo", "dove", "crake", "robin", "sparrow", "eagle", "hawk", "cock", "air", "breeze", "wind", "ozone", "sky", "zephyr", "feather", "storm", "talon", "corvid", "tornado" ],
+            "namestrings_baby" : [ "chick" ],
             "held_items" : [ "SHARP_BEAK" ],
             "tms" : [ "FLY", "SUNNY_DAY", "RAIN_DANCE", "AERIAL_ACE", "STEEL_WING", "THIEF", "TAUNT", "ROCK_SMASH" ]
         },
@@ -542,7 +552,7 @@
             "moves" : [ "SING", "LIGHT_SCREEN", "REFLECT", "AMNESIA", "LOVELY_KISS", "REST", "SNORE", "BELLY_DRUM", "CHARM", "ATTRACT", "SLEEP_TALK", "HEAL_BELL", "PRESENT", "SAFEGUARD", "ENCORE", "SWEET_SCENT", "MORNING_SUN", "MOONLIGHT", "MIRROR_COAT", "FLATTER", "FOLLOW_ME", "NATURE_POWER", "HELPING_HAND", "TRICK", "WISH", "YAWN", "REFRESH", "FAKE_TEARS", "TICKLE", "COSMIC_POWER", "COVET", "SWEET_KISS" ],
             "abilities" : [ "CUTE_CHARM", "OWN_TEMPO", "SERENE_GRACE", "NATURAL_CURE", "HUSTLE" ],
             "egg_groups" : [ "FAIRY" ],
-            "namestrings" : [ "cute", "fairy", "adorable", "charm", "delight", "small", "petite", "baby", "little", "wee", "cherish", "cuddle", "humor", "kiss", "smooch", "pixie", "nymph", "sweet", "child", "sylph", "whimsy", "elegant" ],
+            "namestrings" : [ "cute", "fairy", "adorable", "charm", "delight", "cherish", "cuddle", "humor", "kiss", "smooch", "pixie", "nymph", "sweet", "sylph", "whimsy", "elegant", "cherub" ],
             "held_items" : [ "MOON_STONE", "SUN_STONE", "SOOTHE_BELL", "SILK_SCARF" ],
             "tms" : [ "CALM_MIND", "SUNNY_DAY", "RAIN_DANCE", "PSYCHIC" ]
         },
@@ -551,7 +561,8 @@
             "possible_types" : [ "DARK" ],
             "moves" : [ "CONFUSE_RAY", "GLARE", "THIEF", "NIGHTMARE", "CURSE", "SPITE", "DESTINY_BOND", "PERISH_SONG", "OUTRAGE", "MEAN_LOOK", "PAIN_SPLIT", "PURSUIT", "SHADOW_BALL", "BEAT_UP", "FAKE_OUT", "TORMENT", "FLATTER", "MEMENTO", "TAUNT", "REVENGE", "KNOCK_OFF", "GRUDGE", "SNATCH", "ASTONISH", "FAKE_TEARS", "BLOCK", "DISABLE", "NIGHT_SHADE" ],
             "abilities" : [ "INTIMIDATE", "PRESSURE", "GUTS" ],
-            "namestrings" : [ "imp", "gnome", "goblin", "evil", "hatred", "sin", "misery", "calamity", "devil", "diabolic", "vice", "mischief", "ruin", "bad", "ugly", "foul", "vile", "cruel", "wicked", "sadist", "spite", "fear", "despair", "horror", "terror", "scare", "thief", "grim" ],
+            "namestrings" : [ "goblin", "evil", "hatred", "sin", "misery", "calamity", "devil", "diabolic", "vice", "mischief", "ruin", "bad", "ugly", "foul", "vile", "cruel", "wicked", "sadist", "spite", "fear", "despair", "horror", "terror", "scare", "thief", "grim" ],
+            "namestrings_baby" : [ "imp", "gnome" ],
             "held_items" : [ "MOON_STONE" ],
             "tms" : [ "CALM_MIND", "SHADOW_BALL", "SLUDGE_BOMB", "THUNDER_WAVE" ]
         },
@@ -573,7 +584,8 @@
         "angry" : {
             "moves" : [ "RAGE", "GLARE", "SCARY_FACE", "MEAN_LOOK", "REVENGE", "OUTRAGE", "BULK_UP", "SUPERPOWER", "THRASH", "UPROAR", "PURSUIT", "FACADE", "LEER", "FOLLOW_ME" ],
             "abilities" : [ "GUTS", "HUGE_POWER", "HUSTLE", "INTIMIDATE", "PRESSURE" ],
-            "namestrings" : [ "tyrannic", "brutal", "cruel", "harsh", "mean", "tough", "furious", "irate", "rage", "fierce", "fury", "mania", "temper" ],
+            "namestrings" : [ "tyrannic", "brutal", "cruel", "harsh", "tough", "furious", "irate", "rage", "fierce", "fury", "mania", "temper" ],
+            "namestrings_baby" : [ "mean", "bully", "rude", "nasty", "pesky" ],
             "tms" : [ "BULK_UP", "ROCK_SMASH", "STRENGTH", "BRICK_BREAK", "EARTHQUAKE", "ROCK_TOMB" ]
         },
         
@@ -616,7 +628,7 @@
             "tms" : [ "FLASH", "ROCK_SMASH", "STRENGTH", "SANDSTORM", "ROCK_TOMB", "EARTHQUAKE", "ROCK_SLIDE", "THUNDER_WAVE" ],
             "abilities" : [ "BATTLE_ARMOR", "CLEAR_BODY", "MAGNET_PULL", "ROCK_HEAD", "SHELL_ARMOR", "STURDY" ],
             "egg_groups" : [ "MINERAL" ],
-            "namestrings" : [ "metal", "alloy", "ore", "mineral", "ingot", "plate", "steel", "hard", "solid", "firm", "iron", "rigid", "ferric", "heavy", "bronze", "gold", "copper", "tin", "titanium", "gear" ],
+            "namestrings" : [ "metal", "alloy", "ore", "mineral", "ingot", "plate", "steel", "hard", "solid", "firm", "iron", "rigid", "ferric", "heavy", "bronze", "gold", "copper", "tin", "titanium", "gear", "rust" ],
             "held_items" : [ "METAL_COAT", "BRIGHT_POWDER" ]
         },
         
@@ -627,7 +639,7 @@
             "moves" : [ "HARDEN", "ROCK_THROW", "ROCK_SLIDE", "SANDSTORM", "ANCIENT_POWER", "ROCK_TOMB", "ROCK_BLAST", "ROLLOUT", "EXPLOSION", "SELF_DESTRUCT", "DEFENSE_CURL", "MUD_SPORT", "BLOCK" ],
             "abilities" : [ "BATTLE_ARMOR", "ROCK_HEAD", "STURDY" ],
             "egg_groups" : [ "MINERAL" ],
-            "namestrings" : [ "rock", "earth", "gravel", "rubble", "slab", "boulder", "cobblestone", "crag", "ore", "mineral", "crust", "mass", "pebble", "quarry", "solid", "hard", "tough", "stone", "durable", "cavern", "diamond" ],
+            "namestrings" : [ "rock", "earth", "gravel", "rubble", "slab", "boulder", "cobblestone", "crag", "ore", "mineral", "crust", "mass", "quarry", "solid", "hard", "tough", "stone", "durable", "cavern", "diamond", "pebble" ],
             "held_items" : [ "EVERSTONE", "HARD_STONE" ],
             "tms" : [ "SUNNY_DAY", "ROCK_SMASH", "STRENGTH", "EARTHQUAKE", "DIG", "BRICK_BREAK" ]
         },
@@ -689,7 +701,8 @@
         
         "tentacled" : {
             "moves" : [ "CONSTRICT", "WRAP", "BIND", "TICKLE" ],
-            "namestrings" : [ "tentacle", "wrap" ]
+            "namestrings" : [ "tentacle", "wrap", "bind" ],
+            "namestrings_baby" : [ "tickle" ]
         },
         
         "natural_powers" : {
@@ -725,7 +738,7 @@
         "dark_elemental" : {
             "necessary_types" : [ "DARK" ],
             "optional_subthemes" : [ "evil" ],
-            "moves" : [ "THIEF", "FAINT_ATTACK", "PURSUIT", "KNOCK_OFF", "SNATCH", "TORMENT", "TAUNT", "NIGHT_SHADE", "ASTONISH", "MEAN_LOOK", "SWAGGER", "SCARY_FACE", "LEER", "SCREECH", "BEAT_UP", "MOONLIGHT" ],
+            "moves" : [ "THIEF", "FAINT_ATTACK", "PURSUIT", "KNOCK_OFF", "SNATCH", "TORMENT", "TAUNT", "NIGHT_SHADE", "ASTONISH", "MEAN_LOOK", "SWAGGER", "SCARY_FACE", "LEER", "SCREECH", "MOONLIGHT" ],
             "namestrings" : [ "dark", "black", "foggy", "gloomy", "dusk", "faint", "grimy", "obscure", "tenebrous", "shade", "night", "twilight", "dim", "shadow", "umbra", "gray", "haze", "demise" ],
             "held_items" : [ "PECHA_BERRY", "BLACK_GLASSES" ],
             "tms" : [ "SHADOW_BALL", "PSYCHIC", "SLUDGE_BOMB", "FLASH" ]
@@ -746,19 +759,31 @@
     
     "themes" : {
     
+        "animal" : {
+            "necessary_subthemes" : [ "animal_noises" ],
+            "possible_subthemes" : [ "feline", "canine", "bovine", "simian", "equine", "ursine", "leporine", "ovine", "murine", "generic_animal" ],
+            "moves" : [ "LICK", "BITE" ],
+            "abilities" : [ "IMMUNITY", "OBLIVIOUS", "OWN_TEMPO", "PICKUP", "RUN_AWAY", "SERENE_GRACE", "THICK_FAT", "CLOUD_NINE", "GUTS", "KEEN_EYE" ],
+            "egg_groups" : [ "FIELD" ],
+            "namestrings" :  [ "fur", "wild", "animal", "beast", "feral", "critter", "hair", "fluff", "ruff" ]
+
+        },
+    
         "feline" : {
             "necessary_subthemes" : [ "fast_body", "clawed", "tailed", "fanged", "footed", "sleepy" ],
             "primary" : true,
             "moves" : [ "ASSIST", "PAY_DAY" ],
             "abilities" : [ "LIMBER" ],
-            "namestrings" : [ "cat", "kitten", "feline", "cheetah", "cougar", "jaguar", "kitty", "leopard", "lion", "lynx", "ocelot", "panther", "puma", "pussy", "caracal", "tabby", "tiger", "meow", "purr", "leopard", "leo" ]
+            "namestrings" : [ "cat", "feline", "cheetah", "cougar", "jaguar", "leopard", "lion", "lynx", "ocelot", "panther", "puma", "caracal", "tabby", "tiger", "purr", "leopard", "leo" ],
+            "namestrings_baby" : [ "kitten", "kitty", "pussy", "meow" ]
         },
         
         "canine" : {
             "necessary_subthemes" : [ "fast_body", "clawed", "tailed", "fanged", "footed" ],
             "primary" : true,
             "moves" : [ "ODOR_SLEUTH", "HOWL" ],
-            "namestrings" : [ "dog", "puppy", "cur", "doggy", "hound", "mutt", "pooch", "bark", "hyena", "coyote", "canine", "wolf", "corgi", "spaniel", "terrier", "collie", "retriever", "mastiff", "samoyed", "woof" ]
+            "namestrings" : [ "dog", "cur", "doggy", "hound", "mutt", "pooch", "bark", "hyena", "coyote", "canine", "wolf", "corgi", "spaniel", "terrier", "collie", "retriever", "mastiff", "samoyed" ],
+            "namestrings_baby" : [ "puppy", "woof", "pup", "whelp" ]
         },
         
         "bovine" : {
@@ -766,6 +791,7 @@
             "primary" : true,
             "moves" : [ "MILK_DRINK", "STOMP" ],
             "namestrings" : [ "cow", "bull", "milk", "cream", "moo", "cattle", "bovine" ],
+            "namestrings_baby" : [ "calf", "heifer", "veal" ],
             "held_items" : [ "MOOMOO_MILK" ]
         },
         
@@ -774,6 +800,7 @@
             "optional_subthemes" : [ "tailed", "clawed", "fanged", "sleepy", "fast_body", "tricky" ],
             "primary" : true,
             "namestrings" : [ "ape", "simian", "monkey", "primate", "tamarin", "gibbon", "hominid", "chimpanzee", "gorilla", "orangutan" ],
+            "namestrings_baby" : [ "infant" ],
             "moves" : [ "TICKLE", "BATON_PASS", "HOWL", "ODOR_SLEUTH" ],
             "abilities" : [ "RUN_AWAY", "PICKUP" ]
         },
@@ -782,7 +809,8 @@
             "necessary_subthemes" : [ "footed", "fast_body", "tailed", "strong_body" ],
             "optional_subthemes" : [ "sleepy", "loud", "fanged" ],
             "primary" : true,
-            "namestrings" : [ "equine", "horse", "pony", "colt", "filly", "mare", "stallion", "foal", "mustang", "steed", "donkey", "mule", "neigh", "clydesdale" ],
+            "namestrings" : [ "equine", "horse", "pony", "mare", "stallion", "mustang", "steed", "donkey", "mule", "neigh", "clydesdale" ],
+            "namestrings_baby" : [ "colt", "filly", "foal", "yearling" ],
             "moves" : [ "STOMP", "BOUNCE", "HEADBUTT" ],
             "abilities" : [ "RUN_AWAY" ]
         },
@@ -792,6 +820,7 @@
             "optional_subthemes" : [ "loud" ],
             "primary" : true,
             "namestrings" : [ "ursine", "bear", "panda", "grizzly" ],
+            "namestrings_baby" : [ "cub", "teddy" ],
             "moves" : [ "REST", "SNORE", "ROAR", "SCARY_FACE", "SLASH", "HOWL" ]
         },
         
@@ -800,6 +829,7 @@
             "optional_subthemes" : [ "cute", "sleepy", "tricky" ],
             "primary" : true,
             "namestrings" : [ "rabbit", "hare", "bunny", "doe", "buck", "burrow", "tunnel" ],
+            "namestrings_baby" : [ "kitten", "kit" ],
             "moves" : [ "BOUNCE", "DIG", "ODOR_SLEUTH" ]
         },
         
@@ -807,7 +837,8 @@
             "necessary_subthemes" : [ "footed", "sleepy", "tailed", "horned" ],
             "optional_subthemes" : [ "cute" ],
             "primary" : true,
-            "namestrings" : [ "sheep", "wool", "goat", "lamb", "fluffy", "baah", "cotton" ],
+            "namestrings" : [ "sheep", "wool", "goat", "fluffy", "baah", "cotton" ],
+            "namestrings_baby" : [ "lamb" ],
             "moves" : [ "MILK_DRINK", "COTTON_SPORE" ]
         },
         
@@ -816,13 +847,15 @@
             "optional_subthemes" : [ "loud" ],
             "primary" : true,
             "namestrings" : [ "rat", "mouse", "rodent", "vermin", "hamster", "gerbil", "mus", "murine" ],
+            "namestrings_baby" : [ "pup", "pinkie", "kitten" ],
             "moves" : [ "DIG", "ODOR_SLEUTH" ]
         },
         
         "generic_animal" : {
             "optional_subthemes" : [ "tailed", "footed", "clawed", "fanged", "fast_body", "horned", "sleepy", "eggy" ],
             "primary" : true,
-            "namestrings" : [ "raccoon", "fox", "ferret", "fur", "hair", "pet" ]
+            "namestrings" : [ "fur", "furry", "fuzz", "hair", "mammal", "pet" ],
+            "namestrings_baby" : [ "cub" ]
         },
         
         "animal_noises" : {
@@ -934,7 +967,8 @@
             "moves" : [ "STRING_SHOT", "SPIDER_WEB" ],
             "possible_types" : [ "POISON" ],
             "abilities" : [ "POISON_POINT" ],
-            "namestrings" : [ "spider", "arachnid", "arthropod", "web", "spinneret" ]
+            "namestrings" : [ "spider", "arachnid", "arthropod", "web", "spinneret" ],
+            "namestrings_baby" : [ "spiderling" ]
         },
         
         "flying_insect" : {
@@ -942,7 +976,8 @@
             "possible_subthemes" : [ "fast_body", "stingered" ],
             "primary" : true,
             "moves" : [ "SILVER_WIND", "TAIL_GLOW", "SIGNAL_BEAM", "AGILITY", "DOUBLE_TEAM" ],
-            "namestrings" : [ "fly", "dragonfly", "bee", "butterfly", "gnat", "ladybug", "moth", "mosquito", "hornet", "flea", "bumblebee", "wasp" ]
+            "namestrings" : [ "fly", "dragonfly", "bee", "butterfly", "gnat", "ladybug", "moth", "mosquito", "hornet", "flea", "bumblebee", "wasp" ],
+            "namestrings_baby" : [ "nymph", "wriggler", "tumbler" ]
         },
         
         "big_insect" : {
@@ -950,7 +985,8 @@
             "primary" : true,
             "possible_types" : [ "FIGHTING" ],
             "moves" : [ "HARDEN", "FOCUS_ENERGY", "ENDURE", "LEER", "BULK_UP" ],
-            "namestrings" : [ "beetle", "ant", "mantis", "vermin", "bug", "insect", "mite", "termite", "louse", "cockroach", "tick", "pest", "scorpion", "isopod", "buzz" ]
+            "namestrings" : [ "beetle", "ant", "mantis", "vermin", "bug", "insect", "mite", "termite", "louse", "cockroach", "tick", "pest", "scorpion", "isopod", "buzz" ],
+            "namestrings_baby" : [ "nymph", "nit", "larva" ]
         },
         
         "muddy" : {
@@ -979,7 +1015,8 @@
             "optional_subthemes" : [ "muddy" ],
             "primary" : true,
             "moves" : [ "CRABHAMMER", "VICE_GRIP", "FLAIL" ],
-            "namestrings" : [ "crab", "crustacean", "hermit", "cancer" ]
+            "namestrings" : [ "crab", "crustacean", "hermit", "cancer" ],
+            "namestrings_baby" : [ "zoea" ]
         },
         
         "clam" : {
@@ -988,6 +1025,7 @@
             "primary" : true,
             "moves" : [ "HARDEN", "IRON_DEFENSE", "WITHDRAW", "CLAMP" ],
             "namestrings" : [ "clam", "mollusk", "oyster", "shellfish", "prawn", "shrimp", "barnacle" ],
+            "namestrings_baby" : [ "larva" ],
             "held_items" : [ "PEARL", "BIG_PEARL" ]
         },
         
@@ -998,6 +1036,7 @@
             "moves" : [ "RECOVER", "MINIMIZE", "ACID_ARMOR", "OCTAZOOKA", "CAMOUFLAGE" ],
             "abilities" : [ "SUCTION_CUPS" ],
             "namestrings" : [ "squid", "octopus", "calamari", "nautilus", "cuttlefish", "ink" ],
+            "namestrings_baby" : [ "paralarva" ],
             "tms" : [ "SLUDGE_BOMB" ]
         },
         
@@ -1012,13 +1051,15 @@
             "optional_subthemes" : [ "fanged" ],
             "primary" : true,
             "moves" : [ "WITHDRAW", "SKULL_BASH" ],
-            "namestrings" : [ "turtle", "tortoise", "snapper", "terrapin", "tortuga" ]
+            "namestrings" : [ "turtle", "tortoise", "snapper", "terrapin", "tortuga" ],
+            "namestrings_baby" : [ "hatchling" ]
         },
         
         "aquatic_bird" : {
             "necessary_subthemes" : [ "bird" ],
             "primary" : true,
-            "namestrings" : [ "duck", "swan", "gull", "mallard", "cygnus", "goose", "pelican", "heron", "stork", "flamingo" ]
+            "namestrings" : [ "duck", "swan", "gull", "mallard", "cygnus", "goose", "pelican", "heron", "stork", "flamingo" ],
+            "namestrings_baby" : [ "duckling", "cygnet", "swaling", "gosling", "chick" ]
         },
         
         "seal" : {
@@ -1027,7 +1068,8 @@
             "primary" : true,
             "moves" : [ "ENCORE" ],
             "abilities" : [ "THICK_FAT" ],
-            "namestrings" : [ "seal", "walrus", "pinniped" ]
+            "namestrings" : [ "seal", "walrus", "pinniped" ],
+            "namestrings_baby" : [ "pup" ]
         },
         
         "frog" : {
@@ -1052,13 +1094,6 @@
             "moves" : [ "EGG_BOMB", "SOFT_BOILED" ],
             "namestrings" : [ "egg", "spawn", "nucleus", "shell" ],
             "held_items" : [ "LUCKY_EGG" ]
-        },
-        
-        "general_animal" : {
-            "moves" : [ "LICK" ],
-            "abilities" : [ "IMMUNITY", "OBLIVIOUS", "OWN_TEMPO", "PICKUP", "RUN_AWAY", "SERENE_GRACE", "THICK_FAT", "CLOUD_NINE", "GUTS", "KEEN_EYE" ],
-            "egg_groups" : [ "FIELD" ],
-            "namestrings" :  [ "fur", "wild", "animal", "beast", "feral", "critter", "hair", "fluff", "ruff" ]
         },
         
         "ice_tms" : {

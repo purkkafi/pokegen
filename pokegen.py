@@ -37,6 +37,7 @@ with open('archetypes.json') as f:
     type_colors = rawdb['type_colors']
     average_weights = rawdb['average_weights']
     average_heights = rawdb['average_heights']
+    generic_baby_namestrings = rawdb['generic_baby_namestrings']
 
 # adjust type weights a bit for now
 min_weight = min(type_weights.values())
@@ -103,6 +104,15 @@ MORE_THAN_3_END_CONSONANTS = re.compile('[qwrtpsdfghjklzxcvbnm]{3,}')
 MORE_THAN_3_SUCC_SAME_CHARS = re.compile('(.)\1{2,}')
 
 PREVIOUS_NAME_STARTS = set()
+
+ALL_NAMESTRINGS = set()
+
+for theme in themedata:
+    if 'namestrings' in themedata[theme]:
+        ALL_NAMESTRINGS.update(themedata[theme]['namestrings'])
+    if 'namestrings_baby' in themedata[theme]:
+        ALL_NAMESTRINGS.update(themedata[theme]['namestrings_baby'])
+ALL_NAMESTRINGS.update(generic_baby_namestrings)
 
 Move = namedtuple('Move', ['name', 'type', 'value', 'damaging', 'power'])
 
@@ -244,11 +254,26 @@ class Pokemon:
         
         next_stage.generate_name()
         
-        # higher stage gets longer name
-        if len(self.name) > len(next_stage.name):
-            self.name, next_stage.name = next_stage.name, self.name
-            self.name_start, next_stage.name_start = next_stage.name_start, self.name_start
-            self.name_end, next_stage.name_end = next_stage.name_end, self.name_end
+        # higher stage might get longer name
+        if len(next_stage.name) < len(self.name):
+            longest = next_stage.name
+            longest_start = next_stage.name_start
+            longest_end = next_stage.name_end
+            
+            for i in range(0,9):
+                next_stage.generate_name()
+                
+                if len(next_stage.name) >= len(self.name):
+                    break
+                
+                if len(next_stage.name) > len(longest):
+                    longest = next_stage.name
+                    longest_start = next_stage.name_start
+                    longest_end = next_stage.name_end
+            else:
+                next_stage.name = longest
+                next_stage.name_start = longest_start
+                next_stage.name_end = longest_end
         
         next_stage.types = list(self.types)
         next_stage.abilities = list(self.abilities)
@@ -340,21 +365,38 @@ class Pokemon:
         parts_set = set()
         primary_parts_set = set()
         
+        is_baby = False
+        if Flags.THREE_STAGES in self.flags or Flags.TWO_STAGES in self.flags:
+            is_baby = self.previous_stage == None
+        
         for theme in self.themes:
+            namestring_sets = []
+            
             if 'namestrings' in themedata[theme]:
-                parts_set.update(themedata[theme]['namestrings'])
+                namestring_sets.append(themedata[theme]['namestrings'])
+            if is_baby and 'namestrings_baby' in themedata[theme]:
+                namestring_sets.append(themedata[theme]['namestrings_baby'])
+                
+            for namestrings in namestring_sets:
+                parts_set.update(namestrings)
                 
                 if 'primary' in themedata[theme] and themedata[theme]['primary']:
-                    primary_list = list(themedata[theme]['namestrings'])
+                    primary_list = list(namestrings)
                     random.shuffle(primary_list)
                     for part in primary_list[0:min(5, len(primary_list))]:
                         primary_parts_set.add(part)
-                    #primary_parts_set.update(themedata[theme]['namestrings'])
+        
+        if is_baby:
+            parts_set.update(generic_baby_namestrings)
+            
+            primary_babyparts = list(generic_baby_namestrings)
+            random.shuffle(primary_babyparts)
+            primary_parts_set.update(primary_babyparts[0:min(3, len(primary_babyparts))])
         
         if len(primary_parts_set) == 0:
             primary_parts_set = parts_set
         
-        #print(primary_parts_set)
+        #print(('!BABY!' if is_baby else ''), primary_parts_set)
         
         #speculative! TODO figure out if good or not
         selected_parts = set()
@@ -391,7 +433,12 @@ class Pokemon:
                 if theme in self.initial_themes:
                     continue
                 if 'namestrings' in themedata[theme] and start_word in themedata[theme]['namestrings']:
-                    forbidden_words = set(themedata[theme]['namestrings'])
+                    forbidden_words.update(themedata[theme]['namestrings'])
+                if 'namestrings_baby' in themedata[theme] and start_word in themedata[theme]['namestrings_baby']:
+                    forbidden_words.update(themedata[theme]['namestrings_baby'])
+            
+            if start_word in generic_baby_namestrings:
+                forbidden_words.update(generic_baby_namestrings)
             
             start = start[0:min(len(start), random.randint(3, 7))]
             last_letter = start[-1]
@@ -415,6 +462,12 @@ class Pokemon:
             
             self.name = start + end
             
+            if len(self.name) > 10:
+                continue
+            
+            if self.name in ALL_NAMESTRINGS:
+                continue
+            
             if MORE_THAN_3_SUCC_SAME_CHARS.search(self.name) != None:
                 continue
             
@@ -422,12 +475,6 @@ class Pokemon:
                 continue
             
             if MORE_THAN_3_END_VOWELS.search(self.name) != None or MORE_THAN_3_END_CONSONANTS.search(self.name) != None:
-                continue
-            
-            if start_word in self.name or end_word in self.name:
-                continue
-            
-            if len(self.name) > 10:
                 continue
             
             if self.name[0:5] in PREVIOUS_NAME_STARTS:
