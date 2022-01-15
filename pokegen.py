@@ -866,8 +866,13 @@ class Pokemon:
             d = 0.2 + random.random() * 0.6
             for i in range(0,6):
                 type_weight = (type_bst_spreads[self.types[0]][i] + type_bst_spreads[self.types[1]][i]) / 2
+                
+                for theme in self.themes:
+                    if 'stat_adjustment' in themedata[theme]:
+                        type_weight = type_weight + themedata[theme]['stat_adjustment'][i]
+                
                 self.stat_spread_weights[i] = round((1-d)*self.stat_spread_weights[i] + d*type_weight)
-            
+        
         else:
             for i in range(0,6):
                 self.stat_spread_weights[i] = self.stat_spread_weights[i] + random.randint(-5,5)
@@ -1305,13 +1310,13 @@ def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
     subarchetype = weighted_pick_theme(subarchetypes, normalize_untyped_ratio=True)
     
     if Flags.WATER_STARTER in flags:
-        archetype = random.choice(['water_animal', 'small_animal', 'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
+        archetype = random.choice(['water_animal', 'small_animal', 'dark_animal',  'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
         subarchetype = 'water_elemental'
     if Flags.FIRE_STARTER in flags:
-        archetype = random.choice(['small_animal', 'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
+        archetype = random.choice(['small_animal', 'dark_animal', 'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
         subarchetype = 'fire_elemental'
     if Flags.GRASS_STARTER in flags:
-        archetype = random.choice(['plant', 'small_animal', 'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
+        archetype = random.choice(['plant', 'small_animal', 'dark_animal', 'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
         subarchetype = 'grass_elemental'
     
     if Flags.FOSSIL in flags:

@@ -88,7 +88,7 @@
         "DOUBLE_HIT" : 30,
         "RECOIL_IF_MISS" : 0,
         "FLINCH_HIT" : 10,
-        "ACCURACY_DOWN" : 0,
+        "ACCURACY_DOWN" : -20,
         "RECOIL" : 0,
         "RAMPAGE" : 0,
         "DOUBLE_EDGE" : -10,
@@ -129,7 +129,7 @@
         "MIMIC" : 10,
         "DEFENSE_DOWN_2" : 30,
         "EVASION_UP" : 10,
-        "RESTORE_HP" : 20,
+        "RESTORE_HP" : 10,
         "DEFENSE_UP" : 10,
         "MINIMIZE" : 10,
         "ACCURACY_DOWN" : 10,
@@ -155,7 +155,7 @@
         "ATTACK_UP" : 10,
         "REST" : 30,
         "CONVERSION" : 30,
-        "TRI_ATTACK" : 20,
+        "TRI_ATTACK" : 10,
         "SUPER_FANG" : 60,
         "SUBSTITUTE" : 20,
         "SKETCH" : 0,
@@ -278,7 +278,7 @@
         [ "RAIN_DANCE", "SANDSTORM", "HAIL", "SUNNY_DAY" ],
         [ "MOONLIGHT", "MORNING_SUN", "SLACK_OFF", "SYNTHESIS", "RECOVER", "MILK_DRINK", "SOFT_BOILED" ],
         [ "COVET", "THIEF" ],
-        [ "FURY_ATTACK", "DOUBLE_SLAP", "BARRAGE", "COMET_PUNCH" ],
+        [ "FURY_ATTACK", "DOUBLE_SLAP", "BARRAGE", "COMET_PUNCH", "FURY_SWIPES" ],
         [ "ACID_ARMOR", "IRON_DEFENSE", "BARRIER" ],
         [ "WRAP", "BIND", "SAND_TOMB", "FIRE_SPIN", "WHIRLPOOL" ],
         [ "SHEER_COLD", "GUILLOTINE", "FISSURE", "HORN_DRILL" ],
@@ -294,7 +294,14 @@
         [ "LOCK_ON", "MIND_READER" ],
         [ "MEAN_LOOK", "SPIDER_WEB", "BLOCK" ],
         [ "ROAR", "WHIRLWIND" ],
-        [ "PECK", "GUST" ]
+        [ "PECK", "GUST" ],
+        [ "AIR_CUTTER", "WING_ATTACK" ],
+        [ "ABSORB", "VINE_WHIP" ],
+        [ "BITE", "FAINT_ATTACK" ],
+        [ "KNOCK_OFF", "PURSUIT" ],
+        [ "FLAIL", "REVERSAL" ],
+        [ "SMOG", "ACID" ],
+        [ "MUD_SPORT", "WATER_SPORT" ]
     ],
     
     "tm_list" : [
@@ -406,7 +413,7 @@
         "DARK": 10.5625
     },
     
-    "generic_baby_namestrings" : [ "baby", "child", "little", "small", "petite", "mini", "wee", "puny", "babe", "kid", "toddler", "young", "youngster", "tot", "tiny", "tyke", "teen", "kiddie" ],
+    "generic_baby_namestrings" : [ "baby", "child", "little", "small", "petite", "mini", "wee", "puny", "babe", "kid", "toddler", "young", "youngster", "tot", "tiny", "tyke", "teen", "kiddie", "litter", "junior" ],
     
     "archetypes" : {
     
@@ -420,9 +427,10 @@
         
         "ground_animal" : {
             "necessary_subthemes" : [ "muddy", "ground_elemental", "basic_body", "animal" ],
-            "optional_subthemes" : [ "strong_body", "hard_body", "fire_tms" ],
+            "optional_subthemes" : [ "strong_body", "hard_body", "fire_tms", "boney" ],
             "necessary_types" : [ "GROUND" ],
-            "tms" : [ "SANDSTORM", "ROCK_TOMB", "SUNNY_DAY" ]
+            "tms" : [ "SANDSTORM", "ROCK_TOMB", "SUNNY_DAY" ],
+            "stat_adjustment" : [ 20, 0, 20, 0, 0, 0 ]
         },
         
         "dark_animal" : {
@@ -430,7 +438,8 @@
             "possible_subthemes" : [ "muddy", "strong_body", "hard_body", "fast_body", "evil", "cute" ],
             "necessary_types" : [ "DARK" ],
             "moves" : [ "BITE", "CRUNCH", "FAINT_ATTACK" ],
-            "tms" : [ "ROAR", "TAUNT", "TORMENT" ]
+            "tms" : [ "ROAR", "TAUNT", "TORMENT", "DIG", "SUNNY_DAY", "RAIN_DANCE" ],
+            "stat_adjustment" : [ 0, 20, 0, 20, 0, 0 ]
         },
         
         "monster" : {
@@ -449,12 +458,13 @@
             "possible_subthemes" : [ "strong_body", "fast_body" ],
             "primary" : true,
             "necessary_types" : [ "FIGHTING" ],
-            "moves" : [ "BULK_UP", "FOCUS_ENERGY", "LEER", "FORESIGHT", "SWAGGER", "ENDURE", "BELLY_DRUM", "MEDITATE", "DETECT", "MIND_READER" ],
+            "moves" : [ "BULK_UP", "FOCUS_ENERGY", "LEER", "FORESIGHT", "SWAGGER", "ENDURE", "BELLY_DRUM", "MEDITATE", "DETECT", "MIND_READER", "KARATE_CHOP", "MACH_PUNCH", "DYNAMIC_PUNCH", "VITAL_THROW", "CROSS_CHOP", "FOCUS_PUNCH", "ARM_THRUST", "SUBMISSION", "SUPERPOWER", "SMELLING_SALT" ],
             "abilities" : [ "INNER_FOCUS", "LIMBER", "VITAL_SPIRIT", "KEEN_EYE", "HUSTLE" ],
             "egg_groups" : [ "HUMAN_LIKE" ],
-            "namestrings" : [ "man", "fight", "battle", "melee", "match", "duel", "combat", "brawl", "action", "rumble", "strife", "war", "chop", "karate", "fist", "grip", "smash", "pummel", "wallop", "hit", "rogue" ],
+            "namestrings" : [ "man", "fight", "battle", "melee", "match", "duel", "combat", "brawl", "action", "rumble", "strife", "war", "chop", "karate", "fist", "grip", "smash", "pummel", "wallop", "hit", "rogue", "risk" ],
             "held_items" : [ "FOCUS_BAND", "MACHO_BRACE", "CHOICE_BAND", "BLACK_BELT" ],
-            "tms" : [ "BULK_UP", "ROCK_TOMB", "BRICK_BREAK", "DIG", "EARTHQUAKE", "TAUNT", "STRENGTH", "ROCK_SMASH", "ROCK_SLIDE" ]
+            "tms" : [ "BULK_UP", "ROCK_TOMB", "BRICK_BREAK", "DIG", "EARTHQUAKE", "TAUNT", "STRENGTH", "ROCK_SMASH", "ROCK_SLIDE" ],
+            "stat_adjustment" : [ 0, 30, 0, 0, 0, 0 ]
         },
         
         "humanoid_psychic" : {
@@ -464,8 +474,9 @@
             "primary" : true,
             "abilities" : [ "INNER_FOCUS", "INSOMNIA", "OWN_TEMPO", "PURE_POWER", "SYNCHRONIZE", "TRACE", "SOUNDPROOF" ],
             "egg_groups" : [ "HUMAN_LIKE" ],
-            "namestrings" : [ "man", "psychic", "medium", "magic", "magician", "genius", "witch", "wizard", "conjurer", "genie", "seer", "warlock", "smart", "intelligent", "brainy", "wise", "whiz", "astute", "sage", "witty" ],
-            "tms" : [ "SNATCH", "THIEF", "SKILL_SWAP", "TORMENT", "REFLECT", "SHADOW_BALL", "LIGHT_SCREEN", "PSYCHIC", "TAUNT", "CALM_MIND", "SUNNY_DAY", "RAIN_DANCE", "DREAM_EATER" ]
+            "namestrings" : [ "man", "psychic", "medium", "magic", "magician", "genius", "witch", "wizard", "conjurer", "genie", "seer", "warlock", "smart", "intelligent", "brainy", "wise", "whiz", "astute", "sage", "mage", "witty" ],
+            "tms" : [ "SNATCH", "THIEF", "SKILL_SWAP", "TORMENT", "REFLECT", "SHADOW_BALL", "LIGHT_SCREEN", "PSYCHIC", "TAUNT", "CALM_MIND", "SUNNY_DAY", "RAIN_DANCE", "DREAM_EATER" ],
+            "stat_adjustment" : [ 0, 0, 0, 30, 30, 0 ]
         },
         
         "bird" : {
@@ -479,7 +490,8 @@
             "namestrings" : [ "bird", "fowl", "parrot", "pigeon", "crow", "owl", "vulture", "swallow", "shrike", "pecker", "heron", "toucan", "cuckoo", "dove", "crake", "robin", "sparrow", "eagle", "hawk", "cock", "air", "breeze", "wind", "ozone", "sky", "zephyr", "feather", "storm", "talon", "corvid", "tornado" ],
             "namestrings_baby" : [ "chick" ],
             "held_items" : [ "SHARP_BEAK" ],
-            "tms" : [ "FLY", "SUNNY_DAY", "RAIN_DANCE", "AERIAL_ACE", "STEEL_WING", "THIEF", "TAUNT", "ROCK_SMASH" ]
+            "tms" : [ "FLY", "SUNNY_DAY", "RAIN_DANCE", "AERIAL_ACE", "STEEL_WING", "THIEF", "TAUNT", "ROCK_SMASH" ],
+            "stat_adjustment" : [ 0, 0, 0, 0, 0, 20 ]
         },
         
         "insect" : {
@@ -511,7 +523,8 @@
             "moves" : [ "EMBER", "THRASH", "TAKE_DOWN", "DOUBLE_EDGE", "ROAR", "FLAMETHROWER", "HYPER_BEAM", "AGILITY", "LEER", "RAGE", "FOCUS_ENERGY" ],
             "egg_groups" : [ "DRAGON" ],
             "namestrings" : [ "dragon", "drake", "basilisk", "hydra", "wyvern", "draconic", "ouroboros", "typhon", "serpens", "salamander", "gargoyle", "olm" ],
-            "tms" : [ "DRAGON_CLAW", "SUNNY_DAY", "RAIN_DANCE", "ROCK_TOMB", "SANDSTORM", "AERIAL_ACE", "SHOCK_WAVE", "BRICK_BREAK", "EARTHQUAKE", "DIG", "WATER_PULSE", "TAUNT", "TORMENT", "STRENGTH", "ROCK_SMASH", "CUT", "ROCK_SLIDE", "THUNDER_WAVE" ]
+            "tms" : [ "DRAGON_CLAW", "SUNNY_DAY", "RAIN_DANCE", "ROCK_TOMB", "SANDSTORM", "AERIAL_ACE", "SHOCK_WAVE", "BRICK_BREAK", "EARTHQUAKE", "DIG", "WATER_PULSE", "TAUNT", "TORMENT", "STRENGTH", "ROCK_SMASH", "CUT", "ROCK_SLIDE", "THUNDER_WAVE" ],
+            "stat_adjustment" : [ 0, 20, 0, 20, 0, 20 ]
         },
         
         "plant" : {
@@ -534,14 +547,16 @@
             "moves" : [ "WHIRLPOOL", "WATER_SPORT", "AGILITY", "FOCUS_ENERGY", "LEER", "MIST", "HAZE", "SPLASH", "TACKLE" ],
             "tms" : [ "DIVE", "SUNNY_DAY", "RAIN_DANCE", "HAIL" ],
             "abilities" : [ "RAIN_DISH", "DAMP" ],
-            "held_items" : [ "YELLOW_SHARD", "RED_SHARD", "BLUE_SHARD", "GREEN_SHARD", "MYSTIC_WATER" ]
+            "held_items" : [ "YELLOW_SHARD", "RED_SHARD", "BLUE_SHARD", "GREEN_SHARD", "MYSTIC_WATER" ],
+            "stat_adjustment" : [ 20, 0, 0, 0, 0, 20 ]
         },
         
         "generic_fairy" : {
             "necessary_subthemes" : [ "basic_body", "cute" ],
-            "optional_subthemes" : [ "tricky", "sleepy", "psychic_abilities", "tailed", "footed", "winged", "eggy", "ice_tms", "electric_tms", "fire_tms" ],
+            "optional_subthemes" : [ "tricky", "psychic_abilities", "tailed", "footed", "winged", "eggy", "ice_tms", "electric_tms", "fire_tms" ],
             "possible_types" : [ "NORMAL" ],
-            "moves" : [ "POUND", "DOUBLE_SLAP", "BODY_SLAM", "ROLLOUT" ]
+            "moves" : [ "POUND", "DOUBLE_SLAP", "BODY_SLAM", "ROLLOUT" ],
+            "stat_adjustment" : [ 30, 0, 0, 0, 0, 0 ]
         }
         
     },
@@ -554,7 +569,8 @@
             "egg_groups" : [ "FAIRY" ],
             "namestrings" : [ "cute", "fairy", "adorable", "charm", "delight", "cherish", "cuddle", "humor", "kiss", "smooch", "pixie", "nymph", "sweet", "sylph", "whimsy", "elegant", "cherub" ],
             "held_items" : [ "MOON_STONE", "SUN_STONE", "SOOTHE_BELL", "SILK_SCARF" ],
-            "tms" : [ "CALM_MIND", "SUNNY_DAY", "RAIN_DANCE", "PSYCHIC" ]
+            "tms" : [ "CALM_MIND", "SUNNY_DAY", "RAIN_DANCE", "PSYCHIC" ],
+            "stat_adjustment" : [ 15, 0, 15, 0, 15, 0 ]
         },
         
         "evil" : {
@@ -573,20 +589,31 @@
             "abilities" : [ "INNER_FOCUS", "OWN_TEMPO", "SERENE_GRACE", "TRACE" ],
             "namestrings" : [ "trick", "hoax", "illusion", "plot", "ruse", "trap", "evasion", "game", "wile", "antic", "gag", "caper", "stunt", "jape", "jest", "gift", "secret", "skill", "art", "craft", "cheat", "con", "dupe", "screw" ],
             "held_items" : [ "SUN_STONE", "CLEANSE_TAG", "SCOPE_LENS" ],
-            "egg_groups" : [ "FAIRY" ]
+            "egg_groups" : [ "FAIRY" ],
+            "stat_adjustment" : [ 0, 0, 0, 0, 0, 10 ]
         },
         
         "sleepy" : {
-            "moves" : [ "SLEEP_TALK", "REST", "SNORE", "YAWN", "SLACK_OFF" ],
-            "held_items" : [ "LEFTOVERS", "CHESTO_BERRY" ]
+            "moves" : [ "SLEEP_TALK", "REST", "SNORE", "YAWN", "SLACK_OFF", "AMNESIA", "CURSE", "BELLY_DRUM", "COVET" ],
+            "abilities" : [ "TRUANT" ],
+            "namestrings" : [ "sleepy", "drowsy", "comatose", "dopey", "dozy", "snoozy", "yawn", "tired", "idle", "inert", "loafing", "slack", "snore" ],
+            "held_items" : [ "LEFTOVERS", "CHESTO_BERRY" ],
+            "stat_adjustment" : [ 30, 10, 30, 10, 30, 0 ]
+        },
+        
+        "musical" : {
+            "moves" : [ "GRASS_WHISTLE", "HYPER_VOICE", "SING", "SCREECH", "GROWL", "HOWL", "SUPERSONIC", "UPROAR", "ENCORE", "FOLLOW_ME", "MIMIC", "METRONOME" ],
+            "abilitites" : [ "SOUNDPROOF" ],
+            "namestrings" : [ "sound", "music", "loud", "harmony", "melody", "noise", "note", "tone", "voice", "pitch" ]
         },
         
         "angry" : {
-            "moves" : [ "RAGE", "GLARE", "SCARY_FACE", "MEAN_LOOK", "REVENGE", "OUTRAGE", "BULK_UP", "SUPERPOWER", "THRASH", "UPROAR", "PURSUIT", "FACADE", "LEER", "FOLLOW_ME" ],
+            "moves" : [ "RAGE", "GLARE", "SCARY_FACE", "MEAN_LOOK", "REVENGE", "UPROAR", "PURSUIT", "FACADE", "LEER" ],
             "abilities" : [ "GUTS", "HUGE_POWER", "HUSTLE", "INTIMIDATE", "PRESSURE" ],
             "namestrings" : [ "tyrannic", "brutal", "cruel", "harsh", "tough", "furious", "irate", "rage", "fierce", "fury", "mania", "temper" ],
             "namestrings_baby" : [ "mean", "bully", "rude", "nasty", "pesky" ],
-            "tms" : [ "BULK_UP", "ROCK_SMASH", "STRENGTH", "BRICK_BREAK", "EARTHQUAKE", "ROCK_TOMB" ]
+            "tms" : [ "BULK_UP", "ROCK_SMASH", "STRENGTH", "BRICK_BREAK", "EARTHQUAKE", "ROCK_TOMB" ],
+            "stat_adjustment" : [ 0, 15, 0, 15, 0, 0 ]
         },
         
         "psychic_abilities" : {
@@ -629,7 +656,8 @@
             "abilities" : [ "BATTLE_ARMOR", "CLEAR_BODY", "MAGNET_PULL", "ROCK_HEAD", "SHELL_ARMOR", "STURDY" ],
             "egg_groups" : [ "MINERAL" ],
             "namestrings" : [ "metal", "alloy", "ore", "mineral", "ingot", "plate", "steel", "hard", "solid", "firm", "iron", "rigid", "ferric", "heavy", "bronze", "gold", "copper", "tin", "titanium", "gear", "rust" ],
-            "held_items" : [ "METAL_COAT", "BRIGHT_POWDER" ]
+            "held_items" : [ "METAL_COAT", "BRIGHT_POWDER" ],
+            "stat_adjustment" : [ 0, 0, 20, 0, 20, 0 ]
         },
         
         "rocky" : {
@@ -641,7 +669,8 @@
             "egg_groups" : [ "MINERAL" ],
             "namestrings" : [ "rock", "earth", "gravel", "rubble", "slab", "boulder", "cobblestone", "crag", "ore", "mineral", "crust", "mass", "quarry", "solid", "hard", "tough", "stone", "durable", "cavern", "diamond", "pebble" ],
             "held_items" : [ "EVERSTONE", "HARD_STONE" ],
-            "tms" : [ "SUNNY_DAY", "ROCK_SMASH", "STRENGTH", "EARTHQUAKE", "DIG", "BRICK_BREAK" ]
+            "tms" : [ "SUNNY_DAY", "ROCK_SMASH", "STRENGTH", "EARTHQUAKE", "DIG", "BRICK_BREAK" ],
+            "stat_adjustment" : [ 0, 0, 30, 0, 0, 0 ]
         },
         
         "electric" : {
@@ -651,7 +680,8 @@
             "tms" : [ "FLASH" ],
             "abilities" : [ "ILLUMINATE", "LIGHTNING_ROD", "MAGNET_PULL", "STATIC", "VOLT_ABSORB", "PLUS", "MINUS" ],
             "namestrings" : [ "electric", "magnet", "charge", "zap", "thunder", "spark", "shock", "volt", "bolt", "gleam", "glint", "glow", "energy", "force" ],
-            "held_items" : [ "CHERI_BERRY", "MAGNET", "THUNDER_STONE" ]
+            "held_items" : [ "CHERI_BERRY", "MAGNET", "THUNDER_STONE" ],
+            "stat_adjustment" : [ 0, 0, 0, 0, 0, 10 ]
         },
         
         "fire_elemental" : {
@@ -686,29 +716,25 @@
         
         "shelled" : {
             "optional_subthemes" : [ "spiked" ],
-            "moves" : [ "WITHDRAW", "PROTECT", "HARDEN", "ENDURE", "SAFEGUARD", "MIRROR_COAT" ],
+            "moves" : [ "WITHDRAW", "PROTECT", "HARDEN", "ENDURE" ],
             "abilities" : [ "SHELL_ARMOR", "STURDY" ],
             "namestrings" : [ "shell", "carapace", "case", "hull", "husk", "armor", "plate", "shield", "guard" ],
             "tms" : [ "LIGHT_SCREEN", "REFLECT" ],
-            "egg_groups" : [ "WATER_3" ]
+            "egg_groups" : [ "WATER_3" ],
+            "stat_adjustment" : [ 20, 0, 20, 0, 0, 0 ]
         },
         
         "spiked" : {
             "moves" : [ "SPIKE_CANNON", "SPIKES", "SWORDS_DANCE" ],
             "abilities" : [ "ROUGH_SKIN" ],
-            "namestrings" : [ "spike", "nail", "pin", "spear", "lance", "impale", "stick", "sharp" ]
-        },
-        
-        "tentacled" : {
-            "moves" : [ "CONSTRICT", "WRAP", "BIND", "TICKLE" ],
-            "namestrings" : [ "tentacle", "wrap", "bind" ],
-            "namestrings_baby" : [ "tickle" ]
+            "namestrings" : [ "spike", "nail", "pin", "spear", "lance", "impale", "stick", "sharp" ],
+            "stat_adjustment" : [ 0, 20, 0, 0, 0, 0 ]
         },
         
         "natural_powers" : {
             "moves" : [ "SOLAR_BEAM", "PETAL_DANCE", "HEAL_BELL", "SAFEGUARD", "SWEET_SCENT", "MOONLIGHT", "HIDDEN_POWER", "RAIN_DANCE", "SUNNY_DAY", "NATURE_POWER", "WEATHER_BALL", "AROMATHERAPY", "MAGICAL_LEAF" ],
             "abilities" : [ "NATURAL_CURE" ],
-            "namestrings" : [ "nature", "earth", "forest", "jungle", "wood", "grove", "moon", "crescent", "sun", "light", "star", "ray", "day", "solar", "cloud", "solar", "lunar" ],
+            "namestrings" : [ "nature", "earth", "moon", "crescent", "sun", "light", "star", "ray", "day", "solar", "cloud", "solar", "lunar" ],
             "held_items" : [ "MYSTIC_WATER" ],
             "tms" : [ "SUNNY_DAY", "RAIN_DANCE", "BULLET_SEED", "GIGA_DRAIN" ]
         },
@@ -727,7 +753,7 @@
         "ground_elemental" : {
             "primary" : true,
             "necessary_types" : [ "GROUND" ],
-            "optional_subthemes" : [ "muddy", "hard_body", "boney" ],
+            "optional_subthemes" : [ "muddy", "hard_body" ],
             "moves" : [ "EARTHQUAKE", "FISSURE", "DIG", "MAGNITUDE", "SAND_TOMB", "SANDSTORM", "SAND_ATTACK", "DEFENSE_CURL" ],
             "abilities" : [ "SAND_STREAM", "SAND_VEIL", "LIGHTNING_ROD", "ROCK_HEAD", "ARENA_TRAP" ],
             "namestrings" : [ "ground", "earth", "dirt", "sand", "soil", "turf", "dust", "desert", "clay", "land", "fissure", "dig" ],
@@ -751,7 +777,7 @@
             "moves" : [ "VINE_WHIP", "ABSORB", "MEGA_DRAIN", "LEECH_SEED", "RAZOR_LEAF", "POISON_POWDER", "SLEEP_POWDER", "STUN_SPORE", "SPORE", "COTTON_SPORE", "GIGA_DRAIN", "LEAF_BLADE" ],
             "tms" : [ "CUT", "SOLAR_BEAM" ],
             "abilities" : [ "OVERGROW" ],
-            "namestrings" : [ "plant", "tree", "vine", "grass", "flower", "shrub", "herb", "weed", "seed", "sprout", "growth", "leaf", "petal", "needle", "berry", "nut", "grain", "bark", "bulb", "fleur", "apple", "pumpkin", "cactus", "mushroom", "fungus", "thorn" ],
+            "namestrings" : [ "plant", "tree", "vine", "grass", "flower", "shrub", "herb", "weed", "seed", "sprout", "growth", "leaf", "petal", "needle", "berry", "nut", "grain", "bark", "bulb", "fleur", "apple", "pumpkin", "cactus", "mushroom", "fungus", "thorn", "forest", "jungle", "wood", "grove" ],
             "held_items" : [ "LEAF_STONE" ],
             "egg_groups" : [ "GRASS" ]
         }
@@ -770,12 +796,13 @@
         },
     
         "feline" : {
-            "necessary_subthemes" : [ "fast_body", "clawed", "tailed", "fanged", "footed", "sleepy" ],
+            "necessary_subthemes" : [ "fast_body", "clawed", "tailed", "fanged", "footed" ],
             "primary" : true,
-            "moves" : [ "ASSIST", "PAY_DAY" ],
+            "moves" : [ "ASSIST", "PAY_DAY", "SLACK_OFF", "YAWN", "REST" ],
             "abilities" : [ "LIMBER" ],
             "namestrings" : [ "cat", "feline", "cheetah", "cougar", "jaguar", "leopard", "lion", "lynx", "ocelot", "panther", "puma", "caracal", "tabby", "tiger", "purr", "leopard", "leo" ],
-            "namestrings_baby" : [ "kitten", "kitty", "pussy", "meow" ]
+            "namestrings_baby" : [ "kitten", "kitty", "pussy", "meow" ],
+            "stat_adjustment" : [ 0, 0, 0, 0, 0, 10 ]
         },
         
         "canine" : {
@@ -792,12 +819,13 @@
             "moves" : [ "MILK_DRINK", "STOMP" ],
             "namestrings" : [ "cow", "bull", "milk", "cream", "moo", "cattle", "bovine" ],
             "namestrings_baby" : [ "calf", "heifer", "veal" ],
-            "held_items" : [ "MOOMOO_MILK" ]
+            "held_items" : [ "MOOMOO_MILK" ],
+            "stat_adjustment" : [ 10, 0, 0, 0, 0, 0 ]
         },
         
         "simian" : {
             "necessary_subthemes" : [ "handed", "footed", "loud" ],
-            "optional_subthemes" : [ "tailed", "clawed", "fanged", "sleepy", "fast_body", "tricky" ],
+            "optional_subthemes" : [ "tailed", "clawed", "fanged", "fast_body", "tricky" ],
             "primary" : true,
             "namestrings" : [ "ape", "simian", "monkey", "primate", "tamarin", "gibbon", "hominid", "chimpanzee", "gorilla", "orangutan" ],
             "namestrings_baby" : [ "infant" ],
@@ -807,7 +835,7 @@
         
         "equine" : {
             "necessary_subthemes" : [ "footed", "fast_body", "tailed", "strong_body" ],
-            "optional_subthemes" : [ "sleepy", "loud", "fanged" ],
+            "optional_subthemes" : [ "loud", "fanged" ],
             "primary" : true,
             "namestrings" : [ "equine", "horse", "pony", "mare", "stallion", "mustang", "steed", "donkey", "mule", "neigh", "clydesdale" ],
             "namestrings_baby" : [ "colt", "filly", "foal", "yearling" ],
@@ -816,25 +844,27 @@
         },
         
         "ursine" : {
-            "necessary_subthemes" : [ "footed", "clawed", "handed", "fanged", "sleepy", "strong_body" ],
+            "necessary_subthemes" : [ "footed", "clawed", "handed", "fanged", "strong_body" ],
             "optional_subthemes" : [ "loud" ],
             "primary" : true,
             "namestrings" : [ "ursine", "bear", "panda", "grizzly" ],
             "namestrings_baby" : [ "cub", "teddy" ],
-            "moves" : [ "REST", "SNORE", "ROAR", "SCARY_FACE", "SLASH", "HOWL" ]
+            "moves" : [ "REST", "SNORE", "ROAR", "SCARY_FACE", "SLASH", "HOWL", "SLACK_OFF", "YAWN" ],
+            "stat_adjustment" : [ 10, 0, 0, 0, 0, 0 ]
         },
         
         "leporine" : {
             "necessary_subthemes" : [ "clawed", "footed", "fast_body", "tailed" ],
-            "optional_subthemes" : [ "cute", "sleepy", "tricky" ],
+            "optional_subthemes" : [ "cute", "tricky" ],
             "primary" : true,
             "namestrings" : [ "rabbit", "hare", "bunny", "doe", "buck", "burrow", "tunnel" ],
             "namestrings_baby" : [ "kitten", "kit" ],
-            "moves" : [ "BOUNCE", "DIG", "ODOR_SLEUTH" ]
+            "moves" : [ "BOUNCE", "DIG", "ODOR_SLEUTH" ],
+            "stat_adjustment" : [ 0, 0, 0, 0, 0, 10 ]
         },
         
         "ovine" : {
-            "necessary_subthemes" : [ "footed", "sleepy", "tailed", "horned" ],
+            "necessary_subthemes" : [ "footed", "tailed", "horned" ],
             "optional_subthemes" : [ "cute" ],
             "primary" : true,
             "namestrings" : [ "sheep", "wool", "goat", "fluffy", "baah", "cotton" ],
@@ -848,7 +878,8 @@
             "primary" : true,
             "namestrings" : [ "rat", "mouse", "rodent", "vermin", "hamster", "gerbil", "mus", "murine" ],
             "namestrings_baby" : [ "pup", "pinkie", "kitten" ],
-            "moves" : [ "DIG", "ODOR_SLEUTH" ]
+            "moves" : [ "DIG", "ODOR_SLEUTH" ],
+            "stat_adjustment" : [ 0, 10, 0, 0, 0, 0 ]
         },
         
         "generic_animal" : {
@@ -868,8 +899,8 @@
         },
         
         "basic_body" : {
-            "moves" : [ "TACKLE", "COUNTER" ],
-            "tms" : [ "ROCK_SMASH", "STRENGTH" ]
+            "moves" : [ "TACKLE" ],
+            "tms" : [ "ROCK_SMASH", "STRENGTH", "COUNTER" ]
         },
         
         "hard_body" : {
@@ -880,7 +911,7 @@
         
         "strong_body" : {
             "necessary_subthemes" : [ "basic_body", "hard_body" ],
-            "moves" : [ "HEADBUTT", "STOMP", "THRASH", "SEISMIC_TOSS", "RAGE", "SKULL_BASH", "REVERSAL", "BRICK_BREAK", "BULK_UP", "BELLY_DRUM" ],
+            "moves" : [ "HEADBUTT", "STOMP", "THRASH", "SEISMIC_TOSS", "RAGE", "SKULL_BASH", "REVERSAL", "BRICK_BREAK", "BULK_UP", "BELLY_DRUM", "SUPERPOWER" ],
             "abilities" : [ "THICK_FAT", "VITAL_SPIRIT" ],
             "namestrings" : [ "strong", "heavy", "big", "firm", "steady", "large" ],
             "tms" : [ "EARTHQUAKE", "ROCK_TOMB" ]
@@ -890,12 +921,13 @@
             "moves" : [ "SAND_ATTACK", "QUICK_ATTACK", "DOUBLE_TEAM", "FOCUS_ENERGY", "THIEF", "BATON_PASS", "PURSUIT", "RAPID_SPIN", "EXTREME_SPEED", "FAKE_OUT", "KNOCK_OFF", "SNATCH", "BOUNCE", "FAINT_ATTACK", "AGILITY", "SWIFT" ],
             "abilities" : [ "INSOMNIA", "RUN_AWAY", "SPEED_BOOST", "VITAL_SPIRIT", "EARLY_BIRD", "GUTS", "HUSTLE", "KEEN_EYE", "INNER_FOCUS", "LIMBER" ],
             "namestrings" : [ "fast", "agile", "brisk", "nimble", "quick", "rapid", "swift", "speed" ],
-            "tms" : [ "AERIAL_ACE", "SHOCK_WAVE", "THUNDER_WAVE" ]
+            "tms" : [ "AERIAL_ACE", "SHOCK_WAVE", "THUNDER_WAVE" ],
+            "stat_adjustment" : [ 0, 0, 0, 0, 0, 30 ]
         },
         
         "clawed" : {
-            "moves" : [ "SWORDS_DANCE", "FURY_ATTACK", "FURY_SWIPES", "SLASH", "METAL_CLAW", "AERIAL_ACE", "GUILLOTINE", "FALSE_SWIPE", "FURY_CUTTER", "CRUSH_CLAW", "SCRATCH", "DRAGON_CLAW", "LEER" ],
-            "tms" : [ "CUT" ],
+            "moves" : [ "SWORDS_DANCE", "FURY_ATTACK", "FURY_SWIPES", "SLASH", "METAL_CLAW", "AERIAL_ACE", "GUILLOTINE", "FALSE_SWIPE", "FURY_CUTTER", "CRUSH_CLAW", "SCRATCH", "LEER" ],
+            "tms" : [ "CUT", "DRAGON_CLAW" ],
             "abilities" : [ "HYPER_CUTTER" ],
             "namestrings" : [ "claw", "cut", "rip", "scratch", "itch", "maul" ],
             "held_items" : [ "QUICK_CLAW" ]
@@ -904,6 +936,12 @@
         "tailed" : {
             "moves" : [ "TAIL_WHIP", "IRON_TAIL", "POISON_TAIL", "DOUBLE_SLAP", "POUND" ],
             "namestrings" : [ "tail", "wag" ]
+        },
+        
+        "tentacled" : {
+            "moves" : [ "CONSTRICT", "WRAP", "BIND", "TICKLE", "DOUBLE_SLAP", "POUND", "SLAM" ],
+            "namestrings" : [ "tentacle", "wrap", "bind" ],
+            "namestrings_baby" : [ "tickle" ]
         },
         
         "fanged" : {
@@ -923,7 +961,7 @@
         
         "handed" : {
             "necessary_subthemes" : [ "basic_body" ],
-            "moves" : [ "KARATE_CHOP", "FIRE_PUNCH", "ICE_PUNCH", "THUNDER_PUNCH", "DOUBLE_SLAP", "SEISMIC_TOSS", "COUNTER", "REVERSAL", "MACH_PUNCH", "DYNAMIC_PUNCH", "VITAL_THROW", "CROSS_CHOP", "FOCUS_PUNCH", "BRICK_BREAK", "ARM_THRUST", "SKY_UPPERCUT", "BULK_UP", "SHADOW_PUNCH", "COMET_PUNCH", "MEGA_PUNCH", "SUBMISSION", "DIZZY_PUNCH", "SMELLING_SALT" ],
+            "moves" : [ "FIRE_PUNCH", "ICE_PUNCH", "THUNDER_PUNCH", "DOUBLE_SLAP", "SEISMIC_TOSS", "COUNTER", "REVERSAL", "BRICK_BREAK", "SKY_UPPERCUT", "BULK_UP", "SHADOW_PUNCH", "COMET_PUNCH", "MEGA_PUNCH", "DIZZY_PUNCH" ],
             "tms" : [ "ROCK_SMASH", "STRENGTH" ],
             "namestrings" : [ "punch", "palm", "hold", "jab", "slap", "bash", "toss", "throw" ]
         },
@@ -1026,7 +1064,8 @@
             "moves" : [ "HARDEN", "IRON_DEFENSE", "WITHDRAW", "CLAMP" ],
             "namestrings" : [ "clam", "mollusk", "oyster", "shellfish", "prawn", "shrimp", "barnacle" ],
             "namestrings_baby" : [ "larva" ],
-            "held_items" : [ "PEARL", "BIG_PEARL" ]
+            "held_items" : [ "PEARL", "BIG_PEARL" ],
+            "stat_adjustment" : [ 0, 0, 30, 0, 30, 0 ]
         },
         
         "squid" : {
@@ -1085,8 +1124,8 @@
         },
         
         "loud" : {
-            "moves" : [ "UPROAR", "SUPERSONIC", "SONIC_BOOM", "SCREECH", "HYPER_VOICE", "HOWL", "SING" ],
-            "namestrings" : [ "loud", "rowdy", "screech", "voice", "roar", "sing", "melody" ],
+            "moves" : [ "UPROAR", "SCREECH", "HYPER_VOICE", "HOWL" ],
+            "namestrings" : [ "loud", "rowdy", "screech", "roar" ],
             "tms" : [ "ROAR" ]
         },
         
