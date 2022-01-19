@@ -703,6 +703,12 @@ def generate_wild_encounters():
     with open(pokered_folder + 'src/data/wild_encounters.json', 'w') as f:
         f.write(json.dumps(encs, indent=2, sort_keys=False))
 
+special_types = ['FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK']
+physical_types = ['NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL']
+
+# until some kind of combo mechanism is invented
+ai_forbidden_moves = [ 'DREAM_EATER', 'NIGHTMARE' ]
+
 def assign_moves(species, level, signature_tm=None):
     available = set()
     
@@ -724,9 +730,17 @@ def assign_moves(species, level, signature_tm=None):
     
     if signature_tm != None and signature_tm in dex['tmhm_learnsets.h'][species]:
         available.add(signature_tm)
+
+    moves_bonus = list(available_bonus)
+    moves_bonus.sort(key=by_move_value)
+    moves_bonus = moves_bonus[0:int(len(moves_bonus) * min(1, level/40))]
+    available.update(moves_bonus)
+    
+    for forbidden in ai_forbidden_moves:
+        if forbidden in available:
+            available.remove(forbidden)
     
     moves = list(available)
-    moves_bonus = list(available_bonus)
     
     if len(moves) <= 4:
         while len(moves) < 4:
@@ -735,70 +749,113 @@ def assign_moves(species, level, signature_tm=None):
     
     chosen = set()
     
-    bonuses = random.random() < level/50
-    m = pick_good_stab(species, moves_bonus if bonuses else moves)
-    if m != None:
-        chosen.add(m)
+    strat = dex['strategy'][species]
     
-    while len(chosen) < 4:
-        bonuses = random.random() < level/50
-        
+    if strat['role'] == 'OFFENSIVE':
+        status_amount = random.randint(0,1)
+    elif strat['role'] == 'DEFENSIVE':
+        status_amount = random.randint(2,3)
+    else:
+        status_amount = random.randint(1,2)
+    
+    dmg_amount = 4 - status_amount
+    
+    for i in range(0, status_amount):
+        m = pick_good_non_damaging(species, moves, strat['role'], strat['damage_type'], already_chosen=chosen)
+        if m != None:
+            chosen.add(m)
+    
+    stab_types = set(dex['encounter_data'][species]['types'])
+    for i in range(0, 4 - len(chosen)):
         avoid_types = []
+        
+        if strat['damage_type'] == 'PHYSICAL':
+            avoid_types.extend(special_types)
+        elif strat['damage_type'] == 'SPECIAL':
+            avoid_types.extend(physical_types)
+        
+        for stab in stab_types:
+            if stab in avoid_types:
+                avoid_types.remove(stab)
+        
         for move in chosen:
             if dex['moves'][move]['damaging']:
                 avoid_types.append(dex['moves'][move]['type'])
-        m = pick_good_damaging(species, moves_bonus if bonuses else moves, avoid_types)
+        
+        m = pick_good_damaging(species, moves, avoid_types, stab_types, already_chosen=chosen)
         if m != None:
             chosen.add(m)
-        
-        m = pick_good_non_damaging(species, moves_bonus if bonuses else moves)
-        if m != None:
-            chosen.add(m)
-        
+    
+    while len(chosen) < 4:
+        chosen = list(chosen)
+        chosen.append('NONE')
+    
     chosen = list(chosen)[0:4]
+    
+    # use signature move unless they have something better
+    if signature_tm != None and dex['moves'][signature_tm]['damaging'] and not signature_tm in chosen:
+        for index, move in enumerate(chosen):
+            if dex['moves'][move]['damaging'] and dex['moves'][move]['type'] == dex['moves'][signature_tm]['type'] and dex['moves'][move]['value'] < dex['moves'][signature_tm]['value']:
+                chosen[index] = signature_tm
+                break
+    
     return list(chosen)
 
 by_move_value = lambda m: dex['moves'][m]['value']
 
-def pick_good_stab(species, moves):
-    stab_type = dex['base_stats.h'][species]['type1' if random.random() > 0.5 else 'type2']
-    stabs = []
-    for m in moves:
-        if dex['moves'][m]['type'] == stab_type and dex['moves'][m]['damaging']:
-            stabs.append(m)
-    stabs.sort(key=by_move_value)
-    if len(stabs) == 0:
-        return None
-    return stabs[-1]
+def by_move_value_prefer_types(types):
+    adjustment = lambda m: 1.5 if dex['moves'][m]['type'] in types else 1
+    return lambda m: dex['moves'][m]['value'] * adjustment(m)
 
-def pick_good_damaging(species, moves, avoid_types=[]):
+def pick_good_damaging(species, moves, avoid_types=[], prefer_types=[], already_chosen=[]):
     damaging = []
+    
     for m in moves:
+        if m in already_chosen:
+            continue
         if dex['moves'][m]['damaging'] and (not dex['moves'][m]['type'] in avoid_types):
             damaging.append(m)
-    damaging.sort(key=by_move_value)
-    damaging = damaging[max(0,len(damaging)-random.randint(1,3)):len(damaging)]
+    
+    damaging.sort(key=by_move_value_prefer_types(prefer_types))
+    damaging = damaging[max(0,len(damaging)-3):len(damaging)]
+    
     if len(damaging) == 0:
         if len(avoid_types) != 0:
-            return pick_good_damaging(species, moves)
+            instead = pick_good_damaging(species, moves, avoid_types=[], prefer_types=[])
+            return instead
         else:
             return None
     return random.choice(damaging)
 
 overused_nondmg_attacks = [ 'REST', 'TOXIC', 'SUBSTITUTE', 'SNATCH', 'ROAR', 'COUNTER' ]
 
-def pick_good_non_damaging(species, moves):
+def pick_good_non_damaging(species, moves, role, category, already_chosen=[]):
     nondamaging = []
+    
     for m in moves:
+        if m in already_chosen:
+            continue
+        
         if not dex['moves'][m]['damaging']:
+            
+            if role == 'OFFENSIVE':
+                if dex['moves'][m]['usage_role'] == 'DEFENSIVE':
+                    continue
+                elif dex['moves'][m]['usage_category'] != category:
+                    continue
+            elif role == 'DEFENSIVE':
+                if dex['moves'][m]['usage_role'] == 'OFFENSIVE':
+                    continue
+            
             nondamaging.append(m)
+    
     nondamaging.sort(key=by_move_value)
-    nondamaging = nondamaging[max(0,len(nondamaging)-random.randint(1,15)):len(nondamaging)]
+    nondamaging = nondamaging[max(0,len(nondamaging)-random.randint(6,12)):len(nondamaging)]
     
     # might not pick these because otherwise they're spammed everywhere
-    for ou in overused_nondmg_attacks:
-        if ou in nondamaging and random.random() > 0.33:
-            nondamaging.remove(ou)
+    #for ou in overused_nondmg_attacks:
+    #    if ou in nondamaging and random.random() > 0.33:
+    #        nondamaging.remove(ou)
     
     if len(nondamaging) == 0:
         return None
@@ -823,6 +880,30 @@ def generate_rival_teams():
     
     if len(grass_team) != len(set(grass_team)) or len(fire_team) != len(set(fire_team)) or len(water_team) != len(set(water_team)):
         generate_rival_teams()
+
+defensive_items = [ 'ITEM_BRIGHT_POWDER', 'ITEM_FOCUS_BAND', 'ITEM_LEFTOVERS', 'ITEM_LUM_BERRY', 'ITEM_SITRUS_BERRY', 'ITEM_WHITE_HERB' ]
+physical_offensive_items = [ 'ITEM_KINGS_ROCK', 'ITEM_QUICK_CLAW', 'ITEM_SALAC_BERRY', 'ITEM_SCOPE_LENS', 'ITEM_LIECHI_BERRY' ]
+special_offensive_items = [ 'ITEM_KINGS_ROCK', 'ITEM_QUICK_CLAW', 'ITEM_SALAC_BERRY', 'ITEM_SCOPE_LENS', 'ITEM_PETAYA_BERRY' ]
+
+type_items = {
+    'FIGHTING' : 'ITEM_BLACK_BELT',
+    'DARK' : 'ITEM_BLACKGLASSES',
+    'FIRE' : 'ITEM_CHARCOAL',
+    'DRAGON' : 'ITEM_DRAGON_FANG',
+    'ROCK' : 'ITEM_HARD_STONE',
+    'ELECTRIC' : 'ITEM_MAGNET',
+    'STEEL' : 'ITEM_METAL_COAT',
+    'GRASS' : 'ITEM_MIRACLE_SEED',
+    'WATER' : 'ITEM_MYSTIC_WATER',
+    'ICE' : 'ITEM_NEVER_MELT_ICE',
+    'POISON' : 'ITEM_POISON_BARB',
+    'FLYING' : 'ITEM_SHARP_BEAK',
+    'NORMAL' : 'ITEM_SILK_SCARF',
+    'BUG' : 'ITEM_SILVER_POWDER',
+    'GROUND' : 'ITEM_SOFT_SAND',
+    'GHOST' : 'ITEM_SPELL_TAG',
+    'PSYCHIC' : 'ITEM_TWISTED_SPOON'
+}
 
 def generate_trainers():
     global grass_team
@@ -864,6 +945,7 @@ def generate_trainers():
     party_species = re.compile('\s+\.species\s=\s(.+),')
     party_moves = re.compile('\s+\.moves\s=\s(.+),')
     party_lvl = re.compile('\s+\.lvl\s=\s(.+),')
+    party_item = re.compile('\s+.heldItem\s=\s(.+),')
     
     parties_h_out = []
     current_trainer = None
@@ -888,6 +970,7 @@ def generate_trainers():
         m_sp = party_species.search(line)
         m_mv = party_moves.search(line)
         m_lvl = party_lvl.search(line)
+        m_item = party_item.search(line)
         
         if m_sp != None and current_trainer != None:
             if current_trainer['class'] in class_data['special_classes']:
@@ -936,7 +1019,7 @@ def generate_trainers():
             
             current_species = mon
             dupes.add(base_form(mon))
-            parties_h_out.append(f'        .species = SPECIES_{mon},')
+            parties_h_out.append(f'        .species = SPECIES_{mon}, // {dex["base_stats.h"][mon]["type1"]}/{dex["base_stats.h"][mon]["type2"]}, role {dex["strategy"][mon]["role"]}, damage_type {dex["strategy"][mon]["damage_type"]}')
             current_mon_count = current_mon_count+1
         elif m_mv != None and current_trainer != None:
             signature_tm = None
@@ -947,6 +1030,22 @@ def generate_trainers():
         elif m_lvl != None and current_trainer != None:
             current_level = int(m_lvl.group(1))
             parties_h_out.append(line)
+        elif m_item != None and current_trainer != None and current_trainer['class'] in class_data['special_classes']:
+            items = set()
+            
+            for tp in dex['encounter_data'][current_species]['types']:
+                items.add(type_items[tp])
+            
+            if dex['strategy'][current_species]['role'] != 'OFFENSIVE':
+                items.update(defensive_items)
+            
+            if dex['strategy'][current_species]['role'] != 'DEFENSIVE':
+                if dex['strategy'][current_species]['damage_type'] != 'PHYSICAL':
+                    items.update(special_offensive_items)
+                if dex['strategy'][current_species]['damage_type'] != 'SPECIAL':
+                    items.update(physical_offensive_items)
+            
+            parties_h_out.append(f'        .heldItem = {random.choice(list(items))},')
         else:
             parties_h_out.append(line)
     
@@ -983,6 +1082,7 @@ dex['teachable_moves'].remove('ATTRACT')
 dex['teachable_moves'].remove('PROTECT')
 dex['teachable_moves'].remove('MIMIC')
 dex['teachable_moves'].remove('SNATCH')
+dex['teachable_moves'].remove('HIDDEN_POWER')
 
 generate_rival_teams()
 

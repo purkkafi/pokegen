@@ -30,6 +30,7 @@ with open('archetypes.json') as f:
     type_bst_spreads = rawdb['type_bst_spreads']
     evo_stones_for_types = rawdb['evo_stones_for_types']
     move_value_adjustment = rawdb['move_value_adjustment']
+    status_move_usage_hints = rawdb['status_move_usage_hints']
     similar_move_sets = rawdb['similar_move_sets']
     tm_list = rawdb['tm_list']
     tutor_move_list = rawdb['tutor_move_list']
@@ -114,7 +115,7 @@ for theme in themedata:
         ALL_NAMESTRINGS.update(themedata[theme]['namestrings_baby'])
 ALL_NAMESTRINGS.update(generic_baby_namestrings)
 
-Move = namedtuple('Move', ['name', 'type', 'value', 'damaging', 'power'])
+Move = namedtuple('Move', ['name', 'type', 'value', 'damaging', 'power', 'effect'])
 
 def read_move_data():
     with open(pokered_folder + '/src/data/battle_moves.h') as f:
@@ -133,6 +134,9 @@ def read_move_data():
     for chunk in chunk_extractor.findall(moves_h):
         name = chunk[0]
         data = chunk[1]
+        
+        if name == 'NONE':
+            continue
         
         move_type = get_type.search(data)[1]
         move_power = int(get_power.search(data)[1])
@@ -154,7 +158,7 @@ def read_move_data():
         if move_effect == 'SNORE':
             is_damaging = False
         
-        move_data[name] = Move(name=name, type=move_type, value=move_value, damaging=is_damaging, power=move_power)
+        move_data[name] = Move(name=name, type=move_type, value=move_value, damaging=is_damaging, power=move_power, effect=move_effect)
     
     return move_data
 
@@ -481,6 +485,10 @@ class Pokemon:
                 continue
             
             if self.name in parts:
+                continue
+            
+            if len(end) <= 1 and (not start_word in self.name) and (not end_word in self.name):
+            
                 continue
             
             PREVIOUS_NAME_STARTS.add(self.name[0:5])
@@ -1761,7 +1769,49 @@ def output_to_json(dex):
     # move data for trainer generation
     for move_name in move_data.keys():
         move = move_data[move_name]
-        out['moves'][move_name] = { 'type' : move.type, 'value' : move.value, 'damaging' : move.damaging }
+        move_info = { 'type' : move.type, 'value' : move.value, 'damaging' : move.damaging }
+        
+        if not move.damaging:
+            for role in status_move_usage_hints.keys():
+                for dmg_cat in status_move_usage_hints[role].keys():
+                    if move.effect in status_move_usage_hints[role][dmg_cat]:
+                        move_info['usage_role'] = role
+                        move_info['usage_category'] = dmg_cat
+                        break
+            if not 'usage_role' in move_info.keys():
+                raise BaseException('no usage hint for ' + move_name + ' (' + move.effect + ')')
+        
+        out['moves'][move_name] = move_info
+    
+    # strategy for trainer generation
+    out['strategy'] = {}
+    for index, poke in enumerate(dex):
+        if poke == None:
+            continue
+        
+        strat = {}
+        hp, atk, df, spatk, spdf, spd = poke.stats
+        
+        atk_ratio = atk / spatk
+        
+        if atk_ratio >= 1.2:
+            strat['damage_type'] = 'PHYSICAL'
+            dmg_ratio = (2 * atk + spd) / (hp + df + spd)
+        elif atk_ratio <= 0.8:
+            strat['damage_type'] = 'SPECIAL'
+            dmg_ratio = (2 * spatk + spd) / (hp + df + spd)
+        else:
+            strat['damage_type'] = 'MIXED'
+            dmg_ratio = (atk + spatk + spd) / (hp + df + spd)
+        
+        if dmg_ratio >= 1.1:
+            strat['role'] = 'OFFENSIVE'
+        elif dmg_ratio <= 0.9:
+            strat['role'] = 'DEFENSIVE'
+        else:
+            strat['role'] = 'MIXED'
+        
+        out['strategy'][index_to_id[str(index)]] = strat
     
     teachable_moves = []
     teachable_moves.extend(tm_list)

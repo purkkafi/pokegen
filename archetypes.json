@@ -86,12 +86,12 @@
         "TRAP" : 30,
         "FLINCH_MINIMIZE_HIT" : 10,
         "DOUBLE_HIT" : 30,
-        "RECOIL_IF_MISS" : 0,
+        "RECOIL_IF_MISS" : -10,
         "FLINCH_HIT" : 10,
         "ACCURACY_DOWN" : -20,
-        "RECOIL" : 0,
+        "RECOIL" : -10,
         "RAMPAGE" : 0,
-        "DOUBLE_EDGE" : -10,
+        "DOUBLE_EDGE" : -20,
         "DEFENSE_DOWN" : 10,
         "POISON_HIT" : 10,
         "TWINEEDLE" : 40,
@@ -160,7 +160,7 @@
         "SUBSTITUTE" : 20,
         "SKETCH" : 0,
         "TRIPLE_KICK" : 50,
-        "THIEF" : 10,
+        "THIEF" : 0,
         "MEAN_LOOK" : 10,
         "LOCK_ON" : 10,
         "NIGHTMARE" : 30,
@@ -225,7 +225,7 @@
         "WILL_O_WISP" : 20,
         "MEMENTO" : 20,
         "FACADE" : 10,
-        "FOCUS_PUNCH" : -50,
+        "FOCUS_PUNCH" : -60,
         "SMELLINGSALT" : 0,
         "FOLLOW_ME" : 10,
         "NATURE_POWER" : 20,
@@ -250,7 +250,7 @@
         "IMPRISON" : 10,
         "REFRESH" : 20,
         "GRUDGE" : 10,
-        "SNATCH" : 10,
+        "SNATCH" : 0,
         "SECRET_POWER" : 10,
         "CAMOUFLAGE" : 10,
         "SPECIAL_ATTACK_UP_2" : 40,
@@ -271,6 +271,19 @@
         "WATER_SPORT" : -20,
         "CALM_MIND" : 30,
         "DRAGON_DANCE" : 30
+    },
+    
+    "status_move_usage_hints" : {
+        "DEFENSIVE" : {
+            "PHYSICAL" : [],
+            "SPECIAL" : [],
+            "MIXED" : [ "ROAR", "ATTACK_DOWN", "SLEEP", "CONFUSE", "DISABLE", "MIST", "LEVEL_DAMAGE", "ACCURACY_DOWN", "POISON", "PARALYZE", "SPEED_DOWN", "TOXIC", "MIMIC", "EVASION_UP", "RESTORE_HP", "DEFENSE_UP", "MINIMIZE", "ACCURACY_DOWN", "DEFENSE_CURL", "DEFENSE_UP_2", "LIGHT_SCREEN", "HAZE", "REFLECT", "BIDE", "METRONOME", "SPECIAL_DEFENSE_UP_2", "SOFTBOILED", "TRANSFORM", "REST", "CONVERSION", "SUBSTITUTE", "MEAN_LOOK", "CURSE", "NIGHTMARE", "CONVERSION_2", "SPEED_DOWN_2", "SPITE", "PROTECT", "SPIKES", "DESTINY_BOND", "PERISH_SONG", "SANDSTORM", "ENDURE", "ATTACK_DOWN_2", "SWAGGER", "ATTRACT", "HEAL_BELL", "SAFEGUARD", "PAIN_SPLIT", "BATON_PASS", "ENCORE", "EVASION_DOWN", "MORNING_SUN", "SYNTHESIS", "MOONLIGHT", "PSYCH_UP", "HAIL", "TORMENT", "FLATTER", "WILL_O_WISP", "MEMENTO", "CHARGE", "TAUNT", "HELPING_HAND", "TRICK", "ROLE_PLAY", "WISH", "ASSIST", "INGRAIN", "MAGIC_COAT", "RECYCLE", "YAWN", "SKILL_SWAP", "IMPRISON", "REFRESH", "GRUDGE", "SNATCH", "CAMOUFLAGE", "ATTACK_DOWN_2", "TEETER_DANCE", "MUD_SPORT", "TICKLE", "COSMIC_POWER", "WATER_SPORT", "OHKO", "SONICBOOM", "LEECH_SEED", "DRAGON_RAGE", "COUNTER", "MIRROR_COAT", "TELEPORT", "PSYWAVE", "SPLASH", "SKETCH", "SNORE", "SLEEP_TALK", "STOCKPILE", "SPIT_UP", "SWALLOW", "FOLLOW_ME", "ENDEAVOR" ]
+        },
+        "OFFENSIVE" : {
+            "PHYSICAL" : [ "DEFENSE_DOWN", "ATTACK_UP", "DEFENSE_DOWN_2", "BELLY_DRUM", "FORESIGHT", "BULK_UP", "DRAGON_DANCE", "ATTACK_UP_2", "LOW_KICK", "FLAIL", "RETURN", "PRESENT", "FRUSTRATION", "MAGNITUDE" ],
+            "SPECIAL" : [ "SPECIAL_ATTACK_UP", "RAIN_DANCE", "SUNNY_DAY", "SPECIAL_ATTACK_UP_2", "SPECIAL_DEFENSE_DOWN_2", "CALM_MIND" ],
+            "MIXED" : [ "SPEED_UP_2", "FOCUS_ENERGY", "LOCK_ON", "MIRROR_MOVE", "SUPER_FANG", "HIDDEN_POWER", "NATURE_POWER"]
+        }
     },
     
     "similar_move_sets" : [
@@ -553,7 +566,7 @@
         
         "generic_fairy" : {
             "necessary_subthemes" : [ "basic_body", "cute" ],
-            "optional_subthemes" : [ "tricky", "psychic_abilities", "tailed", "footed", "winged", "eggy", "ice_tms", "electric_tms", "fire_tms" ],
+            "optional_subthemes" : [ "tricky", "psychic_abilities", "tailed", "footed", "eggy", "ice_tms", "electric_tms", "fire_tms" ],
             "possible_types" : [ "NORMAL" ],
             "moves" : [ "POUND", "DOUBLE_SLAP", "BODY_SLAM", "ROLLOUT" ],
             "stat_adjustment" : [ 30, 0, 0, 0, 0, 0 ]
@@ -699,7 +712,7 @@
             "necessary_types" : [ "ICE" ],
             "moves" : [ "MIST", "ICE_BEAM", "BLIZZARD", "AURORA_BEAM", "LIGHT_SCREEN", "REFLECT", "POWDER_SNOW", "ICY_WIND", "HAIL", "ICE_BALL", "SHEER_COLD", "ICICLE_SPEAR", "HAZE" ],
             "abilities" : [ "CLEAR_BODY" ],
-            "namestrings" : [ "ice", "crystal", "hail", "sleet", "glacier", "chill", "snow", "frigid", "frost", "shivers", "winter", "freeze", "blizzard", "aurora", "polar", "arctic", "icicle", "cold", "iceberg", "icy" ],
+            "namestrings" : [ "ice", "crystal", "hail", "sleet", "glacier", "chill", "snow", "frigid", "frost", "shivers", "winter", "freeze", "blizzard", "aurora", "polar", "arctic", "icicle", "cold", "iceberg", "icy", "slush" ],
             "held_items" : [ "NEVER_MELT_ICE", "ASPEAR_BERRY" ],
             "tms" : [ "WATER_PULSE", "SHADOW_BALL" ]
         },
@@ -720,7 +733,6 @@
             "abilities" : [ "SHELL_ARMOR", "STURDY" ],
             "namestrings" : [ "shell", "carapace", "case", "hull", "husk", "armor", "plate", "shield", "guard" ],
             "tms" : [ "LIGHT_SCREEN", "REFLECT" ],
-            "egg_groups" : [ "WATER_3" ],
             "stat_adjustment" : [ 20, 0, 20, 0, 0, 0 ]
         },
         
@@ -787,7 +799,7 @@
     
         "animal" : {
             "necessary_subthemes" : [ "animal_noises" ],
-            "possible_subthemes" : [ "feline", "canine", "bovine", "simian", "equine", "ursine", "leporine", "ovine", "murine", "generic_animal" ],
+            "possible_subthemes" : [ "feline", "canine", "bovine", "simian", "equine", "ursine", "leporine", "ovine", "murine", "vulpine", "generic_animal" ],
             "moves" : [ "LICK", "BITE" ],
             "abilities" : [ "IMMUNITY", "OBLIVIOUS", "OWN_TEMPO", "PICKUP", "RUN_AWAY", "SERENE_GRACE", "THICK_FAT", "CLOUD_NINE", "GUTS", "KEEN_EYE" ],
             "egg_groups" : [ "FIELD" ],
@@ -800,7 +812,7 @@
             "primary" : true,
             "moves" : [ "ASSIST", "PAY_DAY", "SLACK_OFF", "YAWN", "REST" ],
             "abilities" : [ "LIMBER" ],
-            "namestrings" : [ "cat", "feline", "cheetah", "cougar", "jaguar", "leopard", "lion", "lynx", "ocelot", "panther", "puma", "caracal", "tabby", "tiger", "purr", "leopard", "leo" ],
+            "namestrings" : [ "cat", "feline", "cheetah", "cougar", "jaguar", "leopard", "lion", "lynx", "ocelot", "panther", "puma", "caracal", "tabby", "tiger", "purr", "leopard", "leo", "serval", "ocelot" ],
             "namestrings_baby" : [ "kitten", "kitty", "pussy", "meow" ],
             "stat_adjustment" : [ 0, 0, 0, 0, 0, 10 ]
         },
@@ -854,8 +866,8 @@
         },
         
         "leporine" : {
-            "necessary_subthemes" : [ "clawed", "footed", "fast_body", "tailed" ],
-            "optional_subthemes" : [ "cute", "tricky" ],
+            "necessary_subthemes" : [ "clawed", "footed", "tailed" ],
+            "optional_subthemes" : [ "cute", "tricky", "fast_body" ],
             "primary" : true,
             "namestrings" : [ "rabbit", "hare", "bunny", "doe", "buck", "burrow", "tunnel" ],
             "namestrings_baby" : [ "kitten", "kit" ],
@@ -880,6 +892,16 @@
             "namestrings_baby" : [ "pup", "pinkie", "kitten" ],
             "moves" : [ "DIG", "ODOR_SLEUTH" ],
             "stat_adjustment" : [ 0, 10, 0, 0, 0, 0 ]
+        },
+        
+        "vulpine" : {
+            "necessary_subthemes" : [ "clawed", "fanged", "tailed" ],
+            "optional_subthemes" : [ "loud", "fast_body", "tricky" ],
+            "primary" : true,
+            "namestrings" : [ "fox", "vulpine", "vixen", "corsac", "fennec", "kit" ],
+            "namestrings_baby" : [ "kit", "pup", "cub" ],
+            "moves" : [ "DIG", "BOUNCE", "ODOR_SLEUTH", "HOWL" ],
+            "stat_adjustment" : [ 0, 0, 0, 10, 10, 10 ]
         },
         
         "generic_animal" : {
@@ -1029,7 +1051,7 @@
         
         "muddy" : {
             "moves" : [ "MUD_SHOT", "MUD_SPORT", "MUD_SLAP", "DIG", "SAND_ATTACK" ],
-            "namestrings" : [ "mud", "clay", "muck", "slush", "silt" ]
+            "namestrings" : [ "mud", "clay", "muck", "silt" ]
         },
         
         "fish" : {
@@ -1043,9 +1065,8 @@
         },
         
         "invertebrate" : {
-            "possible_subthemes" : [ "crab", "clam" ],
-            "abilities" : [ "SWIFT_SWIM" ],
-            "egg_groups" : [ "WATER_3" ]
+            "possible_subthemes" : [ "crab", "clam", "squid" ],
+            "abilities" : [ "SWIFT_SWIM" ]
         },
         
         "crab" : {
@@ -1053,6 +1074,7 @@
             "optional_subthemes" : [ "muddy" ],
             "primary" : true,
             "moves" : [ "CRABHAMMER", "VICE_GRIP", "FLAIL" ],
+            "egg_groups" : [ "WATER_1", "WATER_3" ],
             "namestrings" : [ "crab", "crustacean", "hermit", "cancer" ],
             "namestrings_baby" : [ "zoea" ]
         },
@@ -1062,6 +1084,7 @@
             "optional_subthemes" : [ "spiked" ],
             "primary" : true,
             "moves" : [ "HARDEN", "IRON_DEFENSE", "WITHDRAW", "CLAMP" ],
+            "egg_groups" : [ "WATER_3" ],
             "namestrings" : [ "clam", "mollusk", "oyster", "shellfish", "prawn", "shrimp", "barnacle" ],
             "namestrings_baby" : [ "larva" ],
             "held_items" : [ "PEARL", "BIG_PEARL" ],
@@ -1074,6 +1097,7 @@
             "primary" : true,
             "moves" : [ "RECOVER", "MINIMIZE", "ACID_ARMOR", "OCTAZOOKA", "CAMOUFLAGE" ],
             "abilities" : [ "SUCTION_CUPS" ],
+            "egg_groups" : [ "WATER_2", "WATER_1" ],
             "namestrings" : [ "squid", "octopus", "calamari", "nautilus", "cuttlefish", "ink" ],
             "namestrings_baby" : [ "paralarva" ],
             "tms" : [ "SLUDGE_BOMB" ]
