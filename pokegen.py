@@ -1532,7 +1532,7 @@ def debug_gen_dex():
         
         if special_dex_slots[index] == None:
             special = None
-            if random.random() > 0.3:
+            if random.random() > 0.2: # was 0.3
                 if random.random() > 0.7:
                     evo_cat = Flags.THREE_STAGES
                 else:

@@ -786,10 +786,6 @@ def assign_moves(species, level, signature_tm=None):
         if m != None:
             chosen.add(m)
     
-    while len(chosen) < 4:
-        chosen = list(chosen)
-        chosen.append('NONE')
-    
     chosen = list(chosen)[0:4]
     
     # use signature move unless they have something better
@@ -798,6 +794,22 @@ def assign_moves(species, level, signature_tm=None):
             if dex['moves'][move]['damaging'] and dex['moves'][move]['type'] == dex['moves'][signature_tm]['type'] and dex['moves'][move]['value'] < dex['moves'][signature_tm]['value']:
                 chosen[index] = signature_tm
                 break
+    
+    # if not enough moves, fuck this, add random good ones
+    if len(chosen) < 4:
+        for ch in chosen:
+            available.remove(ch)
+        available = list(available)
+        available.sort(key=by_move_value)
+        
+        while len(available) > 0 and len(chosen) < 4:
+            random_move = available[-1]
+            available.remove(random_move)
+            chosen.append(random_move)
+    
+    while len(chosen) < 4:
+        chosen = list(chosen)
+        chosen.append('NONE')
     
     return list(chosen)
 
@@ -850,7 +862,10 @@ def pick_good_non_damaging(species, moves, role, category, already_chosen=[]):
             nondamaging.append(m)
     
     nondamaging.sort(key=by_move_value)
-    nondamaging = nondamaging[max(0,len(nondamaging)-random.randint(6,12)):len(nondamaging)]
+    
+    good_amount = min(len(nondamaging), max(3, int(len(nondamaging)/2)))
+    
+    nondamaging = nondamaging[good_amount-1:]
     
     # might not pick these because otherwise they're spammed everywhere
     #for ou in overused_nondmg_attacks:
