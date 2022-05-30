@@ -574,7 +574,7 @@
     "subarchetypes" : {
     
         "cute" : {
-            "moves" : [ "SING", "LIGHT_SCREEN", "REFLECT", "AMNESIA", "LOVELY_KISS", "REST", "SNORE", "BELLY_DRUM", "CHARM", "ATTRACT", "SLEEP_TALK", "HEAL_BELL", "PRESENT", "SAFEGUARD", "ENCORE", "SWEET_SCENT", "MORNING_SUN", "MOONLIGHT", "MIRROR_COAT", "FLATTER", "FOLLOW_ME", "NATURE_POWER", "HELPING_HAND", "TRICK", "WISH", "YAWN", "REFRESH", "FAKE_TEARS", "TICKLE", "COSMIC_POWER", "COVET", "SWEET_KISS" ],
+            "moves" : [ "SING", "LIGHT_SCREEN", "REFLECT", "AMNESIA", "LOVELY_KISS", "REST", "SNORE", "CHARM", "ATTRACT", "SLEEP_TALK", "HEAL_BELL", "PRESENT", "SAFEGUARD", "ENCORE", "SWEET_SCENT", "MORNING_SUN", "MOONLIGHT", "MIRROR_COAT", "FLATTER", "FOLLOW_ME", "NATURE_POWER", "HELPING_HAND", "TRICK", "WISH", "YAWN", "REFRESH", "FAKE_TEARS", "TICKLE", "COSMIC_POWER", "COVET", "SWEET_KISS" ],
             "abilities" : [ "CUTE_CHARM", "OWN_TEMPO", "SERENE_GRACE", "NATURAL_CURE", "HUSTLE" ],
             "egg_groups" : [ "FAIRY" ],
             "namestrings" : [ "cute", "fairy", "adorable", "charm", "delight", "cherish", "cuddle", "humor", "kiss", "smooch", "pixie", "nymph", "sweet", "sylph", "whimsy", "elegant", "cherub" ],
@@ -623,6 +623,7 @@
             "namestrings" : [ "tyrannic", "brutal", "cruel", "harsh", "tough", "furious", "irate", "rage", "fierce", "fury", "mania", "temper" ],
             "namestrings_baby" : [ "mean", "bully", "rude", "nasty", "pesky" ],
             "tms" : [ "BULK_UP", "ROCK_SMASH", "STRENGTH", "BRICK_BREAK", "EARTHQUAKE", "ROCK_TOMB" ],
+            "egg_groups" : [ "MONSTER" ],
             "stat_adjustment" : [ 0, 15, 0, 15, 0, 0 ]
         },
         
@@ -1129,7 +1130,7 @@
             "necessary_subthemes" : [ "bird_general" ],
             "primary" : true,
             "namestrings" : [ "duck", "swan", "gull", "mallard", "cygnus", "goose", "pelican", "heron", "stork", "flamingo" ],
-            "namestrings_baby" : [ "duckling", "cygnet", "swaling", "gosling", "chick" ]
+            "namestrings_baby" : [ "duckling", "cygnet", "swanling", "gosling", "chick" ]
         },
         
         "seal" : {
