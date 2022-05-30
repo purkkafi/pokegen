@@ -402,26 +402,24 @@ class Pokemon:
         
         #print(('!BABY!' if is_baby else ''), primary_parts_set)
         
-        #speculative! TODO figure out if good or not
-        selected_parts = set()
-        primary_parts_set = list(primary_parts_set)
-        parts_set = list(parts_set)
-        
-        for i in range(0,100):
-            selected_parts.add(random.choice(primary_parts_set))
-            if len(selected_parts) >= 25:
-                break
-        
-        target_len = len(selected_parts) + 5
-        for i in range(0,100):
-            selected_parts.add(random.choice(parts_set))
-            if len(selected_parts) >= target_len:
-                break
-        
-        #print(len(selected_parts), selected_parts)
-        
         self.name = None
-        for i in range(1,100):
+        for i in range(1,50):
+            #speculative! TODO figure out if good or not
+            selected_parts = set()
+            primary_parts_set = list(primary_parts_set)
+            parts_set = list(parts_set)
+            
+            for i in range(0,100):
+                selected_parts.add(random.choice(primary_parts_set))
+                if len(selected_parts) >= 25:
+                    break
+            
+            target_len = len(selected_parts) + 5
+            for i in range(0,100):
+                selected_parts.add(random.choice(parts_set))
+                if len(selected_parts) >= target_len:
+                    break
+            
             #if random.random() > 0.66: TODO speculative
             #    parts = list(primary_parts_set)
             #else:
@@ -498,6 +496,9 @@ class Pokemon:
         self.name = self.name.upper()
         self.name_start = start_word
         self.name_end = end_word
+        
+        if end_word == '':
+            print('!!!!!! problem, no end word in', self.name)
     
     def generate_type(self):
         necessary_types = set()
@@ -949,33 +950,45 @@ class Pokemon:
     
     def generate_held_items(self):
         if self.previous_stage != None:
-            self.held_items = self.previous_stage.held_items
+            self.held_items = list(self.previous_stage.held_items)
         else:
             self.held_items = ['NONE', 'NONE']
         
-        items = []
+        commons = []
+        rares = []
+        special_commons = []
+        special_rares = []
         for theme in self.themes:
-            if 'held_items' in themedata[theme]:
-                items.extend(themedata[theme]['held_items'])
+            if 'common_held_items' in themedata[theme]:
+                commons.extend(themedata[theme]['common_held_items'])
+            if 'special_common_held_items' in themedata[theme]:
+                commons.extend(themedata[theme]['special_common_held_items'])
+                special_commons.extend(themedata[theme]['special_common_held_items'])
+            if 'rare_held_items' in themedata[theme]:
+                rares.extend(themedata[theme]['rare_held_items'])
+            if 'special_rare_held_items' in themedata[theme]:
+                rares.extend(themedata[theme]['special_rare_held_items'])
+                special_rares.extend(themedata[theme]['special_rare_held_items'])
         
-        if random.random() > 0.75 and len(items) != 0:
-            item1 = random.choice(items)
-            item2 = random.choice(items)
-            
-            if self.held_items[0] != 'NONE' or self.held_items[1] != 'NONE':
-                if self.held_items[0] == 'NONE':
-                    self.held_items[0] = item1
-                if self.held_items[1] == 'NONE':
-                    self.held_items[1] = item1
-            else:          
-                if random.random() > 0.9:
-                    self.held_items = [item1, item1]
-                elif random.random() > 0.9:
-                    self.held_items = [item1, item2]
-                elif random.random() > 0.75:
-                    self.held_items = [item1, 'NONE']
-                else:
-                    self.held_items = ['NONE', item1]
+        if self.held_items[0] == 'NONE':
+            if random.random() >= 0.7 and len(commons) != 0:
+                self.held_items[0] = random.choice(commons)
+            elif len(special_commons) != 0:
+                self.held_items[0] = random.choice(special_commons)
+        
+        if self.held_items[1] == 'NONE':
+            if random.random() >= 0.7 and len(rares) != 0:
+                self.held_items[1] = random.choice(rares)
+            elif len(special_rares) != 0:
+                self.held_items[1] = random.choice(special_rares)
+        
+        if random.random() >= 0.7:
+            if self.held_items[1] == 'NONE' and self.held_items[0] != 'NONE':
+                self.held_items[1] = self.held_items[0]
+        
+        if random.random() >= 0.5:
+            if self.held_items[0] == 'NONE' and self.held_items[1] != 'NONE':
+                self.held_items[0] = self.held_items[1]
     
     def generate_gender_ratio(self):
         self.gender_ratio = 'PERCENT_FEMALE(50)'
@@ -1296,7 +1309,13 @@ def weighted_pick_theme(possibilities, normalize_untyped_ratio=False):
         untyped_chance = 0.35
     
     if random.random() < untyped_chance:
-        return random.choice(untyped_themes)
+        if type(possibilities) is dict:
+            weights = list(untyped_themes)
+            for i,tp in enumerate(untyped_themes):
+                weights[i] = possibilities[tp]
+            return random.choices(untyped_themes, weights)[0]
+        else:
+            return random.choice(untyped_themes)
     else:
         weights = []
         for theme in typed_themes:
@@ -1306,7 +1325,16 @@ def weighted_pick_theme(possibilities, normalize_untyped_ratio=False):
             acc = acc / len(result_types[theme])
             weights.append(acc)
         
-        return random.choices(typed_themes, weights)[0]
+        if type(possibilities) is dict:
+            new_weights = list(weights)
+            w_adj = sum(weights)
+            p_adj = sum(possibilities.values())
+            
+            for i,tp in enumerate(typed_themes):
+                new_weights[i] = (weights[i]/w_adj * possibilities[tp]/p_adj)
+            return random.choices(typed_themes, new_weights)[0]
+        else:
+            return random.choices(typed_themes, weights)[0]
 
 used_combos = defaultdict(lambda: 0)
 total_combos = defaultdict(lambda: 0)
