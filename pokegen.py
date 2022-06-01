@@ -893,6 +893,10 @@ class Pokemon:
         for i in range(0,6):
             self.stats[i] = round((self.bst) * (self.stat_spread_weights[i]/total_weight))
         
+        # adjust HP so that stat total matches target BST in case of rounding errors
+        bst_diff = self.bst - sum(self.stats)
+        self.stats[0] += bst_diff
+        
     def generate_defeat_yield(self):
         if Flags.LEGENDARY in self.flags or Flags.MYTHICAL in self.flags or Flags.LEGENDARY_TRIO in self.flags:
             evs = 3
@@ -1336,10 +1340,13 @@ def weighted_pick_theme(possibilities, normalize_untyped_ratio=False):
         else:
             return random.choices(typed_themes, weights)[0]
 
-used_combos = defaultdict(lambda: 0)
-total_combos = defaultdict(lambda: 0)
+def init_dex_balance_data():
+    global used_combos, total_combos
+    used_combos = defaultdict(lambda: 0)
+    total_combos = defaultdict(lambda: 0)
 
 def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
+    global used_combos, total_combos
     pkmn = Pokemon(bst_range=bst_range, flags=flags)
     
     archetype = weighted_pick_theme(archetypes)
@@ -1495,12 +1502,12 @@ def debug_gen_pkmn():
     print('egg groups:', pkmn.egg_groups)
     print(pkmn.learnset)
 
-special_dex_slots = [None] * 152
-special_dex_slots[1] = (Flags.THREE_STAGES, Flags.GRASS_STARTER)
+special_dex_slots = [None] * 412
+special_dex_slots[1] = (Flags.THREE_STAGES, Flags.GRASS_STARTER) # kanto starters
 special_dex_slots[4] = (Flags.THREE_STAGES, Flags.FIRE_STARTER)
 special_dex_slots[7] = (Flags.THREE_STAGES, Flags.WATER_STARTER)
 
-special_dex_slots[132] = (Flags.SINGLE, Flags.DITTO) # ditto
+special_dex_slots[137] = (Flags.SINGLE, Flags.DITTO) # ditto
 
 special_dex_slots[138] = (Flags.TWO_STAGES, Flags.FOSSIL) # fossil line 1
 special_dex_slots[140] = (Flags.TWO_STAGES, Flags.FOSSIL) # fossil line 2
@@ -1512,11 +1519,58 @@ special_dex_slots[144] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, legendary_birds_ar
 special_dex_slots[145] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, legendary_birds_arch)
 special_dex_slots[146] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, legendary_birds_arch)
 
-special_dex_slots[147] = (Flags.THREE_STAGES, Flags.PSEUDO) # pseudo
+special_dex_slots[147] = (Flags.THREE_STAGES, Flags.PSEUDO) # pseudo (dratini)
 
 mews_arch = random.choice(archetypes)
 special_dex_slots[150] = (Flags.SINGLE, Flags.LEGENDARY, mews_arch) # mewtwo
 special_dex_slots[151] = (Flags.SINGLE, Flags.MYTHICAL, mews_arch) # mew
+
+special_dex_slots[152] = (Flags.THREE_STAGES, Flags.GRASS_STARTER) # johto starters
+special_dex_slots[155] = (Flags.THREE_STAGES, Flags.FIRE_STARTER)
+special_dex_slots[158] = (Flags.THREE_STAGES, Flags.WATER_STARTER)
+
+legendary_beasts_arch = random.choice(archetypes) # legendary beasts
+special_dex_slots[243] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, legendary_beasts_arch)
+special_dex_slots[244] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, legendary_beasts_arch)
+special_dex_slots[245] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, legendary_beasts_arch)
+
+special_dex_slots[246] = (Flags.THREE_STAGES, Flags.PSEUDO) # pseudo (larvitar)
+
+tower_duo_arch = random.choice(archetypes) # tower duo
+special_dex_slots[249] = (Flags.SINGLE, Flags.LEGENDARY, tower_duo_arch) # lugia
+special_dex_slots[250] = (Flags.SINGLE, Flags.LEGENDARY, tower_duo_arch) # ho-oh
+
+special_dex_slots[251] = (Flags.SINGLE, Flags.MYTHICAL) # celebi
+
+special_dex_slots[277] = (Flags.THREE_STAGES, Flags.GRASS_STARTER) # hoenn starters
+special_dex_slots[280] = (Flags.THREE_STAGES, Flags.FIRE_STARTER)
+special_dex_slots[283] = (Flags.THREE_STAGES, Flags.WATER_STARTER)
+
+special_dex_slots[388] = (Flags.TWO_STAGES, Flags.FOSSIL) # hoenn fossil line 1
+special_dex_slots[390] = (Flags.TWO_STAGES, Flags.FOSSIL) # hoenn fossil line 2
+
+special_dex_slots[392] = (Flags.THREE_STAGES, None) # ralts line, hardcoding to avoid trouble
+
+special_dex_slots[395] = (Flags.THREE_STAGES, Flags.PSEUDO) # pseudo (bagon)
+special_dex_slots[398] = (Flags.THREE_STAGES, Flags.PSEUDO) # pseudo (beldum)
+
+regi_arch = random.choice(archetypes) # regi trio
+special_dex_slots[401] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, regi_arch)
+special_dex_slots[402] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, regi_arch)
+special_dex_slots[403] = (Flags.SINGLE, Flags.LEGENDARY_TRIO, regi_arch)
+
+special_dex_slots[404] = (Flags.SINGLE, Flags.LEGENDARY) # kyogre
+special_dex_slots[405] = (Flags.SINGLE, Flags.LEGENDARY) # groudon
+special_dex_slots[406] = (Flags.SINGLE, Flags.LEGENDARY) # rayquaza
+
+lati_arch = random.choice(archetypes) # lati@s
+special_dex_slots[407] = (Flags.SINGLE, Flags.MYTHICAL, lati_arch)
+special_dex_slots[408] = (Flags.SINGLE, Flags.MYTHICAL, lati_arch)
+
+special_dex_slots[409] = (Flags.SINGLE, Flags.MYTHICAL) # jirachi
+special_dex_slots[410] = (Flags.SINGLE, Flags.MYTHICAL) # deoxys
+
+special_dex_slots[411] = (Flags.SINGLE, None) # chimecho as a special cse
 
 def dex_sort_key(pk):
     # retrieve first form
@@ -1551,12 +1605,13 @@ def dex_sort_key(pk):
     
     return val
 
-def debug_gen_dex():
+def gen_dex(start_index, end_index, sort_start=None, sort_end=None):
+    init_dex_balance_data()
     dex = []
-    dex.append(None)
+    index = start_index
     
-    while len(dex) <= 151:
-        index = len(dex)
+    while index < end_index:
+        index = start_index + len(dex)
         
         if special_dex_slots[index] == None:
             special = None
@@ -1579,77 +1634,13 @@ def debug_gen_dex():
         pks = generate_family(index, evo_cat, special)
         dex.extend(pks)
     
+    if sort_start == None and sort_end == None:
+        return dex
+    
     # approximately sort dex by bst
-    sorting = list(dex[10:138])
+    sorting = list(dex[sort_start-1:sort_end])
     sorting.sort(key=lambda pk: dex_sort_key(pk))
-    dex[10:138] = sorting
-    
-    string = []
-    
-    for i in range(1, len(dex)):
-        poke = dex[i]
-        string.append(f'{i}: {poke.name.ljust(15)}\t{str(poke.types).ljust(30)}\t{poke.abilities}\t({index_to_id[str(i)]})')
-        string.append(f'\t{poke.name_start} + {poke.name_end}, {poke.themes}')
-        string.append(f'\tstats: {poke.stats}, bst: {sum(poke.stats)}')
-        string.append(f'\tcatch rate: {poke.catch_rate}, gender ratio: {poke.gender_ratio}, base friendship: {poke.base_friendship}, flee rate: {poke.flee_rate}')
-        string.append(f'\tegg groups: {poke.egg_groups}, egg cycles: {poke.egg_cycles}, growth rate: {poke.growth_rate}')
-        string.append(f'\texp yield: {poke.exp_yield}, ev yield: {poke.ev_yield}, held items: {poke.held_items}')
-        string.append(f'\tbody color: {poke.body_color}, category: {poke.category}, weight: {poke.weight/10} kg, height: {poke.height/10} m')
-        string.append(f'\ttms: {poke.tms}')
-        string.append(f'\ttutor moves: {poke.tutor_moves}')
-        if poke.egg_moves != None:
-            string.append(f'\tegg moves: {poke.egg_moves}')
-        #print(f'\tflags: {poke.flags}')
-        if poke.evo_target != None:
-            string.append(f'\tevolves into {poke.evo_target.name} with {poke.evo_type}'),
-        for mv in poke.learnset:
-            string.append(f'\t{mv[0]}\t{mv[1].name}')
-    
-    with open('dex.txt', 'w') as f:
-        f.write('\n'.join(string))
-    
-    # debug print for type spread
-    families = set()
-    for poke in dex[1:]:
-        final = poke
-        while final.evo_target != None:
-            final = final.evo_target
-        
-        if Flags.LEGENDARY in final.flags:
-            pass
-        elif Flags.LEGENDARY_TRIO in final.flags:
-            pass
-        elif Flags.MYTHICAL in final.flags:
-            pass
-        else:
-            families.add(final)
-    
-    combo_spread = defaultdict(lambda: 0)
-    type_spread = defaultdict(lambda: 0)
-    
-    for fam in families:
-        tp = tuple(sorted(fam.types))
-        combo_spread[tp] = combo_spread[tp]+1
-        
-        type_spread[tp[0]] = type_spread[tp[0]]+1
-        
-        if(tp[0] != tp[1]):
-            type_spread[tp[1]] = type_spread[tp[1]]+1
-    
-    for tp in type_weights.keys():
-        print(f'{tp}: {type_spread[tp]}')
-        
-        for combo in combo_spread.keys():
-            if combo[0] != tp and combo[1] != tp:
-                continue
-            print(f'\t{combo_spread[combo]} {"*" if combo[0] == tp else combo[0]}/{"*" if combo[1] == tp else combo[1]}')
-    
-    print()
-    rare_types = []
-    for tp in type_weights.keys():
-        if type_spread[tp] < 5:
-            rare_types.append(f'{tp} ({type_spread[tp]})')
-    print('rare types:', ', '.join(rare_types))
+    dex[sort_start-1:sort_end] = sorting
     
     return dex
 
@@ -1663,13 +1654,13 @@ for line in species_h.split('\n'):
     if m != None:
         index_to_id[m.group(2)] = m.group(1)
 
-def output_to_json(dex):
+def output_to_json(dex, ndex, hdex):
 
     poke_to_id = {}
     for index, poke in enumerate(dex):
         if poke == None:
             continue
-        poke_to_id[poke.name] = index_to_id[str(index)]
+        poke_to_id[poke if type(poke) is str else poke.name] = index_to_id[str(index)]
         
     out = {
         'base_stats.h' : {},
@@ -1681,9 +1672,14 @@ def output_to_json(dex):
         'tutor_learnsets.h' : {},
         'image_colors' : [],
         'encounter_data' : {},
+        'encounter_list_kanto' : [],
+        'encounter_list_kanto_post' : [],
+        'encounter_list_hoenn' : [],
         'moves' : {},
         'teachable_moves' : [],
-        'pokedex_entries.h' : {}
+        'pokedex_entries.h' : {},
+        'national_dex' : ndex,
+        'hoenn_dex' : hdex
     }
     
     ids_to_learnset_pointers = {}
@@ -1703,46 +1699,48 @@ def output_to_json(dex):
         
         # src/data/pokemon/base_stats.h data
         
-        entry = {}
-        
-        entry['baseHP'] = poke.stats[0]
-        entry['baseAttack'] = poke.stats[1]
-        entry['baseDefense'] = poke.stats[2]
-        entry['baseSpeed'] = poke.stats[5]
-        entry['baseSpAttack'] = poke.stats[3]
-        entry['baseSpDefense'] = poke.stats[4]
-        entry['type1'] = poke.types[0]
-        entry['type2'] = poke.types[1]
-        entry['catchRate'] = poke.catch_rate
-        entry['expYield'] = poke.exp_yield
-        entry['evYield_HP'] = poke.ev_yield[0]
-        entry['evYield_Attack'] = poke.ev_yield[1]
-        entry['evYield_Defense'] = poke.ev_yield[2]
-        entry['evYield_Speed'] = poke.ev_yield[5]
-        entry['evYield_SpAttack'] = poke.ev_yield[3]
-        entry['evYield_SpDefense'] = poke.ev_yield[4]
-        entry['item1'] = poke.held_items[0]
-        entry['item2'] = poke.held_items[1]
-        entry['genderRatio'] = poke.gender_ratio
-        entry['eggCycles'] = poke.egg_cycles
-        entry['friendship'] = poke.base_friendship
-        entry['growthRate'] = poke.growth_rate
-        entry['eggGroup1'] = poke.egg_groups[0]
-        entry['eggGroup2'] = poke.egg_groups[1]
-        entry['abilities'] = poke.abilities
-        entry['safariZoneFleeRate'] = poke.flee_rate
-        entry['bodyColor'] = poke.body_color
-        entry['noFlip'] = 'FALSE'
-        entry['__learnset_pointer'] = ids_to_learnset_pointers[identifier]
+        if type(poke) is str:
+            entry = 'OLD_UNOWN'
+        else:
+            entry = {}
+            entry['baseHP'] = poke.stats[0]
+            entry['baseAttack'] = poke.stats[1]
+            entry['baseDefense'] = poke.stats[2]
+            entry['baseSpeed'] = poke.stats[5]
+            entry['baseSpAttack'] = poke.stats[3]
+            entry['baseSpDefense'] = poke.stats[4]
+            entry['type1'] = poke.types[0]
+            entry['type2'] = poke.types[1]
+            entry['catchRate'] = poke.catch_rate
+            entry['expYield'] = poke.exp_yield
+            entry['evYield_HP'] = poke.ev_yield[0]
+            entry['evYield_Attack'] = poke.ev_yield[1]
+            entry['evYield_Defense'] = poke.ev_yield[2]
+            entry['evYield_Speed'] = poke.ev_yield[5]
+            entry['evYield_SpAttack'] = poke.ev_yield[3]
+            entry['evYield_SpDefense'] = poke.ev_yield[4]
+            entry['item1'] = poke.held_items[0]
+            entry['item2'] = poke.held_items[1]
+            entry['genderRatio'] = poke.gender_ratio
+            entry['eggCycles'] = poke.egg_cycles
+            entry['friendship'] = poke.base_friendship
+            entry['growthRate'] = poke.growth_rate
+            entry['eggGroup1'] = poke.egg_groups[0]
+            entry['eggGroup2'] = poke.egg_groups[1]
+            entry['abilities'] = poke.abilities
+            entry['safariZoneFleeRate'] = poke.flee_rate
+            entry['bodyColor'] = poke.body_color
+            entry['noFlip'] = 'FALSE'
+            entry['__learnset_pointer'] = ids_to_learnset_pointers[identifier]
         
         out['base_stats.h'][identifier] = entry
         
         # src/data/pokemon/egg_moves.h data
-        if poke.egg_moves != None:
+        if not type(poke) is str and poke.egg_moves != None:
             out['egg_moves.h'][identifier] = list(poke.egg_moves)
         
         # src/data/pokemon/evolution.h data
-        if poke.evo_target != None:
+        if not type(poke) is str and poke.evo_target != None:
             if type(poke.evo_type) is LevelEvo:
                 out['evolution.h'][identifier] = [['EVO_LEVEL', poke.evo_type.level, poke_to_id[poke.evo_target.name]]]
             elif type(poke.evo_type) is FriendshipEvo:
@@ -1754,39 +1752,59 @@ def output_to_json(dex):
         
         # src/data/pokemon/level_up_learnsets.h data
         learnset = []
-        for lvl, mv in poke.learnset:
-            learnset.append([lvl, mv.name])
+        if type(poke) is str:
+            learnset.append([1, 'TACKLE'])
+        else:
+            for lvl, mv in poke.learnset:
+                learnset.append([lvl, mv.name])
         out['level_up_learnsets.h'][ids_to_learnset_pointers[identifier]] = learnset
         
-        # src/data/pokemon/tmhm_learnsets.h data
-        out['tmhm_learnsets.h'][identifier] = list(poke.tms)
-        
-        # src/data/pokemon/tutor_learnsets.h data
-        out['tutor_learnsets.h'][identifier] = list(poke.tutor_moves)
+        if not type(poke) is str:
+            # src/data/pokemon/tmhm_learnsets.h data
+            out['tmhm_learnsets.h'][identifier] = list(poke.tms)
+            
+            # src/data/pokemon/tutor_learnsets.h data
+            out['tutor_learnsets.h'][identifier] = list(poke.tutor_moves)
         
         # data for randomizing wild encounters
-        if not (Flags.LEGENDARY in poke.flags or Flags.MYTHICAL in poke.flags or Flags.LEGENDARY_TRIO in poke.flags or Flags.FIRE_STARTER in poke.flags or Flags.WATER_STARTER in poke.flags or Flags.GRASS_STARTER in poke.flags):
+        if not type(poke) is str and not (Flags.LEGENDARY in poke.flags or Flags.MYTHICAL in poke.flags or Flags.LEGENDARY_TRIO in poke.flags or Flags.FIRE_STARTER in poke.flags or Flags.WATER_STARTER in poke.flags or Flags.GRASS_STARTER in poke.flags):
+            
             out['encounter_data'][identifier] = {
-                'types' : poke.types,
-                'egg_groups' : poke.egg_groups,
-                'bst' : poke.bst
-            }
+                    'types' : poke.types,
+                    'egg_groups' : poke.egg_groups,
+                    'bst' : poke.bst
+                }
+            
+            if ndex.index(identifier) <= 151: # mon in kanto dex
+                out['encounter_list_kanto'].append(identifier)
+            
+            if ndex.index(identifier) <= 251: # mon in kanto or johto dex
+                out['encounter_list_kanto_post'].append(identifier)
+            
+            if hdex.index(identifier) <= 202: # mon in hoenn dex
+                out['encounter_list_hoenn'].append(identifier)
         
     # src/data/text_species_names.h data
     for index, poke in enumerate(dex):
         if poke == None:
             continue
-        out['species_names.h'].append(poke.name.upper())
+        if type(poke) is str:
+            out['species_names.h'].append('?')
+        else:
+            out['species_names.h'].append(poke.name.upper())
     
     # image colors
     for index, poke in enumerate(dex):
         if poke == None:
             continue
-        out['image_colors'].append(poke.image_colors)
+        if type(poke) is str:
+            out['image_colors'].append('OLD_UNOWN')
+        else:
+            out['image_colors'].append(poke.image_colors)
     
     # src/data/pokemon/pokedex_entries.h data
     for index, poke in enumerate(dex):
-        if poke == None:
+        if poke == None or type(poke) is str:
             continue
         dex_entry = {}
         dex_entry['categoryName'] = poke.category
@@ -1814,7 +1832,7 @@ def output_to_json(dex):
     # strategy for trainer generation
     out['strategy'] = {}
     for index, poke in enumerate(dex):
-        if poke == None:
+        if poke == None or type(poke) is str:
             continue
         
         strat = {}
@@ -1850,5 +1868,196 @@ def output_to_json(dex):
     
     with open('dex.json', 'w') as f:
         f.write(json.dumps(out, indent=2, sort_keys=False))
-dex = debug_gen_dex()
-output_to_json(dex)
+
+def output_dex_txt(dex):
+    string = []
+    
+    for i in range(1, len(dex)):
+        poke = dex[i]
+        if type(poke) is str:
+            string.append(f'{i}: {poke}')
+            continue
+        string.append(f'{i}: {poke.name.ljust(15)}\t{str(poke.types).ljust(30)}\t{poke.abilities}\t({index_to_id[str(i)]})')
+        string.append(f'\t{poke.name_start} + {poke.name_end}, {poke.themes}')
+        string.append(f'\tstats: {poke.stats}, bst: {sum(poke.stats)}')
+        string.append(f'\tcatch rate: {poke.catch_rate}, gender ratio: {poke.gender_ratio}, base friendship: {poke.base_friendship}, flee rate: {poke.flee_rate}')
+        string.append(f'\tegg groups: {poke.egg_groups}, egg cycles: {poke.egg_cycles}, growth rate: {poke.growth_rate}')
+        string.append(f'\texp yield: {poke.exp_yield}, ev yield: {poke.ev_yield}, held items: {poke.held_items}')
+        string.append(f'\tbody color: {poke.body_color}, category: {poke.category}, weight: {poke.weight/10} kg, height: {poke.height/10} m')
+        string.append(f'\ttms: {poke.tms}')
+        string.append(f'\ttutor moves: {poke.tutor_moves}')
+        if poke.egg_moves != None:
+            string.append(f'\tegg moves: {poke.egg_moves}')
+        #print(f'\tflags: {poke.flags}')
+        if poke.evo_target != None:
+            string.append(f'\tevolves into {poke.evo_target.name} with {poke.evo_type}'),
+        for mv in poke.learnset:
+            string.append(f'\t{mv[0]}\t{mv[1].name}')
+    
+    with open('dex.txt', 'w') as f:
+        f.write('\n'.join(string))
+
+def print_type_spread(dex):
+    # debug print for type spread
+    families = set()
+    for poke in dex[1:]:
+        if type(poke) is str:
+            continue
+        final = poke
+        while final.evo_target != None:
+            final = final.evo_target
+        
+        if Flags.LEGENDARY in final.flags:
+            pass
+        elif Flags.LEGENDARY_TRIO in final.flags:
+            pass
+        elif Flags.MYTHICAL in final.flags:
+            pass
+        else:
+            families.add(final)
+    
+    combo_spread = defaultdict(lambda: 0)
+    type_spread = defaultdict(lambda: 0)
+    
+    for fam in families:
+        tp = tuple(sorted(fam.types))
+        combo_spread[tp] = combo_spread[tp]+1
+        
+        type_spread[tp[0]] = type_spread[tp[0]]+1
+        
+        if(tp[0] != tp[1]):
+            type_spread[tp[1]] = type_spread[tp[1]]+1
+    
+    for tp in type_weights.keys():
+        #print(f'{tp}: {type_spread[tp]}')
+        
+        for combo in combo_spread.keys():
+            if combo[0] != tp and combo[1] != tp:
+                continue
+            #print(f'\t{combo_spread[combo]} {"*" if combo[0] == tp else combo[0]}/{"*" if combo[1] == tp else combo[1]}')
+    
+    #print(', '.join(tp + ': ' + str(type_spread[tp]) for tp in type_spread.keys()))
+    rare_types = []
+    for tp in type_weights.keys():
+        if type_spread[tp] < 5:
+            rare_types.append(f'{tp} ({type_spread[tp]})')
+    print('rare types:', ', '.join(rare_types))
+
+"""
+Returns the tuple (ndex, hdex), containing all
+the Pokémon in National Dex and Hoenn Dex orders.
+"""
+def generate_dex_orders(dex):
+    original = {}
+    for i,pk in enumerate(dex):
+        original[pk] = index_to_id[str(i)]
+    original['NONE'] = 'NONE'
+    
+    chimecho = dex[-1]
+    sorting_hdex = dex[286:395]
+    sorting_hdex.append(chimecho)
+    
+    hdex_start = dex[277:286]
+    hdex_end = dex[395:411]
+    
+    old_families = []
+    bad_flags = (Flags.GRASS_STARTER, Flags.FIRE_STARTER, Flags.WATER_STARTER, Flags.MYTHICAL, Flags.LEGENDARY, Flags.LEGENDARY_TRIO)
+    for poke in dex[1:251]:
+        if poke.previous_stage == None:
+            has_bad_flag = False
+            for bf in bad_flags:
+                if bf in poke.flags:
+                    has_bad_flag = True
+            
+            if has_bad_flag:
+                continue
+            
+            family = [ poke ]
+            while poke.evo_target != None:
+                poke = poke.evo_target
+                family.append(poke)
+            
+            old_families.append(family)
+    
+    pk_of_tp = defaultdict(lambda: list())
+    for pk in sorting_hdex:
+        tp = tuple(sorted(pk.types))
+        pk_of_tp[tp[0]].append(tp)
+        if tp[0] != tp[1]:
+            pk_of_tp[tp[1]].append(tp)
+    
+    prelength = len(hdex_start) + len(hdex_end)
+    while True:
+        family = random.choice(old_families)
+        
+        if len(sorting_hdex) + prelength + len(family) > 202:
+            continue
+        
+        tp = tuple(sorted(family[-1].types))
+        if len(pk_of_tp[tp[0]]) >= 10 or len(pk_of_tp[tp[1]]) >= 10:
+            if (len(pk_of_tp[tp[0]]) >= 6 and len(pk_of_tp[tp[1]]) >= 6) and random.random() > 0.33:
+                continue
+        
+        pk_of_tp[tp[0]].append(tp)
+        if tp[0] != tp[1]:
+            pk_of_tp[tp[1]].append(tp)
+        
+        old_families.remove(family)
+        sorting_hdex.extend(family)
+        
+        if len(sorting_hdex) + prelength == 202:
+            break
+    
+    sorting_hdex.sort(key=lambda pk: dex_sort_key(pk))
+    
+    hdex = [ 'NONE' ]
+    hdex.extend(hdex_start)
+    hdex.extend(sorting_hdex)
+    hdex.extend(hdex_end)
+    
+    print('Hoenn dex type spread:')
+    print_type_spread(hdex)
+    
+    for pk in dex[1:]:
+        if type(pk) is str:
+            continue
+        if pk not in hdex:
+            hdex.append(pk)
+    
+    ndex = dex[0:252]
+    
+    for hpk in hdex[1:]:
+        if not hpk in ndex:
+            ndex.append(hpk)
+    
+    # convert to names of original pokemon
+    for i,pk in enumerate(ndex):
+        ndex[i] = original[pk]
+    
+    for i,pk in enumerate(hdex):
+        hdex[i] = original[pk]
+    
+    return (ndex, hdex)
+
+dex = [None]
+
+# kanto dex
+dex.extend(kanto_mons := gen_dex(1, 151, sort_start=10, sort_end=137))
+
+# TODO experimental, johto dex
+dex.extend(johto_mons := gen_dex(152, 251, sort_start=161, sort_end=246))
+
+# old unown incides
+dex.extend(['OLD_UNOWN'] * 25)
+
+# TODO experimental, hoenn dex
+dex.extend(hoenn_mons := gen_dex(277, 411)) # note: no need to sort because that is done seperately for the pokedex order
+
+output_dex_txt(dex)
+
+print('Kanto dex type spread:')
+print_type_spread(kanto_mons)
+
+ndex, hdex = generate_dex_orders(dex)
+
+output_to_json(dex, ndex, hdex)

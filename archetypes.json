@@ -249,7 +249,7 @@
         "SKILL_SWAP" : -20,
         "IMPRISON" : -20,
         "REFRESH" : 20,
-        "GRUDGE" : -10,
+        "GRUDGE" : 10,
         "SNATCH" : 0,
         "SECRET_POWER" : 10,
         "CAMOUFLAGE" : 10,
@@ -314,7 +314,9 @@
         [ "KNOCK_OFF", "PURSUIT" ],
         [ "FLAIL", "REVERSAL" ],
         [ "SMOG", "ACID" ],
-        [ "MUD_SPORT", "WATER_SPORT" ]
+        [ "MUD_SPORT", "WATER_SPORT" ],
+        [ "RAZOR_LEAF", "MAGICAL_LEAF" ],
+        [ "WING_ATTACK", "AERIAL_ACE" ]
     ],
     
     "tm_list" : [
@@ -1186,7 +1188,7 @@
             "abilities" : [ "EFFECT_SPORE" ],
             "special_common_held_items" : [ "TINY_MUSHROOM" ], 
             "special_rare_held_items" : [ "BIG_MUSHROOM" ],
-            "namestrings" : [ "growth", "mushroom", "fungus", "yeast", "mold", "slime", "ferment", "truffle", "mycelium", "decay", "spore" ]
+            "namestrings" : [ "growth", "mushroom", "fungus", "yeast", "mold", "slime", "ferment", "truffle", "mycelium", "decay", "spore", "toadstool", "stem", "cap", "shiitake", "amanita" ]
         },
         
         "bird_general" : {

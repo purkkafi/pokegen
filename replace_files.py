@@ -21,6 +21,22 @@ class MonContext(Enum):
 with open('dex.json') as f:
     dex = json.load(f)
 
+def generate_species_h():
+    with open('templates/species.h_template') as f:
+        template = f.read()
+    
+    ndex_list = '\n'.join(f'#define NATIONAL_DEX_{pk} {i}' for i, pk in enumerate(dex['national_dex']))
+    
+    hdex_list = '\n'.join(f'#define HOENN_DEX_{pk} {i}' for i, pk in enumerate(dex['hoenn_dex']))
+    
+    template = template.replace('[!NATIONAL_DEX_ORDER!]', ndex_list)
+    template = template.replace('[!HOENN_DEX_ORDER!]', hdex_list)
+    
+    with open(pokered_folder + '/include/constants/species.h', 'w') as f:
+        f.write(template)
+    
+    print('wrote /include/constants/species.h')
+
 def generate_base_stats_h():
     with open('templates/base_stats.h_template') as f:
         template = f.read()
@@ -39,40 +55,43 @@ def generate_base_stats_h():
         
         if m != None and m.group(1) in data:
             current_poke = m.group(1)
-            output.append(line)
-            output.append('    {')
-            
             pkmn = data[current_poke]
             
-            output.append(
+            if pkmn == 'OLD_UNOWN':
+                output.append(line)
+            else:
+                output.append(line)
+                output.append('    {')
+                
+                output.append(
 f"""        .baseHP = {pkmn['baseHP']},
-        .baseAttack = {pkmn['baseAttack']},
-        .baseDefense = {pkmn['baseDefense']},
-        .baseSpeed = {pkmn['baseSpeed']},
-        .baseSpAttack = {pkmn['baseSpAttack']},
-        .baseSpDefense = {pkmn['baseSpDefense']},
-        .type1 = TYPE_{pkmn['type1']},
-        .type2 = TYPE_{pkmn['type2']},
-        .catchRate = {pkmn['catchRate']},
-        .expYield = {pkmn['expYield']},
-        .evYield_HP = {pkmn['evYield_HP']},
-        .evYield_Attack = {pkmn['evYield_Attack']},
-        .evYield_Defense = {pkmn['evYield_Defense']},
-        .evYield_Speed = {pkmn['evYield_Speed']},
-        .evYield_SpAttack = {pkmn['evYield_SpAttack']},
-        .evYield_SpDefense = {pkmn['evYield_SpDefense']},
-        .item1 = ITEM_{pkmn['item1']},
-        .item2 = ITEM_{pkmn['item2']},
-        .genderRatio = {pkmn['genderRatio']},
-        .eggCycles = {pkmn['eggCycles']},
-        .friendship = {pkmn['friendship']},
-        .growthRate = GROWTH_{pkmn['growthRate']},
-        .eggGroup1 = EGG_GROUP_{pkmn['eggGroup1']},
-        .eggGroup2 = EGG_GROUP_{pkmn['eggGroup2']},
-        .abilities = {{ ABILITY_{pkmn['abilities'][0]}, ABILITY_{pkmn['abilities'][1]} }},
-        .safariZoneFleeRate = {pkmn['safariZoneFleeRate']},
-        .bodyColor = BODY_COLOR_{pkmn['bodyColor']},
-        .noFlip = TRUE,""")
+            .baseAttack = {pkmn['baseAttack']},
+            .baseDefense = {pkmn['baseDefense']},
+            .baseSpeed = {pkmn['baseSpeed']},
+            .baseSpAttack = {pkmn['baseSpAttack']},
+            .baseSpDefense = {pkmn['baseSpDefense']},
+            .type1 = TYPE_{pkmn['type1']},
+            .type2 = TYPE_{pkmn['type2']},
+            .catchRate = {pkmn['catchRate']},
+            .expYield = {pkmn['expYield']},
+            .evYield_HP = {pkmn['evYield_HP']},
+            .evYield_Attack = {pkmn['evYield_Attack']},
+            .evYield_Defense = {pkmn['evYield_Defense']},
+            .evYield_Speed = {pkmn['evYield_Speed']},
+            .evYield_SpAttack = {pkmn['evYield_SpAttack']},
+            .evYield_SpDefense = {pkmn['evYield_SpDefense']},
+            .item1 = ITEM_{pkmn['item1']},
+            .item2 = ITEM_{pkmn['item2']},
+            .genderRatio = {pkmn['genderRatio']},
+            .eggCycles = {pkmn['eggCycles']},
+            .friendship = {pkmn['friendship']},
+            .growthRate = GROWTH_{pkmn['growthRate']},
+            .eggGroup1 = EGG_GROUP_{pkmn['eggGroup1']},
+            .eggGroup2 = EGG_GROUP_{pkmn['eggGroup2']},
+            .abilities = {{ ABILITY_{pkmn['abilities'][0]}, ABILITY_{pkmn['abilities'][1]} }},
+            .safariZoneFleeRate = {pkmn['safariZoneFleeRate']},
+            .bodyColor = BODY_COLOR_{pkmn['bodyColor']},
+            .noFlip = TRUE,""")
         
         if poke_end.search(line) != None:
             current_poke = None
@@ -138,8 +157,12 @@ def generate_pokemon_h():
         if '_Egg[]' in line:
             m_front = m_palette = m_icon = None
         
-        if m_palette != None and index <= 151:
+        if m_palette != None and index <= len(colors):
             palette_file = f'{pokered_folder}{m_palette.group(1)}normal.pal'
+            
+            while colors[index-1] == 'OLD_UNOWN':
+                index = index+1
+            
             color0 = colors[index-1][0]
             color255 = colors[index-1][1]
             
@@ -158,10 +181,17 @@ def generate_pokemon_h():
                 f.write(str.encode(palette.replace('\n', '\r\n')))
         
         if m_front != None:
-            output.append(f'const u32 {m_front.group(1)} = INCBIN_U32("graphics/pokemon/question_mark/circled/front.4bpp.lz");')
+            if 'Deoxys' in m_front.group(1): # TODO hack, deoxys needs a special sprite file, should make one
+                output.append(line)
+            else:
+                output.append(f'const u32 {m_front.group(1)} = INCBIN_U32("graphics/pokemon/question_mark/circled/front.4bpp.lz");')
         elif m_back != None:
-            output.append(f'const u32 {m_back.group(1)} = INCBIN_U32("graphics/pokemon/question_mark/circled/back.4bpp.lz");')
+            if 'Deoxys' in m_back.group(1):
+                output.append(line)
+            else:
+                output.append(f'const u32 {m_back.group(1)} = INCBIN_U32("graphics/pokemon/question_mark/circled/back.4bpp.lz");')
         elif m_icon != None:
+            print(m_icon.group(1))
             output.append(f'const u8 {m_icon.group(1)} = INCBIN_U8("graphics/pokemon/question_mark/icon.4bpp");')
         else:
             output.append(line)
@@ -304,8 +334,7 @@ def generate_pokedex_entries_h():
     
     with open(pokered_folder + 'src/data/pokemon/pokedex_entries.h', 'w') as f:
         f.write('\n'.join(output))
-    print('wrote src/data/pokemon/pokedex_entries.h')
-
+    print('wrote /src/data/pokemon/pokedex_entries.h')
 
 def generate_pokedex_text_fr_h():
     with open('templates/pokedex_text_fr.h_template') as f:
@@ -320,7 +349,7 @@ def generate_pokedex_text_fr_h():
     
     with open(pokered_folder + 'src/data/pokemon/pokedex_text_fr.h', 'w') as f:
         f.write(output)
-    print('wrote src/data/pokemon/pokedex_text_fr.h')
+    print('wrote /src/data/pokemon/pokedex_text_fr.h')
 
 def evo_string(evo):
     if evo[0] == 'EVO_LEVEL':
@@ -396,13 +425,13 @@ def generate_sprite_position_files():
             f.write(t.read())
     print('wrote src/data/pokemon_graphics/front_pic_coordinates.h')
 
-def filter_mons(of_types, of_egg_groups, max_lvl, ctxt=MonContext.UNKNOWN):
+def filter_mons(mon_list, of_types, of_egg_groups, max_lvl, ctxt=MonContext.UNKNOWN):
     choices = []
     
     if of_types == None and of_egg_groups == None:
-        choices.extend(dex['encounter_data'].keys())
+        choices.extend(mon_list)
     else:
-        for poke_name in dex['encounter_data'].keys():
+        for poke_name in mon_list:
             poke = dex['encounter_data'][poke_name]
             if poke['types'][0] in of_types or poke['types'][1] in of_types or poke['egg_groups'][0] in of_egg_groups or poke['egg_groups'][1] in of_egg_groups:
                 choices.append(poke_name)
@@ -501,15 +530,15 @@ def adjust_evo(mon, min_lvl, max_lvl=None, ctxt=None):
     return mon
 
 
-def assign_wild_mons(types, egg_groups, wild_mons):
+def assign_wild_mons(mon_list, types, egg_groups, wild_mons):
     max_lvl = max([ mon['max_level'] for mon in wild_mons['mons'] ])
 
-    mons = filter_mons(types, egg_groups, max_lvl)
+    mons = filter_mons(mon_list, types, egg_groups, max_lvl)
 
     for mon in wild_mons['mons']:
         mon['species'] = 'SPECIES_' + adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'], ctxt=MonContext.WILD)
 
-def try_generate_wild_encounters():
+def try_generate_wild_encounters(mon_list):
     with open('templates/wild_encounters.json_template') as f:
         encs = json.load(f)
     
@@ -524,25 +553,25 @@ def try_generate_wild_encounters():
             types = enc_data[map_name]['types']
             egg_groups = enc_data[map_name]['egg_groups']
             
-            assign_wild_mons(types, egg_groups, entry['land_mons'])
+            assign_wild_mons(mon_list, types, egg_groups, entry['land_mons'])
             
         if 'water_mons' in entry:
             types = enc_data['SPECIAL_SURFING']['types']
             egg_groups = enc_data['SPECIAL_SURFING']['egg_groups']
             
-            assign_wild_mons(types, egg_groups, entry['water_mons'])
+            assign_wild_mons(mon_list, types, egg_groups, entry['water_mons'])
         
         if 'fishing_mons' in entry:
             types = enc_data['SPECIAL_FISHING']['types']
             egg_groups = enc_data['SPECIAL_FISHING']['egg_groups']
             
-            assign_wild_mons(types, egg_groups, entry['fishing_mons'])
+            assign_wild_mons(mon_list, types, egg_groups, entry['fishing_mons'])
         
         if 'rock_smash_mons' in entry:
             types = enc_data['SPECIAL_ROCK_SMASH']['types']
             egg_groups = enc_data['SPECIAL_ROCK_SMASH']['egg_groups']
             
-            assign_wild_mons(types, egg_groups, entry['rock_smash_mons'])
+            assign_wild_mons(mon_list, types, egg_groups, entry['rock_smash_mons'])
     
     return encs
 
@@ -565,8 +594,8 @@ def pick_rare_pkmn(unavailable_families, available_families, req_type=None):
             sel = random.choice(available_families)
         return sel
 
-def generate_wild_encounters():
-    encs = try_generate_wild_encounters()
+def generate_wild_encounters(mon_list):
+    encs = try_generate_wild_encounters(mon_list)
     
     spawns = set()
     
@@ -590,7 +619,7 @@ def generate_wild_encounters():
     unavailable_families = set()
     
     for poke in dex['base_stats.h'].keys():
-        if base_form(poke) in special_families:
+        if base_form(poke) in special_families or poke not in mon_list:
             continue
         
         if f'SPECIES_{poke}' in spawns:
@@ -655,6 +684,15 @@ def generate_wild_encounters():
             tmp = tmp.replace('SPECIES_SUICUNE', 'SPECIES_MEW')
         f.write(tmp)
         print('wrote /src/roamer.c')
+    
+    # change roamer visible in pokedex
+    with open(pokered_folder + 'src/wild_pokemon_area.c', 'w') as f:
+        with open ('templates/wild_pokemon_area.c_template') as t:
+            tmp = t.read().replace('SPECIES_ENTEI', 'SPECIES_MEW')
+            tmp = tmp.replace('SPECIES_RAIKOU', 'SPECIES_MEW')
+            tmp = tmp.replace('SPECIES_SUICUNE', 'SPECIES_MEW')
+        f.write(tmp)
+        print('wrote src/wild/pokemon/area.c')
     
     # replace game corner prizes
     with open(pokered_folder + 'data/maps/CeladonCity_GameCorner_PrizeRoom/scripts.inc', 'w') as f:
@@ -876,25 +914,25 @@ def pick_good_non_damaging(species, moves, role, category, already_chosen=[]):
         return None
     return random.choice(nondamaging)
 
-def generate_rival_teams():
+def generate_rival_teams(mon_list):
     global grass_team
     global fire_team
     global water_team
-    bird = base_form(random.choice(filter_mons(['FLYING'], [], 10)))
+    bird = base_form(random.choice(filter_mons(mon_list, ['FLYING'], [], 10)))
     
-    grass_mon = base_form(random.choice(filter_mons(['GRASS'], [], 50)))
-    water_mon = base_form(random.choice(filter_mons(['WATER'], [], 50)))
-    fire_mon = base_form(random.choice(filter_mons(['FIRE'], [], 50)))
+    grass_mon = base_form(random.choice(filter_mons(mon_list, ['GRASS'], [], 50)))
+    water_mon = base_form(random.choice(filter_mons(mon_list, ['WATER'], [], 50)))
+    fire_mon = base_form(random.choice(filter_mons(mon_list, ['FIRE'], [], 50)))
     
-    psy_mon = base_form(random.choice(filter_mons(['PSYCHIC'], [], 50)))
-    rock_mon = base_form(random.choice(filter_mons(['ROCK'], [], 50)))
+    psy_mon = base_form(random.choice(filter_mons(mon_list, ['PSYCHIC'], [], 50)))
+    rock_mon = base_form(random.choice(filter_mons(mon_list, ['ROCK'], [], 50)))
     
     grass_team = [ rock_mon, water_mon, fire_mon,  psy_mon, bird, 'BULBASAUR' ]
     fire_team =  [ rock_mon, grass_mon, water_mon, psy_mon, bird, 'CHARMANDER' ]
     water_team = [ rock_mon, fire_mon,  grass_mon, psy_mon, bird, 'SQUIRTLE' ]
     
     if len(grass_team) != len(set(grass_team)) or len(fire_team) != len(set(fire_team)) or len(water_team) != len(set(water_team)):
-        generate_rival_teams()
+        generate_rival_teams(mon_list)
 
 defensive_items = [ 'ITEM_BRIGHT_POWDER', 'ITEM_FOCUS_BAND', 'ITEM_LEFTOVERS', 'ITEM_LUM_BERRY', 'ITEM_SITRUS_BERRY', 'ITEM_WHITE_HERB' ]
 physical_offensive_items = [ 'ITEM_KINGS_ROCK', 'ITEM_QUICK_CLAW', 'ITEM_SALAC_BERRY', 'ITEM_SCOPE_LENS', 'ITEM_LIECHI_BERRY' ]
@@ -902,7 +940,7 @@ special_offensive_items = [ 'ITEM_KINGS_ROCK', 'ITEM_QUICK_CLAW', 'ITEM_SALAC_BE
 
 type_items = {
     'FIGHTING' : 'ITEM_BLACK_BELT',
-    'DARK' : 'ITEM_BLACKGLASSES',
+    'DARK' : 'ITEM_BLACK_GLASSES',
     'FIRE' : 'ITEM_CHARCOAL',
     'DRAGON' : 'ITEM_DRAGON_FANG',
     'ROCK' : 'ITEM_HARD_STONE',
@@ -920,7 +958,7 @@ type_items = {
     'PSYCHIC' : 'ITEM_TWISTED_SPOON'
 }
 
-def generate_trainers():
+def generate_trainers(mon_list):
     global grass_team
     global fire_team
     global water_team
@@ -990,14 +1028,14 @@ def generate_trainers():
         if m_sp != None and current_trainer != None:
             if current_trainer['class'] in class_data['special_classes']:
                 if current_trainer['name'] in class_data['special_type_preference']:
-                    mons = filter_mons(class_data['special_type_preference'][current_trainer['name']], [], current_level+15, ctxt=MonContext.BOSS)
+                    mons = filter_mons(mon_list, class_data['special_type_preference'][current_trainer['name']], [], current_level+15, ctxt=MonContext.BOSS)
                     #print('for', current_trainer['name'], mons, 'dupes:', dupes)
                     for mon in list(mons):
                         if base_form(mon) in dupes:
                             mons.remove(mon)
                             #print("won't dupe", mon)
                     if len(mons) == 0:
-                        mons = filter_mons(class_data['special_type_preference'][current_trainer['name']], [], current_level+15, ctxt=MonContext.BOSS)
+                        mons = filter_mons(mon_list, class_data['special_type_preference'][current_trainer['name']], [], current_level+15, ctxt=MonContext.BOSS)
                 elif current_trainer['name'] == 'TERRY':
                     if current_trainer['id'].startswith('sTrainerMons_RivalOaksLab'):
                         offset = 5
@@ -1023,11 +1061,11 @@ def generate_trainers():
                         
             elif current_trainer['name'] in class_data['gym_trainers'].keys():
                 gym_trainer_type = class_data['gym_trainers'][current_trainer['name']]
-                mons = filter_mons(gym_trainer_type, [], current_level)
+                mons = filter_mons(mon_list, gym_trainer_type, [], current_level)
                 
             else:
                 tr_class = class_data['classes'][current_trainer['class']]
-                mons = filter_mons(tr_class['types'], tr_class['egg_groups'], current_level)
+                mons = filter_mons(mon_list, tr_class['types'], tr_class['egg_groups'], current_level)
             
             is_boss = current_trainer['class'] in class_data['special_classes']    
             mon = adjust_evo(random.choice(mons), current_level, ctxt=(MonContext.BOSS if is_boss else MonContext.TRAINER))
@@ -1068,18 +1106,22 @@ def generate_trainers():
         f.write('\n'.join(parties_h_out))
     print('wrote /src/data/trainer_parties.h')
     
+generate_species_h()
 generate_base_stats_h()
 generate_names_h()
 generate_pokemon_h()
 generate_egg_moves_h()
 generate_tmhm_learnsets_h()
 generate_tutor_learnsets_h()
-generate_evolution_h()
-generate_level_up_learnsets_h()
-generate_wild_encounters()
 generate_pokedex_entries_h()
 generate_pokedex_text_fr_h()
+generate_evolution_h()
+generate_level_up_learnsets_h()
 generate_sprite_position_files()
+
+mon_list = dex['encounter_list_kanto']
+
+generate_wild_encounters(mon_list)
 
 # hack: remove shitty moves/moves the AI can't really use before generating trainers
 dex['teachable_moves'].remove('SUNNY_DAY')
@@ -1099,7 +1141,7 @@ dex['teachable_moves'].remove('MIMIC')
 dex['teachable_moves'].remove('SNATCH')
 dex['teachable_moves'].remove('HIDDEN_POWER')
 
-generate_rival_teams()
+generate_rival_teams(mon_list)
 
 # hack: make enemies able to use starters even though they don't spawn in the wild
 for starter in [ 'BULBASAUR', 'IVYSAUR', 'VENUSAUR', 'CHARMANDER', 'CHARMELEON', 'CHARIZARD', 'SQUIRTLE', 'WARTORTLE', 'BLASTOISE' ]:
@@ -1110,4 +1152,4 @@ for starter in [ 'BULBASAUR', 'IVYSAUR', 'VENUSAUR', 'CHARMANDER', 'CHARMELEON',
         'bst' : (sdata['baseHP'] + sdata['baseAttack'] + sdata['baseDefense'] + sdata['baseSpeed'] + sdata['baseSpAttack'] + sdata['baseSpDefense'])
     }
 
-generate_trainers()
+generate_trainers(mon_list)
