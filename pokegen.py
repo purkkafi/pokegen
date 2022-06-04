@@ -169,6 +169,39 @@ def sort_move_list(ls):
 
 move_data = read_move_data()
 
+class Habitat(Enum):
+    LAND = auto()
+    FOREST = auto()
+    LAKE = auto()
+    SHORE = auto()
+    OCEAN = auto()
+    SEAFLOOR = auto()
+    CAVE = auto()
+    CRAGGY = auto()
+    MOUNTAIN = auto()
+    URBAN = auto()
+    DESERT = auto()
+    
+    def __repr__(self):
+        return self.name
+
+class Motif(Enum):
+    DRAGONIC = auto()
+    MYSTICAL = auto()
+    POLLUTION = auto()
+    UNDEAD = auto()
+    ELECTRICAL = auto()
+    VOLCANIC = auto()
+    COLD = auto()
+    FUNGAL = auto()
+    ANIMAL = auto()
+    CREATURE = auto()
+    EARTHY = auto()
+    PLANT = auto()
+    
+    def __repr__(self):
+        return self.name
+
 class Pokemon:
 
     def __init__(self, bst_range = (0, 0), flags=set()):
@@ -197,6 +230,8 @@ class Pokemon:
         self.category = None
         self.weight = None
         self.height = None
+        self.habitats = None
+        self.motifs = None
     
     def __repr__(self):
         return f'[{self.name}]'
@@ -248,6 +283,7 @@ class Pokemon:
         self.generate_egg_moves()
         self.generate_image_colors()
         self.generate_dex_data()
+        self.generate_habitats_and_motifs()
     
     def evolve(self, bst_increase = 0):
         next_stage = Pokemon()
@@ -300,6 +336,7 @@ class Pokemon:
         next_stage.generate_tms()
         next_stage.generate_image_colors()
         next_stage.generate_dex_data()
+        next_stage.generate_habitats_and_motifs()
         
         if Flags.LAST_EVOLVABLE_STAGE in self.flags:
             next_stage.flags.remove(Flags.LAST_EVOLVABLE_STAGE)
@@ -1247,6 +1284,37 @@ class Pokemon:
             self.previous_stage.height = hs[1]
             self.height = hs[2]
 
+    def generate_habitats_and_motifs(self):
+        if self.previous_stage != None:
+            self.habitats = self.previous_stage.habitats
+            self.motifs = self.previous_stage.motifs
+            return
+        
+        habitats = defaultdict(lambda: 0)
+        motifs = defaultdict(lambda: 0)
+        
+        for theme in self.themes:
+            if 'habitat' in themedata[theme]:
+                for hb in themedata[theme]['habitat']:
+                    hb = Habitat[hb.upper()]
+                    habitats[hb] = habitats[hb] + 1
+        
+        for theme in self.themes:
+            if 'motif' in themedata[theme]:
+                for mf in themedata[theme]['motif']:
+                    mf = Motif[mf.upper()]
+                    motifs[mf] = motifs[mf] + 1
+        
+        chosen_habitats = list(habitats.keys())
+        random.shuffle(chosen_habitats)
+        chosen_habitats.sort(key=lambda h: -habitats[h])
+        self.habitats = chosen_habitats[0:random.randint(2,3)]
+        
+        chosen_motifs = list(motifs.keys())
+        random.shuffle(chosen_motifs)
+        chosen_motifs.sort(key=lambda m: -motifs[m])
+        self.motifs = chosen_motifs[0:random.randint(2,3)]
+
 DEX_COLORS = {
     'RED'    : [ 240, 88,  104 ],
     'BLUE'   : [ 48,  136, 240 ],
@@ -1767,13 +1835,18 @@ def output_to_json(dex, ndex, hdex):
             out['tutor_learnsets.h'][identifier] = list(poke.tutor_moves)
         
         # data for randomizing wild encounters
-        if not type(poke) is str and not (Flags.LEGENDARY in poke.flags or Flags.MYTHICAL in poke.flags or Flags.LEGENDARY_TRIO in poke.flags or Flags.FIRE_STARTER in poke.flags or Flags.WATER_STARTER in poke.flags or Flags.GRASS_STARTER in poke.flags):
+        if not type(poke) is str:
             
             out['encounter_data'][identifier] = {
+                    'habitats' : [h.name for h in poke.habitats],
+                    'motifs' : [m.name for m in poke.motifs],
+                    'bst' : poke.bst,
                     'types' : poke.types,
-                    'egg_groups' : poke.egg_groups,
-                    'bst' : poke.bst
+                    'egg_groups' : poke.egg_groups
                 }
+            
+            if (Flags.LEGENDARY in poke.flags or Flags.MYTHICAL in poke.flags or Flags.LEGENDARY_TRIO in poke.flags or Flags.FIRE_STARTER in poke.flags or Flags.WATER_STARTER in poke.flags or Flags.GRASS_STARTER in poke.flags):
+                continue
             
             if ndex.index(identifier) <= 151: # mon in kanto dex
                 out['encounter_list_kanto'].append(identifier)
@@ -1881,6 +1954,7 @@ def output_dex_txt(dex):
         string.append(f'\t{poke.name_start} + {poke.name_end}, {poke.themes}')
         string.append(f'\tstats: {poke.stats}, bst: {sum(poke.stats)}')
         string.append(f'\tcatch rate: {poke.catch_rate}, gender ratio: {poke.gender_ratio}, base friendship: {poke.base_friendship}, flee rate: {poke.flee_rate}')
+        string.append(f'\thabitats: {poke.habitats}, motifs: {poke.motifs}')
         string.append(f'\tegg groups: {poke.egg_groups}, egg cycles: {poke.egg_cycles}, growth rate: {poke.growth_rate}')
         string.append(f'\texp yield: {poke.exp_yield}, ev yield: {poke.ev_yield}, held items: {poke.held_items}')
         string.append(f'\tbody color: {poke.body_color}, category: {poke.category}, weight: {poke.weight/10} kg, height: {poke.height/10} m')

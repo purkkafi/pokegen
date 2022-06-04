@@ -5,6 +5,7 @@ import json
 import sys
 import random
 from enum import Enum, auto
+from collections import defaultdict, OrderedDict
 
 if(len(sys.argv) != 2):
     print('usage: replace_files.py [path to pokefirered folder]')
@@ -191,7 +192,6 @@ def generate_pokemon_h():
             else:
                 output.append(f'const u32 {m_back.group(1)} = INCBIN_U32("graphics/pokemon/question_mark/circled/back.4bpp.lz");')
         elif m_icon != None:
-            print(m_icon.group(1))
             output.append(f'const u8 {m_icon.group(1)} = INCBIN_U8("graphics/pokemon/question_mark/icon.4bpp");')
         else:
             output.append(line)
@@ -407,31 +407,33 @@ def generate_level_up_learnsets_h():
         
     with open(pokered_folder + 'src/data/pokemon/level_up_learnsets.h', 'w') as f:
         f.write('\n'.join(output))
-    print('wrote src/data/pokemon/level_up_learnsets.h')
+    print('wrote /src/data/pokemon/level_up_learnsets.h')
 
 def generate_sprite_position_files():
     with open(pokered_folder + 'src/data/pokemon_graphics/enemy_mon_elevation.h', 'w') as f:
         with open('templates/enemy_mon_elevation.h_template') as t:
             f.write(t.read())
-    print('wrote src/data/pokemon_graphics/enemy_mon_elevation.h')
+    print('wrote /src/data/pokemon_graphics/enemy_mon_elevation.h')
     
     with open(pokered_folder + 'src/data/pokemon_graphics/back_pic_coordinates.h', 'w') as f:
         with open('templates/back_pic_coordinates.h_template') as t:
             f.write(t.read())
-    print('wrote src/data/pokemon_graphics/back_pic_coordinates.h.h')
+    print('wrote /src/data/pokemon_graphics/back_pic_coordinates.h.h')
     
     with open(pokered_folder + 'src/data/pokemon_graphics/front_pic_coordinates.h', 'w') as f:
         with open('templates/front_pic_coordinates.h_template') as t:
             f.write(t.read())
-    print('wrote src/data/pokemon_graphics/front_pic_coordinates.h')
+    print('wrote /src/data/pokemon_graphics/front_pic_coordinates.h')
 
-def filter_mons(mon_list, of_types, of_egg_groups, max_lvl, ctxt=MonContext.UNKNOWN):
+def filter_mons(mons, of_types, of_egg_groups, max_lvl, ctxt=MonContext.UNKNOWN):
     choices = []
+    if len(mons) == 0:
+        raise BaseException('no mons given')
     
     if of_types == None and of_egg_groups == None:
-        choices.extend(mon_list)
+        choices.extend(mons)
     else:
-        for poke_name in mon_list:
+        for poke_name in mons:
             poke = dex['encounter_data'][poke_name]
             if poke['types'][0] in of_types or poke['types'][1] in of_types or poke['egg_groups'][0] in of_egg_groups or poke['egg_groups'][1] in of_egg_groups:
                 choices.append(poke_name)
@@ -440,8 +442,9 @@ def filter_mons(mon_list, of_types, of_egg_groups, max_lvl, ctxt=MonContext.UNKN
     
     rarity = max_lvl/50
     target_len = int(len(choices) * rarity)
-    if target_len < 2:
-        target_len = 2
+    rand_max = random.randint(2,4)
+    if target_len < rand_max:
+        target_len = rand_max
     if target_len > len(choices):
         target_len = len(choices)
     
@@ -529,49 +532,167 @@ def adjust_evo(mon, min_lvl, max_lvl=None, ctxt=None):
     
     return mon
 
+assigned_mons = set()
 
-def assign_wild_mons(mon_list, types, egg_groups, wild_mons):
+def assign_wild_mons(mons, wild_mons):
     max_lvl = max([ mon['max_level'] for mon in wild_mons['mons'] ])
-
-    mons = filter_mons(mon_list, types, egg_groups, max_lvl)
+    
+    #print('before filtering:', mons)
+    mons = filter_mons(mons, None, None, max_lvl)
 
     for mon in wild_mons['mons']:
-        mon['species'] = 'SPECIES_' + adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'], ctxt=MonContext.WILD)
+        chosen = adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'], ctxt=MonContext.WILD)
+        #if chosen in assigned_mons: #reroll
+        #    chosen = adjust_evo(random.choice(mons), mon['min_level'], mon['max_level'], ctxt=MonContext.WILD)
+        assigned_mons.add(base_form(chosen))
+        mon['species'] = 'SPECIES_' + chosen
+
+map_cache = {}
+
+def get_map_data(map_name, enc_data):
+    data = None
+    map_id = None
+    for key in enc_data.keys():
+        if map_name == key:
+            data = enc_data[key]
+            map_id = map_name
+            break
+        elif key[-1] == '*' and key[0:len(key)-1] == map_name[0:len(key)-1]:
+            data = enc_data[key]
+            map_id = key
+    return (data, map_id)
+
+def set_map_data(map_name, encounters, enc_data, mon_list):
+    data, map_id = get_map_data(map_name, enc_data)
+    
+    if data == None:
+        # TODO enable after debugging ends
+        # print('!!!! cant find data:', map_name)
+        return
+    
+    if not map_id.startswith('SPECIAL') and not ('habitats' in data and 'motifs' in data):
+        print('!!!!! incomplete data:', map_name)
+    
+    is_post = 'postgame' in data and data['postgame']
+    mons = mon_list['post'] if is_post else mon_list['main']
+    map_id = map_id + ('_post' if is_post else '')
+    
+    if map_id not in map_cache:
+        map_cache[map_id] = generate_mons(mons, data['habitats'], data['types'] if 'types' in data else [], data['not_types'] if 'not_types' in data else [], data['motifs'] if 'motifs' in data else [])
+    
+    assign_wild_mons(map_cache[map_id], encounters)
+
+def generate_mons(mons, habitats, types, not_types, motifs):
+    mons = list(mons)
+    random.shuffle(mons)
+    
+    mon_values = {}
+    for m in mons:
+        mon_values[m] = wild_mon_value(m, habitats, types, not_types, motifs)
+    mons[:] = [m for m in mons if mon_values[m] > 0]
+    
+    mons.sort(key=lambda m: -mon_values[m])
+    
+    target_len = 10# max(10, len(mons)//2)
+    return mons[0:min(target_len, len(mons))]
+
+def wild_mon_value(mon, habitats, types, not_types, motifs):
+    val = 0
+    mon_habitats = dex['encounter_data'][mon]['habitats']
+    mon_motifs = dex['encounter_data'][mon]['motifs']
+    mon_types = set(dex['encounter_data'][mon]['types'])
+    
+    any_habitat = False
+    for h in habitats:
+        if h in mon_habitats:
+            val += 1
+            any_habitat = True
+    
+    if not any_habitat:
+        val = val - 100000
+    
+    for m in motifs:
+        if m in mon_motifs:
+            val += 5
+    
+    for t in types:
+        if t in mon_types:
+            val += 10
+    
+    for t in not_types:
+        if t in mon_types:
+            val -= 30
+    
+    if mon not in assigned_mons:
+        val += 5
+    
+    # TODO adjust for already encountered
+    return val
 
 def try_generate_wild_encounters(mon_list):
     with open('templates/wild_encounters.json_template') as f:
         encs = json.load(f)
     
     with open('encounter_data.json') as f:
-        enc_data = json.load(f)
+        enc_data = json.load(f, object_pairs_hook=OrderedDict)
+        enc_data_order = list(enc_data.keys())
     
+    entry_order = []
+    entries = {}
+    entry_sort_value = {}
     for entry in encs['wild_encounter_groups'][0]['encounters']:
+        if not 'LeafGreen' in entry['base_label']:
+            if entry['map'] == 'MAP_SIX_ISLAND_ALTERING_CAVE':
+                if entry['base_label'] != 'sSixIslandAlteringCave_FireRed':
+                    continue
+            
+            entry_order.append(entry['map'])
+            entries[entry['map']] = entry
+            data, map_id = get_map_data(entry['map'], enc_data)
+            entry_sort_value[entry['map']] = enc_data_order.index(map_id) if map_id in enc_data_order else 0
+    
+    entry_order.sort(key=lambda map_id: entry_sort_value[map_id])
+    
+    for entry_id in entry_order:
+        entry = entries[entry_id]
+        if 'LeafGreen' in entry['base_label']:
+            continue
+        
         map_name = entry['map']
-        #print(map_name)
+        data, map_id = get_map_data(map_name, enc_data)
         
         if 'land_mons' in entry:
-            types = enc_data[map_name]['types']
-            egg_groups = enc_data[map_name]['egg_groups']
-            
-            assign_wild_mons(mon_list, types, egg_groups, entry['land_mons'])
-            
+            set_map_data(entry['map'], entry['land_mons'], enc_data, mon_list)
+        
         if 'water_mons' in entry:
-            types = enc_data['SPECIAL_SURFING']['types']
-            egg_groups = enc_data['SPECIAL_SURFING']['egg_groups']
-            
-            assign_wild_mons(mon_list, types, egg_groups, entry['water_mons'])
+            if data is None or 'surfing' not in data:
+                print('!!!!!! surfing not declared in', map_name)
+            else:
+                if 'postgame' in data and data['postgame']:
+                    enc_data[data['surfing']]['postgame'] = True
+                else:
+                    enc_data[data['surfing']]['postgame'] = False
+                set_map_data(data['surfing'], entry['water_mons'], enc_data, mon_list)
         
         if 'fishing_mons' in entry:
-            types = enc_data['SPECIAL_FISHING']['types']
-            egg_groups = enc_data['SPECIAL_FISHING']['egg_groups']
-            
-            assign_wild_mons(mon_list, types, egg_groups, entry['fishing_mons'])
+            if data is None or 'fishing' not in data:
+                print('!!!!!! fishing not declared in', map_name)
+            else:
+                if 'postgame' in data and data['postgame']:
+                    enc_data[data['fishing']]['postgame'] = True
+                else:
+                    enc_data[data['fishing']]['postgame'] = False
+                set_map_data(data['fishing'], entry['fishing_mons'], enc_data, mon_list)
         
         if 'rock_smash_mons' in entry:
-            types = enc_data['SPECIAL_ROCK_SMASH']['types']
-            egg_groups = enc_data['SPECIAL_ROCK_SMASH']['egg_groups']
-            
-            assign_wild_mons(mon_list, types, egg_groups, entry['rock_smash_mons'])
+            if data is None or 'rock_smash' not in data:
+                print('!!!!!! rock smash not declared in', map_name)
+            else:
+                if 'postgame' in data and data['postgame']:
+                    enc_data[data['rock_smash']]['postgame'] = True
+                else:
+                    enc_data[data['rock_smash']]['postgame'] = False
+                set_map_data(data['rock_smash'], entry['rock_smash_mons'], enc_data, mon_list)
     
     return encs
 
@@ -597,82 +718,59 @@ def pick_rare_pkmn(unavailable_families, available_families, req_type=None):
 def generate_wild_encounters(mon_list):
     encs = try_generate_wild_encounters(mon_list)
     
-    spawns = set()
+    main_families = list(mon_list['main'])
+    post_families = list(mon_list['post'])
+    main_missing = list(main_families)
+    post_missing = list(set(post_families).difference(main_families))
     
-    for entry in encs['wild_encounter_groups'][0]['encounters']:
-        if entry['base_label'].endswith('_FireRed'):
-            if 'land_mons' in entry:
-                for mon in entry['land_mons']['mons']:
-                    spawns.add(mon['species'])
-            if 'water_mons' in entry:
-                for mon in entry['water_mons']['mons']:
-                    spawns.add(mon['species'])
-            if 'fishing_mons' in entry:
-                for mon in entry['fishing_mons']['mons']:
-                    spawns.add(mon['species'])
-            if 'rock_smash_mons' in entry:
-                for mon in entry['rock_smash_mons']['mons']:
-                    spawns.add(mon['species'])
+    for mon in assigned_mons:
+        if mon in post_missing:
+            post_missing.remove(mon)
+        if mon in main_missing:
+            main_missing.remove(mon)
     
-    available_families = set()
-    special_families = set([ 'BULBASAUR', 'CHARMANDER', 'SQUIRTLE', 'ARTICUNO', 'ZAPDOS', 'MOLTRES', 'MEWTWO', 'MEW' ])
-    unavailable_families = set()
-    
-    for poke in dex['base_stats.h'].keys():
-        if base_form(poke) in special_families or poke not in mon_list:
-            continue
-        
-        if f'SPECIES_{poke}' in spawns:
-            available_families.add(base_form(poke))
-        
-        if not base_form(poke) in available_families:
-            unavailable_families.add(base_form(poke))
-    
-    available_families = list(available_families)
-    unavailable_families = list(unavailable_families)
-    
-    print("unavailable families now:", unavailable_families)
+    print('unavailable families:', main_missing, post_missing)
     
     # replace lapras gift
     with open(pokered_folder + 'data/maps/SilphCo_7F/scripts.inc', 'w') as f:
         with open('templates/SilphCo_7F_scripts.inc_template') as t:
-            tmp = t.read().replace('SPECIES_LAPRAS', 'SPECIES_'+pick_rare_pkmn(unavailable_families, available_families))
+            tmp = t.read().replace('SPECIES_LAPRAS', 'SPECIES_'+pick_rare_pkmn(main_missing, main_families))
         f.write(tmp)
         print('wrote /data/maps/SilphCo_7F/scripts.inc')
     
     # replace eevee gift
     with open(pokered_folder + 'data/maps/CeladonCity_Condominiums_RoofRoom/scripts.inc', 'w') as f:
         with open('templates/CeladonCity_Condominiums_RoofRoom_scripts.inc_template') as t:
-            tmp = t.read().replace('SPECIES_EEVEE', 'SPECIES_'+pick_rare_pkmn(unavailable_families, available_families))
+            tmp = t.read().replace('SPECIES_EEVEE', 'SPECIES_'+pick_rare_pkmn(main_missing, main_families))
         f.write(tmp)
         print('wrote /data/maps/CeladonCity_Condominiums_RoofRoom/scripts.inc')
     
     # replace magikarp gift
     with open(pokered_folder + 'data/maps/Route4_PokemonCenter_1F/scripts.inc', 'w') as f:
         with open('templates/Route4_PokemonCenter_1F_scripts.inc_template') as t:
-            tmp = t.read().replace('SPECIES_MAGIKARP', 'SPECIES_'+pick_rare_pkmn([], available_families))
+            tmp = t.read().replace('SPECIES_MAGIKARP', 'SPECIES_'+pick_rare_pkmn([], main_families))
         f.write(tmp)
         print('wrote /data/maps/Route4_PokemonCenter_1F/scripts.inc')
     
     # replace hitmon gift
     with open(pokered_folder + 'data/maps/SaffronCity_Dojo/scripts.inc', 'w') as f:
         with open('templates/SaffronCity_Dojo_scripts.inc_template') as t:
-            tmp = t.read().replace('SPECIES_HITMONCHAN', 'SPECIES_'+pick_rare_pkmn([], available_families, req_type='FIGHTING'))
-            tmp = tmp.replace('SPECIES_HITMONLEE', 'SPECIES_'+pick_rare_pkmn([], available_families, req_type='FIGHTING'))
+            tmp = t.read().replace('SPECIES_HITMONCHAN', 'SPECIES_'+pick_rare_pkmn([], main_families, req_type='FIGHTING'))
+            tmp = tmp.replace('SPECIES_HITMONLEE', 'SPECIES_'+pick_rare_pkmn([], main_families, req_type='FIGHTING'))
         f.write(tmp)
         print('wrote /data/maps/SaffronCity_Dojo/scripts.inc')
     
     # replace hypno encounter
     with open(pokered_folder + 'data/maps/ThreeIsland_BerryForest/scripts.inc', 'w') as f:
         with open('templates/ThreeIsland_BerryForest_scripts.inc_template') as t:
-            tmp = t.read().replace('SPECIES_HYPNO', 'SPECIES_'+adjust_evo(pick_rare_pkmn([], available_families, req_type='PSYCHIC'), 30))
+            tmp = t.read().replace('SPECIES_HYPNO', 'SPECIES_'+adjust_evo(pick_rare_pkmn([], main_families, req_type='PSYCHIC'), 30))
         f.write(tmp)
         print('wrote /data/maps/ThreeIsland_BerryForest/scripts.inc')
     
     # replace togepi egg gift
     with open(pokered_folder + 'data/maps/FiveIsland_WaterLabyrinth/scripts.inc', 'w') as f:
         with open('templates/FiveIsland_WaterLabyrinth_scripts.inc_template') as t:
-            tmp = t.read().replace('SPECIES_TOGEPI', 'SPECIES_'+pick_rare_pkmn(unavailable_families, available_families))
+            tmp = t.read().replace('SPECIES_TOGEPI', 'SPECIES_'+pick_rare_pkmn(post_missing, post_families))
         f.write(tmp)
         print('wrote /data/maps/FiveIsland_WaterLabyrinth/scripts.inc')
     
@@ -692,7 +790,7 @@ def generate_wild_encounters(mon_list):
             tmp = tmp.replace('SPECIES_RAIKOU', 'SPECIES_MEW')
             tmp = tmp.replace('SPECIES_SUICUNE', 'SPECIES_MEW')
         f.write(tmp)
-        print('wrote src/wild/pokemon/area.c')
+        print('wrote /src/wild/pokemon/area.c')
     
     # replace game corner prizes
     with open(pokered_folder + 'data/maps/CeladonCity_GameCorner_PrizeRoom/scripts.inc', 'w') as f:
@@ -706,8 +804,8 @@ def generate_wild_encounters(mon_list):
             tmp = tmp.replace('SPECIES_DRATINI', '[[$4$]]')
             tmp = tmp.replace('SPECIES_PORYGON', '[[$5$]]')
             
-            tmp = tmp.replace('[[$1$]]', 'SPECIES_'+pick_rare_pkmn(unavailable_families, available_families))
-            tmp = tmp.replace('[[$2$]]', 'SPECIES_'+pick_rare_pkmn(unavailable_families, available_families))
+            tmp = tmp.replace('[[$1$]]', 'SPECIES_'+pick_rare_pkmn(main_missing, main_families))
+            tmp = tmp.replace('[[$2$]]', 'SPECIES_'+pick_rare_pkmn(main_missing, main_families))
             tmp = tmp.replace('[[$3$]]', 'SPECIES_SQUIRTLE')
             tmp = tmp.replace('[[$4$]]', 'SPECIES_CHARMANDER')
             tmp = tmp.replace('[[$5$]]', 'SPECIES_BULBASAUR')
@@ -723,12 +821,12 @@ def generate_wild_encounters(mon_list):
             m_trade = get_trade_species.search(line)
             m_wanted = get_wanted_species.search(line)
             if m_trade != None:
-                unav = unavailable_families
+                unav = main_missing
                 if 'NIDO' in m_trade.group(1):
                     unav = []
-                trades_h_out.append(f'        .species = SPECIES_{pick_rare_pkmn(unav, available_families)},')
+                trades_h_out.append(f'        .species = SPECIES_{pick_rare_pkmn(main_missing, main_families)},')
             elif m_wanted != None:
-                trades_h_out.append(f'        .requestedSpecies = SPECIES_{pick_rare_pkmn([], available_families)}')
+                trades_h_out.append(f'        .requestedSpecies = SPECIES_{pick_rare_pkmn([], main_families)}')
             else:
                 trades_h_out.append(line)
     
@@ -736,7 +834,7 @@ def generate_wild_encounters(mon_list):
         f.write('\n'.join(trades_h_out))
     print('wrote /src/data/ingame_trades.h')
     
-    print('final unavailable families:', unavailable_families)
+    print('final unavailable families:', main_missing, post_missing)
     
     with open(pokered_folder + 'src/data/wild_encounters.json', 'w') as f:
         f.write(json.dumps(encs, indent=2, sort_keys=False))
@@ -958,7 +1056,7 @@ type_items = {
     'PSYCHIC' : 'ITEM_TWISTED_SPOON'
 }
 
-def generate_trainers(mon_list):
+def generate_trainers(mon_lists):
     global grass_team
     global fire_team
     global water_team
@@ -1012,13 +1110,19 @@ def generate_trainers(mon_list):
         if m != None:
             if m.group(1) in trainer_data:
                 current_trainer = trainer_data[m.group(1)]
+                
+                postgame = current_trainer['id'] in class_data['postgame_trainers']
+                
+                if postgame:
+                    class_data['postgame_trainers'].remove(current_trainer['id'])
+                
+                mon_list = mon_lists['post'] if postgame else mon_lists['main']
             else:
                 current_trainer = None
                 current_level = None
                 current_species = None
             current_mon_count = 0
             dupes.clear()
-            
         
         m_sp = party_species.search(line)
         m_mv = party_moves.search(line)
@@ -1102,6 +1206,9 @@ def generate_trainers(mon_list):
         else:
             parties_h_out.append(line)
     
+    if len(class_data['postgame_trainers']) != 0:
+        print('!!! posttrainers not found:', class_data['postgame_trainers'])
+    
     with open(pokered_folder + 'src/data/trainer_parties.h', 'w') as f:
         f.write('\n'.join(parties_h_out))
     print('wrote /src/data/trainer_parties.h')
@@ -1119,9 +1226,23 @@ generate_evolution_h()
 generate_level_up_learnsets_h()
 generate_sprite_position_files()
 
-mon_list = dex['encounter_list_kanto']
+mon_list = {
+    'main' : dex['encounter_list_kanto'],
+    'post' : dex['encounter_list_kanto_post']
+}
 
-generate_wild_encounters(mon_list)
+basic_main = set()
+for mon in mon_list['main']:
+    basic_main.add(base_form(mon))
+
+basic_post = set()
+for mon in mon_list['post']:
+    basic_post.add(base_form(mon))
+
+# allow gen 2 starters in wild
+basic_post.update([ 'CHIKORITA', 'CYNDAQUIL', 'TOTODILE' ])
+
+generate_wild_encounters({ 'main' : basic_main, 'post' : basic_post })
 
 # hack: remove shitty moves/moves the AI can't really use before generating trainers
 dex['teachable_moves'].remove('SUNNY_DAY')
@@ -1141,15 +1262,14 @@ dex['teachable_moves'].remove('MIMIC')
 dex['teachable_moves'].remove('SNATCH')
 dex['teachable_moves'].remove('HIDDEN_POWER')
 
-generate_rival_teams(mon_list)
+generate_rival_teams(mon_list['main'])
 
 # hack: make enemies able to use starters even though they don't spawn in the wild
 for starter in [ 'BULBASAUR', 'IVYSAUR', 'VENUSAUR', 'CHARMANDER', 'CHARMELEON', 'CHARIZARD', 'SQUIRTLE', 'WARTORTLE', 'BLASTOISE' ]:
-    sdata = dex['base_stats.h'][starter]
-    dex['encounter_data'][starter] = {
-        'types' : [sdata['type1'], sdata['type2']],
-        'egg_groups' : [sdata['eggGroup1'], sdata['eggGroup2']],
-        'bst' : (sdata['baseHP'] + sdata['baseAttack'] + sdata['baseDefense'] + sdata['baseSpeed'] + sdata['baseSpAttack'] + sdata['baseSpDefense'])
-    }
+    mon_list['main'].append(starter)
+    mon_list['post'].append(starter)
+
+for starter in [ 'CHIKORITA', 'BAYLEEF', 'MEGANIUM', 'CYNDAQUIL', 'QUILAVA', 'TYPHLOSION', 'TOTODILE', 'CROCONAW', 'FERALIGATR' ]:
+    mon_list['post'].append(starter)
 
 generate_trainers(mon_list)
