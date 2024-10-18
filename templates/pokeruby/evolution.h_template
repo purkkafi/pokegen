@@ -1,0 +1,9 @@
+#ifndef POKERUBY_EVOLUTION_H
+#define POKERUBY_EVOLUTION_H
+
+struct Evolution gEvolutionTable[NUM_SPECIES][5] =
+{
+[!CONTENT!]
+};
+
+#endif //POKERUBY_EVOLUTION_H

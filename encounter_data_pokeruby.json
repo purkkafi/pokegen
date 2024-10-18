@@ -1,0 +1,369 @@
+{
+    "MAP_ROUTE101": {
+        "habitats" : [ "LAND" ],
+        "types" : [ "NORMAL", "BUG" ],
+        "not_types" : [ "GHOST", "ROCK", "STEEL", "DRAGON" ],
+        "motifs" : [ "ANIMAL" ]
+    },
+    "MAP_ROUTE103": {
+        "habitats" : [ "LAND", "SHORE" ],
+        "types" : [ "NORMAL", "WATER", "FLYING" ],
+        "not_types" : [ "GHOST", "ROCK", "STEEL", "DRAGON" ],
+        "motifs" : [ "ANIMAL" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE102": {
+        "habitats" : [ "LAND", "SHORE", "URBAN" ],
+        "types" : [ "NORMAL", "WATER", "FLYING", "GRASS", "BUG" ],
+        "not_types" : [ "GHOST", "ROCK", "STEEL", "DRAGON" ],
+        "motifs" : [ "ANIMAL", "PLANT" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND"
+    },
+    "MAP_PETALBURG_CITY" : {
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND"
+    },
+    "MAP_ROUTE104": {
+        "habitats" : [ "LAND", "SHORE" ],
+        "types" : [ "NORMAL", "BUG", "WATER", "FLYING" ],
+        "motifs" : [ "ANIMAL" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_PETALBURG_WOODS": {
+        "habitats" : [ "LAND", "FOREST" ],
+        "types" : [ "NORMAL", "BUG", "GRASS", "FLYING" ],
+        "motifs" : [ "ANIMAL", "FUNGAL", "PLANT" ]
+    },
+    "MAP_ROUTE116" : {
+        "habitats" : [ "LAND", "CRAGGY", "URBAN" ],
+        "types" : [ "NORMAL", "BUG", "GROUND" ],
+        "motifs" : [ "ANIMAL", "CREATURE" ]
+    },
+    "MAP_RUSTURF_TUNNEL" : {
+        "habitats" : [ "CRAGGY", "MOUNTAIN" ],
+        "motifs" : [ "ANIMAL", "CREATURE" ]
+    },
+    "MAP_DEWFORD_TOWN" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_GRANITE_CAVE_*" : {
+        "habitats" : [ "MOUNTAIN", "CAVE" ],
+        "types" : [ "FIGHTING", "ROCK", "STEEL", "PSYCHIC", "DARK" ],
+        "motifs" : [ "ANIMAL", "CREATURE", "MYSTICAL", "EARTHY" ],
+        "rock_smash" : "SPECIAL_ROCK_SMASH"
+    },
+    "MAP_SLATEPORT_CITY" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE110" : {
+        "habitats" : [ "LAND", "URBAN", "SHORE" ],
+        "types" : [ "NORMAL", "POISON", "GRASS", "ELECTRIC", "FLYING" ],
+        "motifs" : [ "ANIMAL", "CREATURE", "POLLUTION" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE117" : {
+        "habitats" : [ "LAND", "SHORE" ],
+        "types" : [ "NORMAL", "GRASS", "BUG", "WATER" ],
+        "motifs" : [ "ANIMAL", "PLANT" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND"
+    },
+    "MAP_ROUTE111" : {
+        "habitats" : [ "DESERT", "CRAGGY" ],
+        "types" : [ "GROUND" ],
+        "motifs" : [ "ANIMAL", "MYSTIC", "EARTHY" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND",
+        "rock_smash" : "SPECIAL_ROCK_SMASH"
+    },
+    "MAP_ROUTE112" : {
+        "habitats" : [ "CRAGGY", "MOUNTAIN" ],
+        "types" : [ "FIRE", "GROUND", "FIGHTING" ],
+        "motifs" : [ "ANIMAL", "CREATURE", "VOLCANIC" ]
+    },
+    "MAP_FIERY_PATH" : {
+        "habitats" : [ "CAVE", "MOUNTAIN" ],
+        "types" : [ "FIRE", "POISON", "FIGHTING" ],
+        "motifs" : [ "ANIMAL", "CREATURE", "VOLCANIC", "POLLUTION" ]
+    },
+    "MAP_ROUTE113" : {
+        "habitats" : [ "LAND", "DESERT", "CRAGGY" ],
+        "types" : [ "NORMAL", "GROUND", "STEEL" ],
+        "motifs" : [ "ANIMAL" ]
+    },
+    "MAP_ROUTE114" : {
+        "habitats" : [ "LAND", "SHORE", "CRAGGY", "MOUNTAIN" ],
+        "types" : [ "NORMAL", "GRASS", "FLYING" ],
+        "motifs" : [ "ANIMAL", "PLANT" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND",
+        "rock_smash" : "SPECIAL_ROCK_SMASH"
+    },
+    "MAP_METEOR_FALLS_*" : {
+        "habitats" : [ "CAVE", "MOUNTAIN" ],
+        "types" : [ "PSYCHIC", "DRAGON", "ROCK" ],
+        "motifs" : [ "ANIMAL", "EARTHY", "MYSTIC", "DRAGONIC" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND"
+    },
+    "MAP_ROUTE115" : {
+        "habitats" : [ "LAND", "FOREST" ],
+        "types" : [ "NORMAL", "FLYING" ],
+        "motifs" : [ "ANIMAL", "CREATURE" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_JAGGED_PASS" : {
+        "habitats" : [ "CRAGGY", "MOUNTAIN" ],
+        "types" : [ "FIRE", "GROUND", "FIGHTING" ],
+        "motifs" : [ "ANIMAL", "CREATURE", "VOLCANIC" ]
+    },
+    "MAP_ROUTE105" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE106" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE107" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE108" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ABANDONED_SHIP_*" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE109" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_NEW_MAUVILLE_*" : {
+        "habitats" : [ "URBAN", "LAND", "CAVE", "CRAGGY", "MOUNTAIN" ],
+        "types" : [ "ELECTRIC", "STEEL" ],
+        "motifs" : [ "ELECTRICAL" ]
+    },
+    "MAP_ROUTE118" : {
+        "habitats" : [ "LAND", "SHORE" ],
+        "types" : [ "NORMAL", "ELECTRIC", "WATER", "FLYING" ],
+        "motifs" : [ "ANIMAL" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE119" : {
+        "habitats" : [ "LAND", "FOREST" ],
+        "types" : [ "NORMAL", "GRASS" ],
+        "motifs" : [ "ANIMAL", "PLANT" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE120" : {
+        "habitats" : [ "LAND", "SHORE" ],
+        "types" : [ "NORMAL", "DARK", "GRASS", "WATER", "BUG" ],
+        "motifs" : [ "ANIMAL", "PLANT" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND"
+    },
+    "MAP_ROUTE121" : {
+        "habitats" : [ "LAND", "URBAN" ],
+        "types" : [ "NORMAL", "GHOST", "GRASS", "WATER", "FLYING" ],
+        "motifs" : [ "ANIMAL", "PLANT", "UNDEAD", "MYSTICAL" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_SAFARI_ZONE_NORTHWEST" : {
+        "habitats" : [ "LAND", "CRAGGY" ],
+        "types" : [ "GRASS", "GROUND", "FLYING", "BUG" ],
+        "motifs" : [ "ANIMAL", "PLANT", "EARTHY" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND"
+    },
+    "MAP_SAFARI_ZONE_NORTHEAST" : {
+        "habitats" : [ "LAND", "DESERT" ],
+        "types" : [ "GRASS", "GROUND", "FLYING", "BUG" ],
+        "motifs" : [ "ANIMAL", "PLANT", "MYSTICAL" ],
+        "rock_smash" : "SPECIAL_ROCK_SMASH"
+    },
+    "MAP_SAFARI_ZONE_SOUTHWEST" : {
+        "habitats" : [ "LAND", "FOREST" ],
+        "types" : [ "GRASS", "NORMAL", "FLYING", "PSYCHIC", "ELECTRIC" ],
+        "motifs" : [ "ANIMAL", "PLANT", "CREATURE", "MYSTICAL" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND"
+    },
+    "MAP_SAFARI_ZONE_SOUTHEAST" : {
+        "habitats" : [ "LAND", "FOREST" ],
+        "types" : [ "GRASS", "NORMAL", "FLYING", "PSYCHIC", "ELECTRIC" ],
+        "motifs" : [ "ANIMAL", "PLANT", "CREATURE", "MYSTICAL" ]
+    },
+    "MAP_ROUTE122" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_MT_PYRE_*" : {
+        "habitats" : [ "URBAN", "CAVE" ],
+        "types" : [ "GHOST" ],
+        "motifs" : [ "UNDEAD" ]
+    },
+    "MAP_MT_PYRE_EXTERIOR" : {
+        "habitats" : [ "LAND", "MOUNTAIN", "URBAN", "SHORE" ],
+        "types" : [ "GHOST", "PSYCHIC", "WATER", "FIRE" ],
+        "motifs" : [ "ANIMAL", "UNDEAD", "MYSTICAL" ] 
+    },
+    "MAP_MT_PYRE_SUMMIT" : {
+        "habitats" : [ "LAND", "MOUNTAIN", "URBAN" ],
+        "types" : [ "GHOST", "PSYCHIC" ],
+        "motifs" : [ "ANIMAL", "UNDEAD", "MYSTICAL" ] 
+    },
+    "MAP_ROUTE123" : {
+        "habitats" : [ "LAND", "SHORE" ],
+        "types" : [ "NORMAL", "GHOST", "GRASS", "FLYING" ],
+        "motifs" : [ "ANIMAL", "UNDEAD", "PLANT" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_LILYCOVE_CITY" : {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_UNDERWATER*" : {
+        "surfing" : "SPECIAL_UNDERWATER"
+    },
+    "MAP_ROUTE124" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_MOSSDEEP_CITY" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE125" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_SHOAL_CAVE_*" : {
+        "habitats" : [ "CAVE", "MOUNTAIN", "CRAGGY", "SHORE" ],
+        "types" : [ "ICE" ],
+        "not_types" : [ "GRASS", "FIRE" ],
+        "motifs" : [ "COLD", "ANIMAL", "CREATURE" ],
+        "surfing" : "SPECIAL_SURFING_COLD",
+        "fishing" : "SPECIAL_FISHING_COLD"
+    },
+    "MAP_ROUTE127" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE126" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE128" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE129" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE130" :  {
+        "habitats" : [ "LAND" ],
+        "motifs" : [ "ANIMAL" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE131" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_PACIFIDLOG_TOWN" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE132" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE133" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_ROUTE134" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_SEAFLOOR_CAVERN_*" :  {
+        "habitats" : [ "CAVE" ],
+        "motifs" : [ "ANIMAL" ],
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_SOOTOPOLIS_CITY" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_CAVE_OF_ORIGIN_*" : {
+        "habitats" : [ "CAVE" ],
+        "motifs" : [ "MYSTICAL" ]
+    },
+    "MAP_EVER_GRANDE_CITY" :  {
+        "surfing" : "SPECIAL_SURFING_OCEAN",
+        "fishing" : "SPECIAL_FISHING_OCEAN"
+    },
+    "MAP_VICTORY_ROAD_*" : {
+        "habitats" : [ "CAVE", "MOUNTAIN", "CRAGGY" ],
+        "types" : [ "FIGHTING", "ROCK", "GROUND", "STEEL", "GHOST", "DARK", "NORMAL" ],
+        "motifs" : [ "MYSTICAL", "EARTHY", "CREATURE" ],
+        "surfing" : "SPECIAL_SURFING_INLAND",
+        "fishing" : "SPECIAL_FISHING_INLAND",
+        "rock_smash" : "SPECIAL_ROCK_SMASH"
+    },
+    "MAP_SKY_PILLAR_*" : {
+        "habitats" : [ "CAVE", "MOUNTAIN", "CRAGGY" ],
+        "types" : [ "ROCK", "GROUND", "PSYCHIC", "GHOST", "DRAGON", "FLYING" ],
+        "motifs" : [ "MYSTICAL", "EARTHY", "DRAGONIC" ]
+    },
+    
+    
+    
+
+    "SPECIAL_SURFING_INLAND" : {
+        "habitats" : [ "LAKE" ]
+    },
+    "SPECIAL_FISHING_INLAND" : {
+        "habitats" : [ "SEAFLOOR" ]
+    },
+    "SPECIAL_SURFING_OCEAN" : {
+        "habitats" : [ "OCEAN" ]
+    },
+    "SPECIAL_FISHING_OCEAN" : {
+        "habitats" : [ "SEAFLOOR" ]
+    },
+    "SPECIAL_SURFING_COLD" : {
+        "habitats" : [ "LAKE", "OCEAN" ],
+        "types" : [ "ICE" ],
+        "motifs" : [ "COLD" ]
+    },
+    "SPECIAL_FISHING_COLD" : {
+        "habitats" : [ "LAKE", "OCEAN", "SEAFLOOR" ],
+        "types" : [ "WATER", "ICE" ],
+        "motifs" : [ "ANIMAL", "COLD" ]
+    },
+    "SPECIAL_UNDERWATER": {
+        "habitats" : [ "SEAFLOOR" ]
+    },
+    "SPECIAL_ROCK_SMASH" : {
+        "habitats" : [ "CAVE" ],
+        "types" : [ "ROCK", "STEEL" ],
+        "motifs" : [ "EARTHY" ]
+    }
+}

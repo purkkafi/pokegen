@@ -29,6 +29,7 @@ with open('archetypes.json') as f:
     type_weights = rawdb['type_weights']
     type_bst_spreads = rawdb['type_bst_spreads']
     evo_stones_for_types = rawdb['evo_stones_for_types']
+    ability_value = rawdb['ability_value']
     move_value_adjustment = rawdb['move_value_adjustment']
     status_move_usage_hints = rawdb['status_move_usage_hints']
     similar_move_sets = rawdb['similar_move_sets']
@@ -39,14 +40,18 @@ with open('archetypes.json') as f:
     average_weights = rawdb['average_weights']
     average_heights = rawdb['average_heights']
     generic_baby_namestrings = rawdb['generic_baby_namestrings']
+    limited_moves = set(rawdb['limited_moves'])
 
-# adjust type weights a bit for now
-min_weight = min(type_weights.values())
-max_weight = max(type_weights.values())
-avg_weight = (min_weight + max_weight)/2
+# normalize type weights
+type_weights_sum = sum(type_weights.values())
 
-for key in type_weights.keys():
-    type_weights[key] = (type_weights[key] + 2*avg_weight)/3
+for tw in type_weights.keys():
+    type_weights[tw] = type_weights[tw] / type_weights_sum
+
+# normalize common type combos
+common_type_combos = set()
+for ctb in rawdb['common_type_combos']:
+    common_type_combos.add(tuple(sorted(ctb)))
 
 # generate normalized bst comparaisons between types
 def make_normalized_bsts():
@@ -155,8 +160,10 @@ def read_move_data():
         move_value = move_value + int(move_value_adjustment[move_effect])
         
         is_damaging = move_power != 0 and move_power != 1
-        if move_effect == 'SNORE':
+        if move_effect == 'SNORE' or move_effect == 'FUTURE_SIGHT':
             is_damaging = False
+        elif move_effect == 'MAGNITUDE':
+            is_damaging = True
         
         move_data[name] = Move(name=name, type=move_type, value=move_value, damaging=is_damaging, power=move_power, effect=move_effect)
     
@@ -232,6 +239,8 @@ class Pokemon:
         self.height = None
         self.habitats = None
         self.motifs = None
+        self.pokedex_fr = None
+        self.pokedex_ruby = None
     
     def __repr__(self):
         return f'[{self.name}]'
@@ -257,7 +266,7 @@ class Pokemon:
         
         if 'optional_subthemes' in data:
             for optional_theme in data['optional_subthemes']:
-                if random.random() > 0.5:
+                if random.random() > 0.5 and len(self.themes) < 10:
                     self.populate_theme(optional_theme)
     
     # Generates data based on themes
@@ -265,12 +274,12 @@ class Pokemon:
         self.populate_themes()
         self.generate_name()
         self.generate_type()
-        self.generate_bst()
         self.generate_abilities()
+        self.generate_bst()
         self.generate_egg_groups()
+        self.assign_base_stats()
         self.generate_moves()
         self.generate_learnset()
-        self.assign_base_stats()
         self.generate_catch_rate()
         self.generate_defeat_yield()
         self.generate_held_items()
@@ -291,6 +300,7 @@ class Pokemon:
         next_stage.themes = self.themes
         next_stage.initial_themes = self.initial_themes
         next_stage.flags = set(self.flags)
+        next_stage.bst_ability_adjustment = self.bst_ability_adjustment
         
         next_stage.generate_name()
         
@@ -345,7 +355,8 @@ class Pokemon:
             next_stage.flags.add(Flags.LAST_EVOLVABLE_STAGE)
         
         self.evo_target = next_stage
-        self.evo_type = LevelEvo(round(10 + random.randint(0,10) + 40 * ((self.bst-200)/300) ))
+        adjust = int(10 * ((type_bsts[self.types[0]] + type_bsts[self.types[1]]) / 2))
+        self.evo_type = LevelEvo(round(7 + adjust + 45 * ((self.bst-200)/300) ))
         
         if Flags.GRASS_STARTER in self.flags or Flags.FIRE_STARTER in self.flags or Flags.WATER_STARTER in self.flags:
             if Flags.LAST_EVOLVABLE_STAGE in self.flags:
@@ -401,6 +412,18 @@ class Pokemon:
         pos = r*adjust + (1-r)*random.random()
         
         self.bst = round(min_val + ((max_val-min_val) * pos))
+        
+        if min_val != max_val:
+            ability_adjust = 0
+            for ab in self.abilities:
+                if ab in ability_value:
+                    ability_adjust += ability_value[ab]
+            if self.abilities[1] != 'NONE':
+                ability_adjust = int(ability_adjust / 2)
+            
+            self.bst_ability_adjustment = ability_adjust
+        else:
+            self.bst_ability_adjustment = 0
     
     def generate_name(self):
         parts_set = set()
@@ -614,6 +637,9 @@ class Pokemon:
         if 'LEVITATE' in self.abilities:
             self.abilities = [ 'LEVITATE', 'NONE' ]
         
+        if 'TRUANT' in self.abilities:
+            self.abilities = [ 'TRUANT', 'NONE' ]
+        
         if Flags.GRASS_STARTER in self.flags:
             self.abilities = [ 'OVERGROW', 'NONE' ]
         
@@ -628,7 +654,12 @@ class Pokemon:
         
         for theme in self.themes:
             if 'moves' in themedata[theme]:
-                moves.update(themedata[theme]['moves'])
+                for move in themedata[theme]['moves']:
+                    if move in limited_moves:
+                        if random.random() > 0.5:
+                            moves.add(move)
+                    else:
+                        moves.add(move)
         
         self.moves = moves
     
@@ -668,143 +699,107 @@ class Pokemon:
             val = 0.9
         return val
     
+    def filter_moves(self, movelist, damaging, type_predicate, value_predicate):
+        chosen = []
+        for move in movelist:
+            if move_data[move].damaging == damaging and type_predicate(move_data[move].type) and value_predicate(move_data[move].value):
+                if not move in limited_moves or random.random() > 0.5:
+                    chosen.append(move)
+        return chosen
     
-    def pick_move(self, moves, picked, target_len):
-        moves = list(moves)
-        for already_picked in picked:
-            moves.remove(already_picked)
-        try_move = None
+    def pick_and_remove(self, from_list, into_set, excludes):
+        if len(from_list) == 0:
+            return
+        pick = random.choice(from_list)
+        while pick in excludes:
+            from_list.remove(pick)
+            if len(from_list) == 0:
+                return
+            pick = random.choice(from_list)
         
-        too_much_damage = False
-        too_much_status = False
-        stab_1_wanted = False
-        stab_2_wanted = False
-        weak_attack_wanted = False
-        
-        MAX_NON_STAB_1_PERC = self.calc_max_non_stab_perc(self.types[0])
-        MAX_NON_STAB_2_PERC = self.calc_max_non_stab_perc(self.types[1])
-        
-        for i in range(0, 50):
-            random.shuffle(moves)
-            
-            if too_much_damage and too_much_status:
-                too_much_status = False
-            
-            if stab_1_wanted and stab_2_wanted:
-                stab_2_wanted = False
-                stab_1_wanted = True
-                too_much_status = False
-            
-            for try_this in moves:
-                try_move = try_this
-                if too_much_damage and (move_data[try_move].damaging):
-                    continue
-                if too_much_status and (not move_data[try_move].damaging):
-                    continue
-                if stab_1_wanted and (((move_data[try_move].type != self.types[0]) or not move_data[try_move].damaging)):
-                    continue
-                if stab_2_wanted and (((move_data[try_move].type != self.types[1]) or not move_data[try_move].damaging)):
-                    continue
-                if weak_attack_wanted and (not (move_data[try_move].damaging and move_data[try_move].power < 50)):
-                    continue
-                
-                reject_similar = False
-                for similar_set in similar_move_sets:
-                    if try_move in similar_set:
-                        for similar in similar_set:
-                            if similar in picked:
-                                reject_similar = True
-                
-                if reject_similar:
-                    continue
-                
-                break
-            
-            new_picked = set(picked)
-            new_picked.add(try_move)
-            
-            too_much_damage = too_much_status = stab_1_wanted = stab_2_wanted = weak_attack_wanted = False
-            
-            # avoid: more than 80 % damaging
-            damaging = 0
-            for pick in new_picked:
-                if move_data[pick].damaging:
-                    damaging = damaging + 1
-            
-            if (move_data[try_move].damaging) and damaging > target_len*0.8:
-                too_much_damage = True
-            
-            # avoid: more than 60 % non-damaging
-            non_damaging = 0
-            for pick in new_picked:
-                if not move_data[pick].damaging:
-                    non_damaging = non_damaging + 1
-            
-            if (not move_data[try_move].damaging) and non_damaging > target_len*0.6:
-                too_much_status = True
-            
-            # avoid: more than MAX_NON_STAB_PERC % non-stab
-            non_stab_1 = 0
-            for pick in new_picked:
-                pick_type = move_data[pick].type
-                if pick_type != self.types[0] or (not move_data[pick].damaging):
-                    non_stab_1 = non_stab_1+1
-            
-            if (move_data[try_move].type != self.types[0]) and non_stab_1 > target_len*MAX_NON_STAB_1_PERC:
-                stab_1_wanted = True
-            
-            non_stab_2 = 0
-            for pick in new_picked:
-                pick_type = move_data[pick].type
-                if pick_type != self.types[1] or (not move_data[pick].damaging):
-                    non_stab_2 = non_stab_2+1
-            
-            if (move_data[try_move].type != self.types[1]) and non_stab_2 > target_len*MAX_NON_STAB_2_PERC:
-                stab_2_wanted = True
-            
-            # at least 2 attacks with less than 60 power
-            weak_attacks = 0
-            for pick in new_picked:
-                if move_data[pick].damaging and move_data[pick].power < 50:
-                    weak_attacks = weak_attacks + 1
-            
-            if (not (move_data[try_move].damaging and move_data[try_move].power < 50)) and weak_attacks < 2:
-                weak_attack_wanted = True
-            
-            if too_much_damage or too_much_status or stab_1_wanted or stab_2_wanted or weak_attack_wanted:
-                continue
-            
-            return try_move
-        
-        return try_move
+        self.update_excludes(excludes, pick)
+        from_list.remove(pick)
+        into_set.add(pick)
+    
+    def update_excludes(self, excludes, new_move):
+        for similar_set in similar_move_sets:
+            for similar in similar_set:
+                if new_move == similar:
+                    excludes.update(similar_set)
+                    return
     
     def generate_learnset(self):
         learnset = set()
-        target_len = random.randint(8, 12)
+        target_len = random.randint(9, 13)
         movelist = list(self.moves)
         
         if Flags.DITTO in self.flags:
             self.learnset = [(1, move_data['TRANSFORM'])]
             return
         
-        # give starters good starting move
+        # give starters more moves
         if Flags.GRASS_STARTER in self.flags or Flags.FIRE_STARTER in self.flags or Flags.WATER_STARTER in self.flags:
-            target_len = random.randint(10, 12)
-            
-            if 'SCRATCH' in movelist:
-                learnset.add('SCRATCH')
-            elif 'POUND' in movelist:
-                learnset.add('POUND')
-            else:
-                learnset.add('TACKLE')
-                if 'TACKLE' not in movelist:
-                    movelist.append('TACKLE')
-                    self.moves.add('TACKLE')
+            target_len = random.randint(11, 13)
         
+        offense = self.stats[1] + self.stats[3] + self.stats[5]
+        defense = self.stats[0] + self.stats[2] + self.stats[4]
+        
+        nondmg_ratio = 0.5
+        if offense/defense > 1.1:
+            nondmg_ratio = 0.4
+        elif offense/defense < 0.9:
+            nondmg_ratio = 0.6
+        stab_ratio = 0.5 if self.types[0] == self.types[1] else 0.75
+        
+        bad_nondamaging = self.filter_moves(movelist, damaging=False, type_predicate=lambda t: True, value_predicate=lambda v: v <= 90)
+        good_nondamaging = self.filter_moves(movelist, damaging=False, type_predicate=lambda t: True, value_predicate=lambda v: v > 90)
+        bad_stab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t in self.types, value_predicate=lambda v: v <= 80)
+        good_stab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t in self.types, value_predicate=lambda v: v > 80)
+        bad_nonstab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t not in self.types, value_predicate=lambda v: v <= 80)
+        good_nonstab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t not in self.types, value_predicate=lambda v: v > 80)
+        
+        excludes = set()
+        
+        for i in range(int(target_len * nondmg_ratio)//2):
+            self.pick_and_remove(bad_nondamaging, learnset, excludes)
+            self.pick_and_remove(good_nondamaging, learnset, excludes)
+        
+        for i in range(int(target_len * (1-nondmg_ratio) * (stab_ratio))//2):
+            self.pick_and_remove(bad_stab_dmg, learnset, excludes)
+            self.pick_and_remove(good_stab_dmg, learnset, excludes)
+        
+        for i in range(int(target_len * (1-nondmg_ratio) * (1-stab_ratio))//2):
+            self.pick_and_remove(bad_nonstab_dmg, learnset, excludes)
+            self.pick_and_remove(good_nonstab_dmg, learnset, excludes)
+        
+        nondmg_leftovers = []
+        nondmg_leftovers.extend(bad_nondamaging)
+        nondmg_leftovers.extend(good_nondamaging)
+        dmg_leftovers = []
+        dmg_leftovers.extend(bad_stab_dmg)
+        dmg_leftovers.extend(good_stab_dmg)
+        dmg_leftovers.extend(bad_nonstab_dmg)
+        dmg_leftovers.extend(good_nonstab_dmg)
+        
+        used_leftovers = dmg_leftovers
         tries = 0
-        while len(learnset) < target_len and tries < 1000:
-            learnset.add(self.pick_move(movelist, learnset, target_len))
-            tries = tries + 1
+        while len(learnset) < target_len and tries < 100:
+            self.pick_and_remove(used_leftovers, learnset, excludes)
+            used_leftovers = dmg_leftovers if used_leftovers == nondmg_leftovers else nondmg_leftovers
+            tries = tries+1
+        
+        # make sure starters have a good starting move
+        if Flags.GRASS_STARTER in self.flags or Flags.FIRE_STARTER in self.flags or Flags.WATER_STARTER in self.flags:
+            if 'SCRATCH' not in learnset and 'POUND' not in learnset and 'TACKLE' not in learnset:
+                if 'SCRATCH' in movelist:
+                    learnset.add('SCRATCH')
+                elif 'POUND' in movelist:
+                    learnset.add('POUND')
+                else:
+                    learnset.add('TACKLE')
+                    if 'TACKLE' not in movelist:
+                        movelist.append('TACKLE')
+                        self.moves.add('TACKLE')
         
         learnset = list(learnset)
         for i in range(0, len(learnset)):
@@ -841,17 +836,17 @@ class Pokemon:
             if Flags.LEGENDARY in self.flags or Flags.MYTHICAL in self.flags or Flags.LEGENDARY_TRIO in self.flags:
                 target_max_lvl = random.randint(70, 90)
             else:
-                target_max_lvl = random.randint(40, 60)
+                target_max_lvl = random.randint(45, 55)
                 
         elif Flags.TWO_STAGES in self.flags: # bst 250–450
-            lo = 45
-            hi = 65
+            lo = 47
+            hi = 53
             d = (self.bst-250)/200
             target_max_lvl = int(hi*d + lo*(1-d))
             
         elif Flags.THREE_STAGES in self.flags: # bst 200–350
-            lo = 40
-            hi = 50
+            lo = 35
+            hi = 45
             d = (self.bst-200)/150
             target_max_lvl = int(hi*d + lo*(1-d))
         
@@ -871,6 +866,34 @@ class Pokemon:
         for i in range(lvl_1_moves, len(learnset)):
             learnset[i] = (acc, learnset[i])
             acc = acc + delta
+        
+        # avoid starters having elemental attacks before lvl 5
+        if Flags.GRASS_STARTER in self.flags or Flags.FIRE_STARTER in self.flags or Flags.WATER_STARTER in self.flags:
+            changed = False
+            
+            for index,mv in enumerate(learnset):
+                lvl = mv[0]
+                tp = mv[1].type
+                if lvl <= 5 and (tp == 'GRASS' or tp == 'FIRE' or tp == 'WATER') and mv[1].damaging:
+                    new_lvl = 6
+                    old_lvl = lvl
+                    
+                    # find move to switch with
+                    for index2,mv2 in enumerate(learnset):
+                        lvl2 = mv2[0]
+                        tp2 = mv2[1].type
+                        if (lvl2 > 5 and lvl2 <= 10) and (not mv2[1].damaging or (tp2 != 'GRASS' and tp2 != 'FIRE' and tp2 != 'WATER')):
+                            # switch these moves
+                            new_lvl = lvl2
+                            learnset[index2] = (old_lvl, mv2[1])
+                            break
+                    
+                    # if no suitable move to switch with was found, set problematic attack to lvl6    
+                    learnset[index] = (new_lvl, mv[1])
+                    changed = True
+            
+            if changed:
+                learnset.sort(key=lambda m: m[0])
         
         self.learnset = learnset
     
@@ -918,7 +941,6 @@ class Pokemon:
                         type_weight = type_weight + themedata[theme]['stat_adjustment'][i]
                 
                 self.stat_spread_weights[i] = round((1-d)*self.stat_spread_weights[i] + d*type_weight)
-        
         else:
             for i in range(0,6):
                 self.stat_spread_weights[i] = self.stat_spread_weights[i] + random.randint(-5,5)
@@ -1230,13 +1252,31 @@ class Pokemon:
         if self.previous_stage != None and random.random() > 0.5:
             self.category = self.previous_stage.category
         
+        # theme average size
+        theme_avg_size = None
+        theme_sizes = []
+        for t in self.themes:
+            if 'size' in themedata[t]:
+                ts_range = themedata[t]['size']
+                theme_sizes.append(random.uniform(ts_range[0], ts_range[1]))
+        if len(theme_sizes) != 0:
+            theme_avg_size = sum(theme_sizes) / len(theme_sizes)
+            # adjust because pokemon tend to be light and short
+            theme_avg_size = theme_avg_size ** 0.9
+        
         # determine weight
-        avg_w = (average_weights[self.types[0]] + average_weights[self.types[1]])/2
+        type_avg_w = (average_weights[self.types[0]] + average_weights[self.types[1]])/2
+        
+        if theme_avg_size != None:
+            avg_w = (type_avg_w + 9*theme_avg_size)/10
+        else:
+            avg_w = type_avg_w
+        
         w = -1
         while w < 1:
             w = nprandom.normal(loc=avg_w, scale=avg_w)
-        if w > 99999:
-            w = 99999
+        if w > 9999:
+            w = 9999
         
         self.weight = int(w)
         
@@ -1264,6 +1304,10 @@ class Pokemon:
             h = nprandom.normal(loc=avg_h, scale=avg_h/2)
         if h > 200:
             h = 200
+        
+        if theme_avg_size != None:
+            # TODO think about the magic numbers
+            h = (avg_h + 4*theme_avg_size*0.025444479931864154)/5
         
         self.height = int(h)
         
@@ -1314,6 +1358,28 @@ class Pokemon:
         random.shuffle(chosen_motifs)
         chosen_motifs.sort(key=lambda m: -motifs[m])
         self.motifs = chosen_motifs[0:random.randint(2,3)]
+    
+    def primary_type(self):
+        if Flags.WATER_STARTER in self.flags:
+            return 'WATER'
+        if Flags.GRASS_STARTER in self.flags:
+            return 'GRASS'
+        if Flags.FIRE_STARTER in self.flags:
+            return 'FIRE'
+        if self.types[0] == self.types[1]:
+            return self.types[0]
+        
+        counts = {}
+        counts[self.types[0]] = 0
+        counts[self.types[1]] = 0
+        for (lvl,mv) in self.learnset:
+            if mv.type in counts.keys():
+                counts[mv.type] = counts[mv.type] + 1
+        
+        return self.types[0] if counts[self.types[0]] > counts[self.types[1]] else self.types[1]
+    
+    def other_type(self):
+        return self.types[1] if self.primary_type() == self.types[0] else self.types[0]
 
 DEX_COLORS = {
     'RED'    : [ 240, 88,  104 ],
@@ -1356,7 +1422,7 @@ def stat_spread_weight():
         return random.randint(70, 100)
     if random.random() > 0.75:
         return random.randint(50, 130)
-    return random.randint(30, 180)
+    return random.randint(30, 190)
 
 def weighted_pick_theme(possibilities, normalize_untyped_ratio=False):
     result_types = defaultdict(lambda: [])
@@ -1408,27 +1474,85 @@ def weighted_pick_theme(possibilities, normalize_untyped_ratio=False):
         else:
             return random.choices(typed_themes, weights)[0]
 
-def init_dex_balance_data():
-    global used_combos, total_combos
+def init_dex_balance_data(dex_size):
+    global used_combos, total_combos, expected_per_type, expected_monotypes
     used_combos = defaultdict(lambda: 0)
     total_combos = defaultdict(lambda: 0)
+    
+    expected_per_type = {}
+    for tp in type_weights.keys():
+        expected_per_type[tp] = int(dex_size * type_weights[tp])
+    
+    expected_monotypes = {}
+    for tp in expected_per_type.keys():
+        expected_monotypes[tp] = max(1, int(expected_per_type[tp] // 2.5))
 
-def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
-    global used_combos, total_combos
+def make_pkmn(slot, flags, dex_size, bst_range=(0,0), reroll=True):
+    global used_combos, total_combos, expected_per_type, expected_monotypes
     pkmn = Pokemon(bst_range=bst_range, flags=flags)
     
-    archetype = weighted_pick_theme(archetypes)
-    subarchetype = weighted_pick_theme(subarchetypes, normalize_untyped_ratio=True)
+    archetype = random.choice(archetypes)
+    subarchetype = random.choice(subarchetypes)
+    
+    # might change (sub)archetype to something that matches missing types
+    if not reroll:
+        pkmn_per_type = {}
+        
+        for tp in type_weights:
+            pkmn_per_type[tp] = 0
+        
+        for tc in used_combos:
+            pkmn_per_type[tc[0]] = pkmn_per_type[tc[0]] + 1
+            if tc[0] != tc[1]:
+                pkmn_per_type[tc[1]] = pkmn_per_type[tc[1]] + 1
+        
+        limit = min(pkmn_per_type.values())
+        if limit > 2:
+            limit = 2
+        
+        for tp in type_weights:
+            if pkmn_per_type[tp] > limit:
+                del pkmn_per_type[tp]
+        
+        good_archetypes = set()
+        for arch in archetypes:
+            if 'necessary_types' in themedata[arch]:
+                for nt in themedata[arch]['necessary_types']:
+                    if nt in pkmn_per_type:
+                        good_archetypes.add(arch)
+        good_archetypes = list(good_archetypes)
+        
+        good_subarchetypes = set()
+        for arch in subarchetypes:
+            if 'necessary_types' in themedata[arch]:
+                for nt in themedata[arch]['necessary_types']:
+                    if nt in pkmn_per_type:
+                        good_subarchetypes.add(arch)
+        good_subarchetypes = list(good_subarchetypes)
+        
+        if len(good_archetypes) != 0:
+            archetype = random.choice(good_archetypes)
+        
+        if len(good_subarchetypes) != 0:
+            subarchetype = random.choice(good_subarchetypes)
     
     if Flags.WATER_STARTER in flags:
-        archetype = random.choice(['water_animal', 'small_animal', 'dark_animal',  'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
-        subarchetype = 'water_elemental'
+        archetype = random.choices(list(water_starter_archetypes.keys()), weights=water_starter_archetypes.values())[0]
+        if archetype == 'water_animal':
+            subarchetype = random.choice(subarchetypes)
+        else:
+            subarchetype = 'water_elemental'
+    
     if Flags.FIRE_STARTER in flags:
-        archetype = random.choice(['small_animal', 'dark_animal', 'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
+        archetype = random.choices(list(fire_starter_archetypes.keys()), weights=fire_starter_archetypes.values())[0]
         subarchetype = 'fire_elemental'
+    
     if Flags.GRASS_STARTER in flags:
-        archetype = random.choice(['plant', 'small_animal', 'dark_animal', 'ground_animal', 'monster', 'humanoid_fighter', 'humanoid_psychic', 'bird'])
-        subarchetype = 'grass_elemental'
+        archetype = random.choices(list(grass_starter_archetypes.keys()), weights=grass_starter_archetypes.values())[0]
+        if archetype == 'plant':
+            subarchetype = random.choice(subarchetypes)
+        else:
+            subarchetype = 'grass_elemental'
     
     if Flags.FOSSIL in flags:
         subarchetype = 'rocky'
@@ -1437,6 +1561,7 @@ def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
         archetype = 'blob'
     
     if Flags.LEGENDARY_TRIO in flags or Flags.MYTHICAL in flags or Flags.LEGENDARY in flags:
+        reroll = False
         if len(special_dex_slots[slot]) == 3:
             archetype = special_dex_slots[slot][2]
     
@@ -1447,34 +1572,26 @@ def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
     
     type_combo = tuple(sorted(pkmn.types))
     
+    reroll_conds = {
+        'overused_combo': lambda tc: (tc[0] != tc[1]) and used_combos[tc] >= (4 if tc in common_type_combos else 2),
+        'is_overused_monotype': lambda tc: (tc[0] == tc[1]) and used_combos[tc] >= expected_monotypes[tc[0]],
+        'both_types_overused': lambda tc: (tc[0] != tc[1]) and total_combos[tc[0]] >= expected_per_type[tc[0]] and total_combos[tc[1]] >= expected_per_type[tc[1]],
+        'type_sum_overused': lambda tc: (tc[0] != tc[1]) and (total_combos[tc[0]] + total_combos[tc[1]] >= expected_per_type[tc[0]] + expected_per_type[tc[1]] - 2)
+    }
+    
     if reroll:
-        if (type_combo[0] != type_combo[1]) and used_combos[type_combo] > 2:
-            # print('rerolling (used combo)', type_combo)
-            for i in range(0,20):
-                pkmn = make_pkmn(slot, flags, bst_range=bst_range, reroll=False)
+        if any(cond(type_combo) for cond in reroll_conds.values()):
+            #print('rerolling ', type_combo, ', '.join(cond + ': ' + str(reroll_conds[cond](type_combo)) for cond in reroll_conds))
+            for i in range(0,10):
+                pkmn = make_pkmn(slot, flags, dex_size, bst_range=bst_range, reroll=False)
                 type_combo = tuple(sorted(pkmn.types))
-                if not (type_combo[0] != type_combo[1]) and used_combos[type_combo] > 2:
+                if all(not cond(type_combo) for cond in reroll_conds.values()):
                     break
-            # print('got', type_combo)  
-        
-        if total_combos[type_combo[0]] >= 6 and total_combos[type_combo[1]] >= 6:
-            # print('rerolling (common types)', type_combo)
-            for i in range(0,20):
-                pkmn = make_pkmn(slot, flags, bst_range=bst_range, reroll=False)
-                type_combo = tuple(sorted(pkmn.types))
-                if not (total_combos[type_combo[0]] >= 6 and total_combos[type_combo[1]] >= 6):
-                    break
-            # print('got', type_combo)  
-        
-        if total_combos[type_combo[0]] >= 10 or total_combos[type_combo[1]] >= 10:
-            # print('rerolling (common type)', type_combo[0])
-            for i in range(0,20):
-                pkmn = make_pkmn(slot, flags, bst_range=bst_range, reroll=False)
-                type_combo = tuple(sorted(pkmn.types))
-                if not (total_combos[type_combo[0]] >= 10 or total_combos[type_combo[1]] >= 10):
-                    break
-            # print('got', type_combo)
-        
+                #else:
+                #    print('  rejected', type_combo, ', '.join(cond + ': ' + str(reroll_conds[cond](type_combo)) for cond in reroll_conds))
+            #print('  got', type_combo, ': ', pkmn.name)
+    
+    # update data used for rerolling
     if reroll:
         used_combos[type_combo] = used_combos[type_combo] + 1
         
@@ -1484,26 +1601,22 @@ def make_pkmn(slot, flags, bst_range=(0,0), reroll=True):
         
     return pkmn
 
-def debug_type_distribution():
-    types = defaultdict(lambda: 0)
-    for i in range(0,10000):
-        pkmn = make_pkmn()
-        types[pkmn.types[0]] = types[pkmn.types[0]] + 1
-        types[pkmn.types[1]] = types[pkmn.types[0]] + 1
-    
-    #maxval = max(types.values())
-    
-    #for k in types.keys():
-    #    types[k] = int(types[k])/maxval*100
-    
-    pprint.pp(types)
+ungainable_types = [ 'NORMAL', 'FLYING', 'BUG', 'WATER' ]
+rare_starter_secondary_types = [ 'GHOST', 'STEEL', 'ICE', 'DRAGON', 'ROCK', 'ELECTRIC' ]
+impossible_starter_secondary_types = [ 'FIRE', 'WATER', 'GRASS', 'NORMAL' ]
 
-ungainable_types = [ 'NORMAL', 'FLYING', 'BUG' ]
+general_starter_archetypes = { 'small_animal': 4, 'dark_animal': 1, 'ground_animal': 1, 'monster': 1, 'humanoid_fighter': 1, 'humanoid_psychic': 1, 'bird': 1 }
+fire_starter_archetypes = dict(general_starter_archetypes)
+water_starter_archetypes = dict(general_starter_archetypes)
+water_starter_archetypes['water_animal'] = 4
+grass_starter_archetypes = dict(general_starter_archetypes)
+water_starter_archetypes['plant'] = 4
+
 
 # no evo: 350–500
 # stage 1 of 3: 200–350 // + 100–125 per evo
 # stage 1 of 2: 250–450 // + 100–150
-def generate_family(slot, evo_cat, special=None):
+def generate_family(slot, evo_cat, dex_size, special=None, used_starter_subtypes=set()):
     flags = set([evo_cat])
     
     if special != None:
@@ -1519,7 +1632,7 @@ def generate_family(slot, evo_cat, special=None):
         if special == Flags.LEGENDARY_TRIO:
             bst_range = (580, 580)
         
-        pkmn = make_pkmn(slot, flags, bst_range=bst_range)
+        pkmn = make_pkmn(slot, flags, dex_size, bst_range=bst_range)
         
         if not special == Flags.DITTO:
             pkmn.tms.add('HYPER_BEAM')
@@ -1527,11 +1640,12 @@ def generate_family(slot, evo_cat, special=None):
         
     elif evo_cat == Flags.TWO_STAGES:
         flags.add(Flags.LAST_EVOLVABLE_STAGE)
-        pkmn = make_pkmn(slot, flags, bst_range=(250, 450))
+        pkmn = make_pkmn(slot, flags, dex_size, bst_range=(250, 450))
         pkmn2 = pkmn.evolve(bst_increase=random.randint(100, 150))
         
-        if random.random() > 0.5 and not pkmn.types[1] in ungainable_types:
-            pkmn.types[1] = pkmn.types[0]
+        primtype = pkmn.primary_type()
+        if primtype != pkmn.other_type() and random.random() > 0.6 and not pkmn.other_type() in ungainable_types:
+            pkmn.types = [primtype, primtype]
         
         pkmn2.tms.add('HYPER_BEAM')
         return [ pkmn, pkmn2 ]
@@ -1551,24 +1665,27 @@ def generate_family(slot, evo_cat, special=None):
             bst_increase_1 = 120
             bst_increase_2 = 180
         
-        pkmn = make_pkmn(slot, flags, bst_range=bst_range)
+        pkmn = make_pkmn(slot, flags, dex_size, bst_range=bst_range)
+        
+        if special == Flags.FIRE_STARTER or special == Flags.GRASS_STARTER or special == Flags.WATER_STARTER:
+            while (pkmn.primary_type() != pkmn.other_type() and pkmn.other_type() in impossible_starter_secondary_types) or pkmn.other_type() in used_starter_subtypes:
+                pkmn = make_pkmn(slot, flags, dex_size, bst_range=bst_range)
+            used_starter_subtypes.add(pkmn.other_type())
+        
         pkmn2 = pkmn.evolve(bst_increase=bst_increase_1)
         pkmn3 = pkmn2.evolve(bst_increase=bst_increase_2)
         
-        if random.random() > 0.5 and not pkmn.types[1] in ungainable_types:
-            pkmn.types[1] = pkmn.types[0]
-            pkmn2.types[1] = pkmn2.types[0]
+        primtype = pkmn.primary_type()
+        if primtype != pkmn.other_type() and random.random() > 0.6 and not pkmn.other_type() in ungainable_types:
+            pkmn.types = [primtype, primtype]
+            pkmn2.types = [primtype, primtype]
+        
+        if special == Flags.FIRE_STARTER or special == Flags.GRASS_STARTER or special == Flags.WATER_STARTER:
+            if pkmn3.other_type() in rare_starter_secondary_types:
+                pkmn.types = [primtype, primtype]
         
         pkmn3.tms.add('HYPER_BEAM')
         return [ pkmn, pkmn2, pkmn3 ]
-
-def debug_gen_pkmn():
-    pkmn = make_pkmn()
-    print(pkmn.themes)
-    print('type:', pkmn.types)
-    print('abilities:', pkmn.abilities)
-    print('egg groups:', pkmn.egg_groups)
-    print(pkmn.learnset)
 
 special_dex_slots = [None] * 412
 special_dex_slots[1] = (Flags.THREE_STAGES, Flags.GRASS_STARTER) # kanto starters
@@ -1674,9 +1791,11 @@ def dex_sort_key(pk):
     return val
 
 def gen_dex(start_index, end_index, sort_start=None, sort_end=None):
-    init_dex_balance_data()
     dex = []
     index = start_index
+    dex_size = end_index - start_index
+    init_dex_balance_data(dex_size)
+    used_starter_subtypes = set()
     
     while index < end_index:
         index = start_index + len(dex)
@@ -1699,7 +1818,7 @@ def gen_dex(start_index, end_index, sort_start=None, sort_end=None):
         if evo_cat == Flags.TWO_STAGES and special_dex_slots[index+1] != None:
             evo_cat = Flags.SINGLE
         
-        pks = generate_family(index, evo_cat, special)
+        pks = generate_family(index, evo_cat, dex_size, special, used_starter_subtypes)
         dex.extend(pks)
     
     if sort_start == None and sort_end == None:
@@ -1729,7 +1848,9 @@ def output_to_json(dex, ndex, hdex):
         if poke == None:
             continue
         poke_to_id[poke if type(poke) is str else poke.name] = index_to_id[str(index)]
-        
+    
+    pokedex_fr = {}
+    
     out = {
         'base_stats.h' : {},
         'species_names.h' : [],
@@ -1746,6 +1867,7 @@ def output_to_json(dex, ndex, hdex):
         'moves' : {},
         'teachable_moves' : [],
         'pokedex_entries.h' : {},
+        'pokedex_text_fr.h' : {},
         'national_dex' : ndex,
         'hoenn_dex' : hdex
     }
@@ -1833,6 +1955,10 @@ def output_to_json(dex, ndex, hdex):
             
             # src/data/pokemon/tutor_learnsets.h data
             out['tutor_learnsets.h'][identifier] = list(poke.tutor_moves)
+        
+        # pokedex entries
+        if not type(poke) is str:
+            out['pokedex_text_fr.h'][identifier] = poke.pokedex_fr
         
         # data for randomizing wild encounters
         if not type(poke) is str:
@@ -1958,6 +2084,7 @@ def output_dex_txt(dex):
         string.append(f'\tegg groups: {poke.egg_groups}, egg cycles: {poke.egg_cycles}, growth rate: {poke.growth_rate}')
         string.append(f'\texp yield: {poke.exp_yield}, ev yield: {poke.ev_yield}, held items: {poke.held_items}')
         string.append(f'\tbody color: {poke.body_color}, category: {poke.category}, weight: {poke.weight/10} kg, height: {poke.height/10} m')
+        string.append(f'\t"{poke.pokedex_fr}" (FR)')
         string.append(f'\ttms: {poke.tms}')
         string.append(f'\ttutor moves: {poke.tutor_moves}')
         if poke.egg_moves != None:
@@ -2003,12 +2130,14 @@ def print_type_spread(dex):
             type_spread[tp[1]] = type_spread[tp[1]]+1
     
     for tp in type_weights.keys():
-        #print(f'{tp}: {type_spread[tp]}')
+        print(f'\t{tp}: {type_spread[tp]}')
         
+        spread_str = ""
         for combo in combo_spread.keys():
             if combo[0] != tp and combo[1] != tp:
                 continue
-            #print(f'\t{combo_spread[combo]} {"*" if combo[0] == tp else combo[0]}/{"*" if combo[1] == tp else combo[1]}')
+            spread_str += f'\t{combo_spread[combo]} {"*" if combo[0] == tp else combo[0]}/{"*" if combo[1] == tp else combo[1]}\n'
+        #print(spread_str)
     
     #print(', '.join(tp + ': ' + str(type_spread[tp]) for tp in type_spread.keys()))
     rare_types = []
@@ -2113,6 +2242,175 @@ def generate_dex_orders(dex):
     
     return (ndex, hdex)
 
+
+# returns whether predator mon can predate on prey mon
+def can_eat(predator, prey):
+    if predator == prey:
+        return False
+    
+    # can't eat legends
+    if Flags.LEGENDARY in prey.flags or Flags.MYTHICAL in prey.flags or Flags.LEGENDARY_TRIO in prey.flags:
+        return False
+    
+    common_habitat = False
+    for h in predator.habitats:
+        if h in prey.habitats:
+            common_habitat = True
+            break
+    
+    if not common_habitat:
+        return False
+    
+    # make sure prey is not too large
+    w_ratios = []
+    for t in predator.themes:
+        if 'prey_size_ratio' in themedata[t]:
+            w_ratios.append(themedata[t]['prey_size_ratio'])
+    if len(w_ratios) == 0:
+        w_ratio = 0.75
+    else:
+        w_ratio = sum(w_ratios) / len(w_ratios)
+    
+    if prey.weight > predator.weight * w_ratio:
+        return False
+    
+    # make sure prey is not too small
+    if prey.weight < predator.weight * 0.01:
+        return False
+    
+    return True
+
+# generates pokedex entries
+get_keywords = re.compile('\\[(.+?)\\]')
+def generate_dex_entries(mons):
+    for mon in mons:
+        words = {}
+        
+        can_evolve = mon.evo_target != None
+        
+        # select place
+        places = []
+        for p in mon.habitats + mon.motifs:
+            if p.name in rawdb['dex_places']:
+                places.extend(rawdb['dex_places'][p.name])
+        for t in mon.themes:
+            if 'dex_place' in themedata[t]:
+                places.extend(themedata[t]['dex_place'])
+        words['PLACE'] = random.choice(places)
+        
+        # select food
+        foods = []
+        for t in mon.themes:
+            if 'dex_food' in themedata[t]:
+                foods.extend(themedata[t]['dex_food'])
+        if len(foods) != 0:
+            words['FOOD'] = random.choice(foods)
+        
+        # select prey
+        prey_themes = []
+        for t in mon.themes:
+            if 'dex_prey' in themedata[t]:
+                prey_themes.extend(themedata[t]['dex_prey'])
+        
+        preys = []
+        for prey in mons:
+            test_prey = False
+            for pt in prey_themes:
+                if pt in prey.themes:
+                    test_prey = True
+                    break
+            
+            if test_prey and can_eat(mon, prey):
+                preys.append(prey.name)
+        
+        if len(preys) != 0:
+            words['PREY'] = random.choice(preys)
+        
+        # only food or prey
+        if 'FOOD' in words and 'PREY' in words:
+            if random.random() >= 0.25:
+                words.pop('FOOD')
+            else:
+                words.pop('PREY')
+        
+        # select action
+        actions = []
+        for t in mon.themes:
+            if 'dex_action' in themedata[t]:
+                actions.extend(themedata[t]['dex_action'])
+        if len(actions) != 0:
+            action = random.choice(actions)
+            words['ACTION-ING'] = action['ing']
+            words['ACTION-3RD'] = action['3rd']
+        
+        # select attack noun
+        attack_nouns = []
+        for t in mon.themes:
+            if 'dex_attack_noun' in themedata[t]:
+                attack_nouns.extend(themedata[t]['dex_attack_noun'])
+        if len(attack_nouns) != 0:
+            words['ATTACK-NOUN'] = random.choice(attack_nouns)
+        
+        # select feeling adjective
+        feeling_adjs = []
+        for t in mon.themes:
+            if 'dex_adj_feeling' in themedata[t]:
+                feeling_adjs.extend(themedata[t]['dex_adj_feeling'])
+        if len(feeling_adjs) != 0:
+            words['ADJ-FEELING'] = random.choice(feeling_adjs)
+        
+        # select body adjective
+        body_adjs = []
+        for t in mon.themes:
+            if 'dex_adj_body' in themedata[t]:
+                body_adjs.extend(themedata[t]['dex_adj_body'])
+        if len(body_adjs) != 0:
+            words['ADJ-BODY'] = random.choice(body_adjs)
+        
+        # select kind
+        kinds = []
+        for t in mon.themes:
+            if 'dex_kind' in themedata[t]:
+                kinds.extend(themedata[t]['dex_kind'])
+        if len(kinds) != 0:
+            words['KIND'] = random.choice(kinds)
+        
+        # select brings
+        if not can_evolve:
+            brings = []
+            for t in mon.themes:
+                if 'dex_brings' in themedata[t]:
+                    brings.extend(themedata[t]['dex_brings'])
+            if len(brings) != 0:
+                words['BRINGS'] = random.choice(brings)
+        
+        # generate entry
+        phrases = list(rawdb['dex_phrases'])
+        entry = ''
+        tries = 0
+        while len(entry) <= 70 and tries <= 10 and len(phrases) >= 1:
+            tries = tries + 1
+            phrase = random.choice(phrases)
+            phrases.remove(phrase)
+            
+            keywords = get_keywords.findall(phrase)
+            valid = True
+            for kw in keywords:
+                if kw in words:
+                    phrase = phrase.replace('['+kw+']', words[kw])
+                else:
+                    valid = False
+            
+            if valid and len(entry + ' ' + phrase) <= 90:
+                phrase = phrase[0].capitalize() + phrase[1:]
+                entry += (' ' + phrase)
+                for kw in keywords:
+                    words.pop(kw)
+            
+        entry = entry.strip()
+        
+        mon.pokedex_fr = entry
+
 dex = [None]
 
 # kanto dex
@@ -2127,11 +2425,21 @@ dex.extend(['OLD_UNOWN'] * 25)
 # TODO experimental, hoenn dex
 dex.extend(hoenn_mons := gen_dex(277, 411)) # note: no need to sort because that is done seperately for the pokedex order
 
-output_dex_txt(dex)
-
 print('Kanto dex type spread:')
 print_type_spread(kanto_mons)
 
 ndex, hdex = generate_dex_orders(dex)
 
+# do bst_ability_adjustment
+for pk in dex:
+    if pk != None and (type(pk) != str) and pk.bst_ability_adjustment != 0:
+        diff = int(pk.bst_ability_adjustment // -6)
+        for i in range(len(pk.stats)):
+            pk.stats[i] += diff
+
+generate_dex_entries(kanto_mons)
+generate_dex_entries(johto_mons)
+generate_dex_entries(hoenn_mons)
+
+output_dex_txt(dex)
 output_to_json(dex, ndex, hdex)

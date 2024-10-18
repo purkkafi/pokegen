@@ -1,0 +1,307 @@
+{
+    "unused_classes" : [],
+    
+    "special_classes" : {
+        "TRAINER_CLASS_ELITE_FOUR" : {},
+        "TRAINER_CLASS_LEADER" : {},
+        "TRAINER_CLASS_CHAMPION" : {},
+        "TRAINER_CLASS_POKEMON_TRAINER_3" : {}
+    },
+    
+    "special_type_preference" : {
+        "ROXANNE" : "ROCK",
+        "BRAWLY" : "FIGHTING",
+        "WATTSON" : "ELECTRIC",
+        "FLANNERY" : "FIRE",
+        "NORMAN" : "NORMAL",
+        "WINONA" : "FLYING",
+        "TATE&LIZA" : "PSYCHIC",
+        "WALLACE" : "WATER",
+        
+        "SIDNEY" : "DARK",
+        "PHOEBE" : "GHOST",
+        "GLACIA" : "ICE",
+        "DRAKE" : "DRAGON",
+        "STEVEN" : [ "STEEL", "GROUND", "STEEL", "ROCK", "ROCK", "STEEL" ],
+        
+        "MAXIE" : [ "POISON", "DARK", "FIRE" ],
+        "ARCHIE" : [ "POISON", "DARK", "WATER" ]
+    },
+    
+    "gym_trainers" : {
+        "JOSH" : "ROCK",
+        "TOMMY" : "ROCK",
+        
+        "LAURA" : "FIGHTING",
+        "HIDEKI" : "FIGHTING",
+        "TESSA" : "FIGHTING",
+        
+        "KIRK" : "ELECTRIC",
+        "BEN" : "ELECTRIC",
+        "SHAWN" : "ELECTRIC",
+        "VIVIAN" : "ELECTRIC",
+        
+        "COLE" : "FIRE",
+        "ZANE" : "FIRE",
+        "AXLE" : "FIRE",
+        "SADIE" : "FIRE",
+        "ANDY" : "FIRE",
+        
+        "RANDALL" : "NORMAL",
+        "MARY" : "NORMAL",
+        "PARKER" : "NORMAL",
+        "LORI" : "NORMAL",
+        "GEORGE" : "NORMAL",
+        "JODY" : "NORMAL",
+        "BERKE" : "NORMAL",
+        
+        "JARED" : "FLYING",
+        "KYLEE" : "FLYING",
+        "TERRELL" : "FLYING",
+        "WILL" : "FLYING",
+        
+        "PRESTON" : "PSYCHIC",
+        "MAURA" : "PSYCHIC",
+        "SAMANTHA" : "PSYCHIC",
+        "FRITZ" : "PSYCHIC",
+        "VIRGIL" : "PSYCHIC",
+        "HANNAH" : "PSYCHIC",
+        
+        "CONNIE" : "WATER",
+        "ANDREA" : "WATER",
+        "BRIDGET" : "WATER",
+        "BRIANNA" : "WATER",
+        "OLIVIA" : "WATER",
+        "CRISSY" : "WATER",
+        "TIFFANY" : "WATER",
+        "MARISSA" : "WATER"
+    },
+    
+    "signature_tm" : {
+        "ROXANNE" : "ROCK_TOMB",
+        "BRAWLY" : "BULK_UP",
+        "WATTSON" : "SHOCK_WAVE",
+        "FLANNERY" : "OVERHEAT",
+        "NORMAN" : "FACADE",
+        "WINONA" : "AERIAL_ACE",
+        "TATE&LIZA" : "CALM_MIND",
+        "WALLACE" : "WATER_PULSE",
+        
+        "PHOEBE" : "SHADOW_BALL",
+        "GLACIA" : "ICE_BEAM",
+        "DRAKE" : "DRAGON_CLAW"
+    },
+    
+    "classes" : {
+        "TRAINER_CLASS_RUIN_MANIAC" : {
+            "types" : [ "ROCK", "GROUND" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_INTERVIEWER" : {
+            "types" : [ "NORMAL", "ELECTRIC" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_TUBER_M" : {
+            "types" : [ "NORMAL", "WATER" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_COOL_TRAINER" : {
+            "types" : null,
+            "egg_groups" : null
+        },
+        "TRAINER_CLASS_LADY" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "GRASS" ]
+        },
+        "TRAINER_CLASS_BEAUTY" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "WATER_1", "WATER_2" ]
+        },
+        "TRAINER_CLASS_RICH_BOY" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "WATER_1", "WATER_2" ]
+        },
+        "TRAINER_CLASS_BLACK_BELT" : {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_CAMPER" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "FLYING", "GRASS" ]
+        },
+        "TRAINER_CLASS_BUG_MANIAC" : {
+            "types" : [ "BUG" ],
+            "egg_groups" : [ "BUG" ]
+        },
+        "TRAINER_CLASS_PSYCHIC" : {
+            "types" : [ "PSYCHIC", "GHOST" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_GENTLEMAN" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD" ]
+        },
+        "TRAINER_CLASS_SR_AND_JR" : {
+            "types" : null,
+            "egg_groups" : null
+        },
+        "TRAINER_CLASS_WINSTRATE" : {
+            "types" : null,
+            "egg_groups" : null
+        },
+        "TRAINER_CLASS_POKEFAN" : {
+            "types" : [],
+            "egg_groups" : [ "FAIRY" ]
+        },
+        "TRAINER_CLASS_EXPERT" : {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_YOUNGSTER" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "BUG", "FLYING" ]
+        },
+        "TRAINER_CLASS_DRAGON_TAMER" : {
+            "types" : [],
+            "egg_groups" : [ "DRAGON" ]
+        },
+        "TRAINER_CLASS_NINJA_BOY" : {
+            "types" : [ "POISON", "BUG" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_PARASOL_LADY" : {
+            "types" : [ "WATER", "FIRE", "GRASS" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_PICNICKER" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "FLYING", "GRASS" ]
+        },
+        "TRAINER_CLASS_TWINS" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "FAIRY" ]
+        },
+        "TRAINER_CLASS_HIKER" : {
+            "types" : [ "ROCK", "FIGHTING", "GROUND" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_BATTLE_GIRL" : {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_YOUNG_COUPLE" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "FAIRY", "BUG" ]
+        },
+        "TRAINER_CLASS_OLD_COUPLE" : {
+            "types" : [ "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_TEAM_AQUA" : {
+            "types" : [ "WATER", "DARK", "POISON" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_AQUA_ADMIN" : {
+            "types" : [ "WATER", "DARK", "POISON" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_AQUA_LEADER" : {
+            "types" : [ "WATER", "DARK", "POISON" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_AROMA_LADY" : {
+            "types" : [ "GRASS" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_TUBER_F" : {
+            "types" : [ "NORMAL", "WATER" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_HEX_MANIAC" : {
+            "types" : [ "GHOST" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_POKEMANIAC" : {
+            "types" : [],
+            "egg_groups" : [ "MONSTER" ]
+        },
+        "TRAINER_CLASS_SWIMMER_M" : {
+            "types" : [ "WATER" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_GUITARIST" : {
+            "types" : [ "ELECTRIC", "NORMAL" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_KINDLER" : {
+            "types" : [ "FIRE" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_SCHOOL_KID" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "GRASS", "BUG", "AMORPHOUS", "MONSTER", "HUMAN_LIKE" ]
+        },
+        "TRAINER_CLASS_FISHERMAN" : {
+            "types" : [],
+            "egg_groups" : [ "WATER_2", "WATER_3" ]
+        },
+        "TRAINER_CLASS_TRIATHLETE" : {
+            "types" : [ "WATER", "ELECTRIC", "FLYING" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_BIRD_KEEPER" : {
+            "types" : [],
+            "egg_groups" : [ "FLYING" ]
+        },
+        "TRAINER_CLASS_SWIMMER_F" : {
+            "types" : [ "WATER" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_SAILOR" : {
+            "types" : [ "WATER", "FIGHTING" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_BOARDER" : {
+            "types" : [ "ICE" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_COLLECTOR" : {
+            "types" : null,
+            "egg_groups" : null
+        },
+        "TRAINER_CLASS_POKEMON_BREEDER" : {
+            "types" : null,
+            "egg_groups" : null
+        },
+        "TRAINER_CLASS_POKEMON_RANGER" : {
+            "types" : [ "GRASS" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_TEAM_MAGMA" : {
+            "types" : [ "FIRE", "GROUND", "DARK", "POISON" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_MAGMA_ADMIN" : {
+            "types" : [ "FIRE", "GROUND", "DARK", "POISON" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_MAGMA_LEADER" : {
+            "types" : [ "FIRE", "GROUND", "DARK", "POISON" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_LASS" : {
+            "types" : [],
+            "egg_groups" : [ "FIELD", "GRASS", "FLYING" ]
+        },
+        "TRAINER_CLASS_BUG_CATCHER" : {
+            "types" : [ "BUG" ],
+            "egg_groups" : []
+        },
+        "TRAINER_CLASS_SIS_AND_BRO" : {
+            "types" : [ "WATER" ],
+            "egg_groups" : []
+        }
+    },
+    
+    "postgame_trainers" : []
+}
