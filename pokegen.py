@@ -33,6 +33,8 @@ with open('archetypes.json') as f:
     move_value_adjustment = rawdb['move_value_adjustment']
     status_move_usage_hints = rawdb['status_move_usage_hints']
     similar_move_sets = rawdb['similar_move_sets']
+    treat_as_status_moves = rawdb['treat_as_status_moves']
+    treat_as_damaging_moves = rawdb['treat_as_damaging_moves']
     tm_list = rawdb['tm_list']
     tutor_move_list = rawdb['tutor_move_list']
     universal_tms = rawdb['universal_tms']
@@ -126,13 +128,13 @@ def read_move_data():
     with open(pokered_folder + '/src/data/battle_moves.h') as f:
         moves_h = f.read()
     
-    chunk_extractor = re.compile('\[MOVE_(.+)\]\s=\n\s\s\s\s{([\s\S]+?)}')
+    chunk_extractor = re.compile(r'\[MOVE_(.+)\]\s=\n\s\s\s\s{([\s\S]+?)}')
     
-    get_type = re.compile('type\s=\sTYPE_([A-Z]+)')
-    get_power = re.compile('power\s=\s([0-9]+)')
-    get_pp = re.compile('pp\s=\s([0-9]+)')
-    get_effect = re.compile('effect\s=\sEFFECT_([A-Z0-9_]+)')
-    get_accuracy = re.compile('accuracy\s=\s([0-9]+)')
+    get_type = re.compile(r'type\s=\sTYPE_([A-Z]+)')
+    get_power = re.compile(r'power\s=\s([0-9]+)')
+    get_pp = re.compile(r'pp\s=\s([0-9]+)')
+    get_effect = re.compile(r'effect\s=\sEFFECT_([A-Z0-9_]+)')
+    get_accuracy = re.compile(r'accuracy\s=\s([0-9]+)')
     
     move_data = {}
     
@@ -160,9 +162,10 @@ def read_move_data():
         move_value = move_value + int(move_value_adjustment[move_effect])
         
         is_damaging = move_power != 0 and move_power != 1
-        if move_effect == 'SNORE' or move_effect == 'FUTURE_SIGHT':
+        
+        if is_damaging and name in treat_as_status_moves:
             is_damaging = False
-        elif move_effect == 'MAGNITUDE':
+        if not is_damaging and name in treat_as_damaging_moves:
             is_damaging = True
         
         move_data[name] = Move(name=name, type=move_type, value=move_value, damaging=is_damaging, power=move_power, effect=move_effect)
@@ -175,6 +178,20 @@ def sort_move_list(ls):
     return ls
 
 move_data = read_move_data()
+
+def pkmn_complexity(themes):
+    complexity = 0
+    for theme in themes:
+        data = themedata[theme]
+        if 'necessary_types' in data:
+            complexity = complexity + len(data['necessary_types']) * 10
+        if 'possible_types' in data:
+            complexity = complexity + len(data['possible_types']) * 5
+        if 'moves' in data:
+            complexity = complexity + min(15, len(data['moves']))
+        if 'abilities' in data:
+            complexity = complexity + min(5, len(data['abilities']))
+    return complexity
 
 class Habitat(Enum):
     LAND = auto()
@@ -248,8 +265,19 @@ class Pokemon:
     # Recursively adds themes from initially defined ones
     def populate_themes(self):
         self.initial_themes = list(self.themes)
+        
+        self.optional_subthemes = []
         for theme in self.initial_themes:
             self.populate_theme(theme)
+        
+        while len(self.optional_subthemes) > 0:
+            chosen = random.choice(self.optional_subthemes)
+            
+            if pkmn_complexity(list(self.themes) + [chosen]) > 80:
+                break
+            
+            self.optional_subthemes.remove(chosen)
+            self.populate_theme(chosen)
             
     def populate_theme(self, theme):
         self.themes.add(theme)
@@ -266,8 +294,7 @@ class Pokemon:
         
         if 'optional_subthemes' in data:
             for optional_theme in data['optional_subthemes']:
-                if random.random() > 0.5 and len(self.themes) < 10:
-                    self.populate_theme(optional_theme)
+                self.optional_subthemes.append(optional_theme)
     
     # Generates data based on themes
     def generate(self):
@@ -654,12 +681,16 @@ class Pokemon:
         
         for theme in self.themes:
             if 'moves' in themedata[theme]:
-                for move in themedata[theme]['moves']:
-                    if move in limited_moves:
-                        if random.random() > 0.5:
-                            moves.add(move)
-                    else:
-                        moves.add(move)
+                
+                theme_moves = themedata[theme]['moves']
+                for tm in themedata[theme]['moves']:
+                    if tm in limited_moves and random.random() > 0.66:
+                        theme_moves.remove(tm)
+                
+                theme_moves = random.sample(theme_moves, min(10, len(theme_moves)))
+                
+                for move in theme_moves:#themedata[theme]['moves']:
+                    moves.add(move)
         
         self.moves = moves
     
@@ -707,19 +738,32 @@ class Pokemon:
                     chosen.append(move)
         return chosen
     
-    def pick_and_remove(self, from_list, into_set, excludes):
+    def pick_with_predicate(self, from_list, predicate):
+        pickable = [x for x in from_list if predicate(x)]
+        if len(pickable) == 0:
+            return None
+        return random.choice(pickable)
+    
+    def pick_and_remove(self, from_list, into_set, excludes, predicate=lambda _: True):
         if len(from_list) == 0:
+            print('\tfound none', from_list)
             return
-        pick = random.choice(from_list)
+        pick = self.pick_with_predicate(from_list, predicate)
+        if pick == None:
+            print('\tfound none', from_list)
+            return
+        
         while pick in excludes:
             from_list.remove(pick)
-            if len(from_list) == 0:
+            pick = self.pick_with_predicate(from_list, predicate)
+            if pick == None:
+                print('\tfound none', from_list)
                 return
-            pick = random.choice(from_list)
         
         self.update_excludes(excludes, pick)
         from_list.remove(pick)
         into_set.add(pick)
+        print('\t', pick)
     
     def update_excludes(self, excludes, new_move):
         for similar_set in similar_move_sets:
@@ -730,7 +774,7 @@ class Pokemon:
     
     def generate_learnset(self):
         learnset = set()
-        target_len = random.randint(9, 13)
+        target_len = random.randint(9, 11)
         movelist = list(self.moves)
         
         if Flags.DITTO in self.flags:
@@ -739,36 +783,48 @@ class Pokemon:
         
         # give starters more moves
         if Flags.GRASS_STARTER in self.flags or Flags.FIRE_STARTER in self.flags or Flags.WATER_STARTER in self.flags:
-            target_len = random.randint(11, 13)
+            target_len = random.randint(10, 11)
         
         offense = self.stats[1] + self.stats[3] + self.stats[5]
         defense = self.stats[0] + self.stats[2] + self.stats[4]
         
-        nondmg_ratio = 0.5
+        nondmg_ratio = 0.45
         if offense/defense > 1.1:
             nondmg_ratio = 0.4
         elif offense/defense < 0.9:
-            nondmg_ratio = 0.6
-        stab_ratio = 0.5 if self.types[0] == self.types[1] else 0.75
+            nondmg_ratio = 0.5
+        
+        dualtype = self.types[0] != self.types[1]
+        stab_ratio = 0.75 if dualtype else 0.5
         
         bad_nondamaging = self.filter_moves(movelist, damaging=False, type_predicate=lambda t: True, value_predicate=lambda v: v <= 90)
         good_nondamaging = self.filter_moves(movelist, damaging=False, type_predicate=lambda t: True, value_predicate=lambda v: v > 90)
-        bad_stab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t in self.types, value_predicate=lambda v: v <= 80)
-        good_stab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t in self.types, value_predicate=lambda v: v > 80)
+        bad_stab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t in self.types, value_predicate=lambda v: v <= 85)
+        good_stab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t in self.types, value_predicate=lambda v: v > 85)
         bad_nonstab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t not in self.types, value_predicate=lambda v: v <= 80)
         good_nonstab_dmg = self.filter_moves(movelist, damaging=True, type_predicate=lambda t: t not in self.types, value_predicate=lambda v: v > 80)
         
         excludes = set()
         
-        for i in range(int(target_len * nondmg_ratio)//2):
+        print(self.types, nondmg_ratio)
+        print(bad_stab_dmg, good_stab_dmg)
+        
+        for i in range(math.ceil(target_len * nondmg_ratio / 2)):
             self.pick_and_remove(bad_nondamaging, learnset, excludes)
             self.pick_and_remove(good_nondamaging, learnset, excludes)
         
-        for i in range(int(target_len * (1-nondmg_ratio) * (stab_ratio))//2):
-            self.pick_and_remove(bad_stab_dmg, learnset, excludes)
-            self.pick_and_remove(good_stab_dmg, learnset, excludes)
+        first_stab = True if random.random() > 0.5 else False
+        pick_stab1 = lambda m: move_data[m].type == self.types[0]
+        pick_stab2 = lambda m: move_data[m].type == self.types[1]
+        for i in range(math.ceil(target_len * (1-nondmg_ratio) * (stab_ratio) / 2)):
+            if random.random() > 0.25:
+                first_stab = not first_stab
+            self.pick_and_remove(bad_stab_dmg, learnset, excludes, predicate=(pick_stab1 if first_stab else pick_stab2))
+            
+            first_stab = not first_stab
+            self.pick_and_remove(good_stab_dmg, learnset, excludes, predicate=(pick_stab1 if first_stab else pick_stab2))
         
-        for i in range(int(target_len * (1-nondmg_ratio) * (1-stab_ratio))//2):
+        for i in range(math.ceil(target_len * (1-nondmg_ratio) * (1-stab_ratio) / 2)):
             self.pick_and_remove(bad_nonstab_dmg, learnset, excludes)
             self.pick_and_remove(good_nonstab_dmg, learnset, excludes)
         
@@ -783,6 +839,8 @@ class Pokemon:
         
         used_leftovers = dmg_leftovers
         tries = 0
+        
+        print('------------')
         while len(learnset) < target_len and tries < 100:
             self.pick_and_remove(used_leftovers, learnset, excludes)
             used_leftovers = dmg_leftovers if used_leftovers == nondmg_leftovers else nondmg_leftovers
@@ -828,7 +886,7 @@ class Pokemon:
             mvs = learnset[i:i+4]
             dmg_cat = mvs[0].damaging
             can_fix = (mvs[1].damaging == dmg_cat) and (mvs[2].damaging == dmg_cat) and (mvs[3].damaging != dmg_cat)
-            if can_fix:
+            if not dmg_cat and can_fix:
                 learnset[i+2], learnset[i+3] = learnset[i+3], learnset[i+2]
         
         # transform list into tuples (level, move)
@@ -851,6 +909,20 @@ class Pokemon:
             target_max_lvl = int(hi*d + lo*(1-d))
         
         lvl_1_moves = random.randint(1,3)
+        # no multiple damaging moves that share the same type in lvl 1 moves
+        while True:
+            ms = learnset[0:lvl_1_moves]
+            types = []
+            for m in ms:
+                if m.damaging:
+                    types.append(m.type)
+            
+            if len(types) != len(set(types)):
+                lvl_1_moves = lvl_1_moves - 1
+                continue
+            
+            break
+        
         if len(learnset) < 10:
             lvl_1_moves = max(1, lvl_1_moves-1)
         
@@ -1601,7 +1673,7 @@ def make_pkmn(slot, flags, dex_size, bst_range=(0,0), reroll=True):
         
     return pkmn
 
-ungainable_types = [ 'NORMAL', 'FLYING', 'BUG', 'WATER' ]
+ungainable_types = [ 'NORMAL', 'FLYING', 'BUG', 'WATER', 'GRASS', 'GROUND', 'ELECTRIC', 'FIRE' ]
 rare_starter_secondary_types = [ 'GHOST', 'STEEL', 'ICE', 'DRAGON', 'ROCK', 'ELECTRIC' ]
 impossible_starter_secondary_types = [ 'FIRE', 'WATER', 'GRASS', 'NORMAL' ]
 
@@ -1833,7 +1905,7 @@ def gen_dex(start_index, end_index, sort_start=None, sort_end=None):
 
 index_to_id = {}
 
-get_id = re.compile('SPECIES_(\S+)\s([0-9]+)')
+get_id = re.compile(r'SPECIES_(\S+)\s([0-9]+)')
 with open(pokered_folder + '/include/constants/species.h') as f:
     species_h = f.read()
 for line in species_h.split('\n'):
@@ -1873,7 +1945,7 @@ def output_to_json(dex, ndex, hdex):
     }
     
     ids_to_learnset_pointers = {}
-    get_pointer = re.compile('\[SPECIES_(\S+)\]\s=\s(.+),')
+    get_pointer = re.compile(r'\[SPECIES_(\S+)\]\s=\s(.+),')
     with open(pokered_folder + '/src/data/pokemon/level_up_learnset_pointers.h') as f:
         pointers_h = f.read()
         for line in pointers_h.split('\n'):

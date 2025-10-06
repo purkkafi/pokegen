@@ -59,8 +59,8 @@ def generate_base_stats_h():
     with open(f'templates/{version.value}/base_stats.h_template') as f:
         template = f.read()
         
-    poke_start = re.compile('\s\s\s\s\[SPECIES_(.+)\]\s=')
-    poke_end = re.compile('\s\s\s\s\},')
+    poke_start = re.compile(r'\s\s\s\s\[SPECIES_(.+)\]\s=')
+    poke_end = re.compile(r'\s\s\s\s\},')
     
     data = dex['base_stats.h']
     
@@ -160,7 +160,7 @@ def generate_names_h_pokefirered():
     
     names = dex['species_names.h']
     names.insert(0, '??????????')
-    is_name = re.compile('\s\s\s\s_\("(.+)"\)')
+    is_name = re.compile(r'\s\s\s\s_\("(.+)"\)')
     
     output = []
     
@@ -187,7 +187,7 @@ def generate_names_h_pokeruby():
     
     names = dex['species_names.h']
     names.insert(0, '??????????')
-    is_name = re.compile('_\(.+\)')
+    is_name = re.compile(r'_\(.+\)')
     
     output = []
     
@@ -216,15 +216,15 @@ def generate_pokemon_h():
         palette_template = f.read()
     
     if version == GameVersion.FIRERED:
-        get_front_pic = re.compile('const\su32\s(.+)\s=\sINCBIN_U32\("graphics\/pokemon\/(.+)\/front.4bpp.lz"\);')
-        get_back_pic = re.compile('const\su32\s(.+)\s=\sINCBIN_U32\("graphics\/pokemon\/(.+)\/back.4bpp.lz"\);')
-        get_icon = re.compile('const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/icon.4bpp"\);')
-        get_palette = re.compile('const\su32\s.+\s=\sINCBIN_U32\(\"(.+)normal\.gbapal\.lz"\);')
+        get_front_pic = re.compile(r'const\su32\s(.+)\s=\sINCBIN_U32\("graphics\/pokemon\/(.+)\/front.4bpp.lz"\);')
+        get_back_pic = re.compile(r'const\su32\s(.+)\s=\sINCBIN_U32\("graphics\/pokemon\/(.+)\/back.4bpp.lz"\);')
+        get_icon = re.compile(r'const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/icon.4bpp"\);')
+        get_palette = re.compile(r'const\su32\s.+\s=\sINCBIN_U32\(\"(.+)normal\.gbapal\.lz"\);')
     elif version == GameVersion.RUBY:
-        get_front_pic = re.compile('const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/front.4bpp.lz"\);')
-        get_back_pic = re.compile('const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/back.4bpp.lz"\);')
-        get_icon = re.compile('const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/icon.4bpp"\);')
-        get_palette = re.compile('const\su8\s.+\s=\sINCBIN_U8\(\"(.+)normal\.gbapal\.lz"\);')
+        get_front_pic = re.compile(r'const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/front.4bpp.lz"\);')
+        get_back_pic = re.compile(r'const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/back.4bpp.lz"\);')
+        get_icon = re.compile(r'const\su8\s(.+)\s=\sINCBIN_U8\("graphics\/pokemon\/(.+)\/icon.4bpp"\);')
+        get_palette = re.compile(r'const\su8\s.+\s=\sINCBIN_U8\(\"(.+)normal\.gbapal\.lz"\);')
 
     
     output = []
@@ -295,7 +295,7 @@ def generate_egg_moves_h():
     
     data = dex['egg_moves.h']
     output = []
-    is_start = re.compile('\s\s\s\segg_moves\((.+),')
+    is_start = re.compile(r'\s\s\s\segg_moves\((.+),')
     
     tmpl_start, tmpl_end = template.split('[!CONTENT!]')
     
@@ -382,7 +382,7 @@ def generate_pokedex_entries_h():
     
     description_to_entry = {}
     
-    species_def = re.compile('DEX_(.+)\]')
+    species_def = re.compile(r'DEX_(.+)\]')
     get_description = re.compile('=\\s(.+?),')
     
     output = []
@@ -498,8 +498,8 @@ def generate_pokedex_pokeruby():
     with open('templates/pokeruby/pokedex_entries_en.h_template') as f:
         template = f.read()
     
-    desc_line_1 = re.compile('_1\[\]\s=\s_\(\n.+\n.+\n?.+\);')
-    desc_line_2 = re.compile('_2\[\]\s=\s_\(\n.+\n.+\n?.+\);')
+    desc_line_1 = re.compile(r'_1\[\]\s=\s_\(\n.+\n.+\n?.+\);')
+    desc_line_2 = re.compile(r'_2\[\]\s=\s_\(\n.+\n.+\n?.+\);')
     
     desc_1_empty = """_1[] = _(
   "This is a newly discovered POKéMON.\\n"
@@ -599,9 +599,9 @@ def generate_level_up_learnsets_h():
         template = f.read()
     
     if version == GameVersion.FIRERED:
-        poke_start = re.compile('static\sconst\su16\s(.+)\[\]')
+        poke_start = re.compile(r'static\sconst\su16\s(.+)\[\]')
     elif version == GameVersion.RUBY:
-        poke_start = re.compile('const\su16\s(.+)\[\]')
+        poke_start = re.compile(r'const\su16\s(.+)\[\]')
     
     output = []
     data = dex['level_up_learnsets.h']
@@ -1078,8 +1078,8 @@ def generate_in_game_pokemon_pokefirered(main_families, post_families, main_miss
         print('wrote /data/maps/CeladonCity_GameCorner_PrizeRoom/scripts.inc')
     
     # replace in-game trades
-    get_trade_species = re.compile('\s+\.species\s=\s(.+),')
-    get_wanted_species = re.compile('\s+\.requestedSpecies\s=\s(.+)')
+    get_trade_species = re.compile(r'\s+\.species\s=\s(.+),')
+    get_wanted_species = re.compile(r'\s+\.requestedSpecies\s=\s(.+)')
     trades_h_out = []
     with open('templates/pokefirered/ingame_trades.h_template') as f:
         for line in f.read().split('\n'):
@@ -1487,13 +1487,13 @@ def generate_trainers(mon_lists):
     global fire_team
     global water_team
     
-    trainer_start = re.compile('\s+\[TRAINER_')
-    get_name = re.compile('\s+\.trainerName\s=\s_\("(.+)"\),')
+    trainer_start = re.compile(r'\s+\[TRAINER_')
+    get_name = re.compile(r'\s+\.trainerName\s=\s_\("(.+)"\),')
     if version == GameVersion.FIRERED:
-        get_id = re.compile('(sTrainerMons_.+)}')
+        get_id = re.compile(r'(sTrainerMons_.+)}')
     else:
-        get_id = re.compile('(gTrainerParty_.+)}')
-    get_class = re.compile('\s+\.trainerClass\s=\s(.+),')
+        get_id = re.compile(r'(gTrainerParty_.+)}')
+    get_class = re.compile(r'\s+\.trainerClass\s=\s(.+),')
     
     trainer_data = {}
     
@@ -1524,15 +1524,15 @@ def generate_trainers(mon_lists):
         parties_h = f.read()
     
     if version == GameVersion.FIRERED:
-        party_start = re.compile('static\sconst\sstruct\s.+\s(sTrainerMons_.+)\[\]')
-        party_lvl = re.compile('\s+\.lvl\s=\s(.+),')
-        party_species = re.compile('\s+\.species\s=\s(.+),')
+        party_start = re.compile(r'static\sconst\sstruct\s.+\s(sTrainerMons_.+)\[\]')
+        party_lvl = re.compile(r'\s+\.lvl\s=\s(.+),')
+        party_species = re.compile(r'\s+\.species\s=\s(.+),')
     else:
-        party_start = re.compile('const\sstruct\s.+\s(gTrainerParty_.+)\[\]')
-        party_lvl = re.compile('\s+\.level\s=\s(.+),')
-        party_species = re.compile('\s+\.species\s=\s(.+),?')
-    party_moves = re.compile('\s+\.moves\s=\s(.+),')
-    party_item = re.compile('\s+.heldItem\s=\s(.+),')
+        party_start = re.compile(r'const\sstruct\s.+\s(gTrainerParty_.+)\[\]')
+        party_lvl = re.compile(r'\s+\.level\s=\s(.+),')
+        party_species = re.compile(r'\s+\.species\s=\s(.+),?')
+    party_moves = re.compile(r'\s+\.moves\s=\s(.+),')
+    party_item = re.compile(r'\s+.heldItem\s=\s(.+),')
     
     parties_h_out = []
     current_trainer = None
@@ -1547,6 +1547,7 @@ def generate_trainers(mon_lists):
         m = party_start.search(line)
         
         if m != None:
+            
             # save previous rematch team
             if current_trainer != None:
                 rematch_trainers[current_trainer['name']] = rematch_team
